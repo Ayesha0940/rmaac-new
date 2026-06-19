@@ -52,39 +52,16 @@ def load_compare_curve(csv_path):
     adv_y = df["reward_adv_noise_no_diffusion"].astype(float).values
     clean_base = float(df["reward_clean_no_noise"].iloc[0])
 
-    diff_cols = [col for col in df.columns if col.startswith("reward_adv_with_diff_t")]
-    diff_y = None
-    diff_label = None
-    if diff_cols:
-        best_col = None
-        best_values = None
-        best_mean = None
-        for col in diff_cols:
-            values = df[col].astype(float).values
-            mean_value = float(values.mean())
-            if best_mean is None or mean_value > best_mean:
-                best_col = col
-                best_values = values
-                best_mean = mean_value
-        diff_y = best_values
-        diff_label = best_col
-
-    return x, base_y, adv_y, diff_y, clean_base, diff_label
+    return x, base_y, adv_y, clean_base
 
 
 def make_plot(scenario, files, out_dir):
     if "compare" in files:
-        x, base_y, adv_y, diff_y, clean_base, diff_label = load_compare_curve(files["compare"])
+        x, base_y, adv_y, clean_base = load_compare_curve(files["compare"])
 
         plt.figure(figsize=(8, 5))
         plt.plot(x, base_y, marker="o", linewidth=2, label="base model noisy")
         plt.plot(x, adv_y, marker="s", linewidth=2, label="adv model noisy")
-
-        if diff_y is not None:
-            diff_text = "adv + diffusion"
-            if diff_label is not None:
-                diff_text = "adv + diffusion ({})".format(diff_label.replace("reward_adv_with_diff_t", "t="))
-            plt.plot(x, diff_y, marker="^", linewidth=2, label=diff_text)
 
         plt.axhline(clean_base, linestyle="--", linewidth=1.2, alpha=0.8, label="clean baseline")
 

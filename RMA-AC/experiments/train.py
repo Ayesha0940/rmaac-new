@@ -25,16 +25,8 @@ import torch.nn.functional as F
 
 from gym.spaces import Box, Discrete
 
-import collect_joint_data
-import joint_diffusion
-import score_diffusion
-
-
-# ================= Diffusion globals =================
 DIFFUSION_MODEL = None
 DIFFUSION_CONSTS = {}
-DIFFUSION_DEVICE = torch.device("cpu")
-
 
 
 
@@ -75,41 +67,11 @@ def parse_args():
     parser.add_argument("--run-id", type=int, default=0, help="ID of the run for multiple seeds")
     parser.add_argument("--seed", type=int, default=None, help="Random seed for reproducibility")
 
-    parser.add_argument("--baseline-load-dir", type=str, default=None,
-                        help="checkpoint directory for the clean/base model used in comparisons")
-    parser.add_argument("--baseline-exp-name", type=str, default=None,
-                        help="checkpoint name for the clean/base model used in comparisons")
-    parser.add_argument("--adv-load-dir", type=str, default=None,
-                        help="checkpoint directory for the adversarially trained model used in comparisons")
-    parser.add_argument("--adv-exp-name", type=str, default=None,
-                        help="checkpoint name for the adversarially trained model used in comparisons")
-    parser.add_argument("--compare-baseline-adv", action="store_true", default=False,
-                        help="when testing, compare base-noisy, adv-noisy, and adv+diffusion in one sweep")
-    parser.add_argument("--t-start-list", type=int, nargs="*", default=[20, 40, 60],
-                        help="diffusion reverse step starts to sweep during comparison/test")
-
-     # parser.add_argument("--mode", choices=["train", "test"], default="train", help="Run mode: 'train' to train agents, 'test' to run evaluation")
-    parser.add_argument(
-    "--mode",
-    choices=["train", "test", "collect_diffusion", "train_diffusion",
-             "collect_joint_diffusion", "train_joint_denoiser", "test_joint",
-             "noise_sweep", "train_score", "test_score"],
-    default="train",
-    help="Run mode:\n"
-         "  'train'                   : normal MADDPG training\n"
-         "  'test'                    : robustness tests (legacy denoiser)\n"
-         "  'collect_diffusion'       : collect action-only trajectories\n"
-         "  'train_diffusion'         : train legacy action-only denoiser\n"
-         "  'collect_joint_diffusion' : collect joint (state+action+anchor) trajectories\n"
-         "  'train_joint_denoiser'    : train joint state-action denoiser\n"
-         "  'test_joint'              : evaluate with joint denoiser sweep\n"
-         "  'noise_sweep'             : joint obs+act noise sweep across noise_std values\n"
-         "  'train_score'             : train score network (DSM, continuous sigma)\n"
-         "  'test_score'              : evaluate score-based Langevin correction"
-    )
+    parser.add_argument("--mode", choices=["train", "test", "collect_diffusion", "train_diffusion"],
+                        default="train",
+                        help="Run mode: train / test / collect_diffusion / train_diffusion")
     parser.add_argument("--adv-type", choices=["none", "obs", "act", "both"], default="obs", help="Adversary Type: 'none' clean training, 'obs' state uncertainity, 'act' action uncertainity, 'both' action+state uncertainity")
     parser.add_argument("--num-test-runs", type=int, default=3, help="Number of test runs to perform when in test mode")
-    parser.add_argument("--skip-diffusion", action="store_true", default=False, help="skip diffusion denoising during test mode")
 
     # State Perturbation
     parser.add_argument("--noise-type", type=str, default="Linear", help="Linear, Gaussian")
@@ -129,13 +91,6 @@ def parse_args():
     parser.add_argument("--uniform-high", type=float, default=0.1, help="high bound for uniform noise")
     parser.add_argument("--llm-disturb-interval", type=int, default=5, help="steps between disturbances")
     parser.add_argument("--num-test-episodes", type=int, default=800, help="number of testing episodes")
-    parser.add_argument("--act-noise-list", type=float, nargs="+",
-                        default=[0.0, 0.4, 0.8, 1.2, 1.6, 2.0],
-                        help="action noise std values to sweep in noise_sweep mode")
-    parser.add_argument("--obs-noise-list", type=float, nargs="+",
-                        default=[0.0, 0.4, 0.8, 1.2],
-                        help="observation noise std values to sweep in noise_sweep mode")
-
         # --- LLM-guided adversary ---
     parser.add_argument("--llm-guide", type=str, default="adversary", choices=["none", "adversary"],
                         help="enable LLM-guided perturbations")
@@ -161,58 +116,22 @@ def parse_args():
     parser.add_argument("--perturb-num-steps", type=int, default=3,
                         help="number of EARNIE inner-loop ascent steps")
 
-    # --- Diffusion settings ---
+    # --- DDPM action denoiser ---
     parser.add_argument("--diffusion-horizon", type=int, default=25,
-                        help="trajectory length H for diffusion model")
+                        help="trajectory length H used when training the diffusion model")
     parser.add_argument("--diffusion-steps", type=int, default=100,
-                        help="number of diffusion steps T")
+                        help="number of forward diffusion steps T")
     parser.add_argument("--diffusion-batch-size", type=int, default=64)
     parser.add_argument("--diffusion-epochs", type=int, default=50)
     parser.add_argument("--diffusion-lr", type=float, default=1e-4)
     parser.add_argument("--diffusion-data-path", type=str, default="./diffusion_data.npz",
-                        help="where to save/load (states,actions) trajectories")
+                        help="path to save/load (states, actions) trajectories for the denoiser")
     parser.add_argument("--diffusion-model-path", type=str, default="./diffusion_model.pt",
-                        help="where to save the trained diffusion model")
-
-    # --- Joint denoiser settings ---
-    parser.add_argument("--num-collect-episodes", type=int, default=5000,
-                        help="episodes to collect for joint diffusion data")
-    parser.add_argument("--joint-diffusion-data-path", type=str,
-                        default="./joint_diffusion_data.npz",
-                        help="path to save/load joint (state+action+anchor) dataset")
-    parser.add_argument("--denoiser-type", type=str, default="joint",
-                        choices=["legacy", "joint"],
-                        help="'legacy' = action-only MLP, 'joint' = joint state-action denoiser")
-    parser.add_argument("--anchor-type", type=str, default="none",
-                        choices=["none", "init_obs", "landmarks", "roles", "landmarks+roles"],
-                        help="clean anchor signal type for the joint denoiser")
-    parser.add_argument("--denoiser-hidden-dim", type=int, default=256,
-                        help="hidden dimension for FiLM residual blocks")
-    parser.add_argument("--denoiser-n-blocks", type=int, default=4,
-                        help="number of FiLM residual blocks")
-    parser.add_argument("--channel-weight-lambda", type=float, default=0.1,
-                        help="state channel loss weight (action channel = 1.0)")
-    parser.add_argument("--joint-denoiser-model-path", type=str,
-                        default="./joint_denoiser.pt",
-                        help="path to save/load the joint denoiser checkpoint")
-    parser.add_argument("--corrupt-anchor-std", type=float, default=0.0,
-                        help="std of noise added to the anchor at test time (ablation)")
-
-    # --- Score network (DSM) settings ---
-    parser.add_argument("--score-model-path", type=str, default="./score_model.pt",
-                        help="path to save/load the score network checkpoint")
-    parser.add_argument("--score-sigma-min", type=float, default=0.01,
-                        help="minimum sigma for LogUniform training distribution")
-    parser.add_argument("--score-sigma-max", type=float, default=3.0,
-                        help="maximum sigma for LogUniform training distribution")
-    parser.add_argument("--score-eta", type=float, default=0.1,
-                        help="Langevin step size eta for score correction")
-    parser.add_argument("--score-sigma-est", type=float, default=0.5,
-                        help="estimated noise level sigma_est used at inference")
-    parser.add_argument("--score-n-steps", type=int, default=1,
-                        help="number of Langevin correction steps (1=single-step Phase 1)")
-    parser.add_argument("--lam-q", type=float, default=0.0,
-                        help="critic gradient weight lambda_Q (0=score-only Phase 1)")
+                        help="path to save/load the trained DDPM denoiser")
+    parser.add_argument("--skip-diffusion", action="store_true", default=False,
+                        help="disable DDPM denoising during the test sweep")
+    parser.add_argument("--t-start-list", type=int, nargs="*", default=[20, 40, 60],
+                        help="reverse-diffusion start steps to sweep at test time")
 
     return parser.parse_args()
 
@@ -1139,7 +1058,7 @@ def testRobustnessOA(arglist, load_dir=None, exp_name=None):
         print("Average total reward: {}".format(np.mean(np.sum(all_rewards, axis=1))))
         return np.mean(np.sum(all_rewards, axis=1))
     
-def testRobustnessAP(arglist, deffusion=True, t_start=40, load_dir=None, exp_name=None):
+def testRobustnessAP(arglist, use_denoiser=False, t_start=40, load_dir=None, exp_name=None):
     tf.reset_default_graph()
     with U.single_threaded_session():
         # Create environment
@@ -1160,8 +1079,6 @@ def testRobustnessAP(arglist, deffusion=True, t_start=40, load_dir=None, exp_nam
         load_dir, exp_name = resolve_checkpoint(arglist, load_dir, exp_name)
         print('Loading trained model from {}'.format(load_dir))
         U.load_state(load_dir, exp_name=exp_name)
-        if deffusion:
-            load_diffusion_model(arglist)
 
         # Testing params
         n_episodes = arglist.num_test_episodes
@@ -1214,33 +1131,14 @@ def testRobustnessAP(arglist, deffusion=True, t_start=40, load_dir=None, exp_nam
                     apply_action_disruption(action, 0, env, arglist)
                     for action in action_n
                 ]
-                # print("=======Noisy actions:=========")
-                # print(action_n_noisy)
                 action_n_clean = action_n_noisy
-                if deffusion:
-                    # --- diffusion denoising ---
+
+                # --- optional DDPM denoising ---
+                if use_denoiser:
                     action_vec_noisy = concat_actions(action_n_noisy)
-                    # print("=======Noisy action vec:=========")
-                    # print(action_vec_noisy)
                     state_vec = np.concatenate(obs_n, axis=0)
-
-                    action_vec_clean = diffusion_denoise_action(
-                        action_vec_noisy,
-                        state_vec,
-                        t_start=t_start
-                    )
-                    # print("=======Clean action vec:=========")
-                    # print(action_vec_clean)
-
+                    action_vec_clean = diffusion_denoise_action(action_vec_noisy, state_vec, t_start=t_start)
                     action_n_clean = split_actions(action_vec_clean, n_agents, action_dim_per_agent)
-                    # print("===========Clean actions:=============")
-                    # print(action_n_clean)
-
-                # for i, a in enumerate(action_n_clean):
-                #     print("Agent {}: type={}, len={}, inner shape={}".format(
-                #         i, type(a), len(a), a[0].shape
-                #     ))
-
 
                 # --- env step ---
                 new_obs_n, rew_n, done_n, info_n = env.step(action_n_clean)
@@ -1265,358 +1163,187 @@ def testRobustnessAP(arglist, deffusion=True, t_start=40, load_dir=None, exp_nam
         print("Average total reward: {}".format(np.mean(np.sum(all_rewards, axis=1))))
         return np.mean(np.sum(all_rewards, axis=1))
 
-def collect_diffusion_data(arglist):
-    """
-    Roll out the trained MADDPG policy and collect (state, action) trajectories
-    for diffusion training. Uses the *clean* environment (no adversarial noise).
-
-    Saves a .npz file with:
-        states:  [N, H, Ds]   (global state = concat of obs_n)
-        actions: [N, H, Da]   (global action = concat of action_n)
-    """
-    tf.reset_default_graph()
-    H = arglist.diffusion_horizon
-
-    with U.single_threaded_session():
-        # 1) Build env & trainers
-        env = make_env(arglist.scenario, arglist, arglist.benchmark)
-        obs_shape_n = [env.observation_space[i].shape for i in range(env.n)]
-        num_adversaries = min(env.n, arglist.num_adversaries)
-        trainers = get_trainers(env, num_adversaries, obs_shape_n, arglist)
-
-        print("[Diffusion] Using trained MADDPG from {}".format(arglist.save_dir))
-        U.initialize()
-        # load your best or final MADDPG policy
-        U.load_state(arglist.save_dir, exp_name=arglist.exp_name)
-
-        # 2) Figure out global dims
-        # state_dim = sum of per-agent obs dims
-        state_dim = sum(int(np.prod(s)) for s in obs_shape_n)
-
-        # action_dim = sum of per-agent action dims (handle Box/Discrete)
-        action_dim = get_total_action_dim(env)
-
-        print("[Diffusion] state_dim={}, action_dim={}, horizon={}".format(
-            state_dim, action_dim, H))
-
-        state_trajs = []
-        action_trajs = []
-
-        num_episodes = arglist.num_episodes  # how many episodes to use for data
-        max_episode_len = arglist.max_episode_len
-
-        print("[Diffusion] Collecting trajectories from MADDPG expert...")
-        for ep in range(num_episodes):
-            obs_n = env.reset()
-            ep_states = []
-            ep_actions = []
-
-            for t in range(max_episode_len):
-                # build global state
-                state_vec = np.concatenate(obs_n, axis=0)  # [Ds]
-
-                # get joint action from MADDPG
-                action_n = [agent.action(obs) for agent, obs in zip(trainers, obs_n)]
-                action_vec = np.concatenate(action_n, axis=0)  # [Da]
-
-                ep_states.append(state_vec)
-                ep_actions.append(action_vec)
-
-                obs_n, rew_n, done_n, info_n = env.step(action_n)
-
-                if all(done_n):
-                    break
-
-            ep_states = np.asarray(ep_states, dtype=np.float32)
-            ep_actions = np.asarray(ep_actions, dtype=np.float32)
-
-            # keep only episodes that are at least H long
-            if ep_states.shape[0] < H:
-                continue
-
-            ep_states = ep_states[:H]
-            ep_actions = ep_actions[:H]
-
-            state_trajs.append(ep_states)
-            action_trajs.append(ep_actions)
-
-            if (ep + 1) % 50 == 0:
-                print("[Diffusion] Collected {} episodes so far".format(ep + 1))
-
-        states = np.stack(state_trajs, axis=0)   # [N,H,Ds]
-        actions = np.stack(action_trajs, axis=0)  # [N,H,Da]
-        print("[Diffusion] Final dataset: states {}, actions {}".format(
-            states.shape, actions.shape))
-
-        np.savez(arglist.diffusion_data_path, states=states, actions=actions)
-        print("[Diffusion] Saved dataset to {}".format(arglist.diffusion_data_path))
 
 
 class TrajectoryDiffusion(nn.Module):
-    """
-    Simple DDPM-style diffusion model for joint action trajectories.
-    x: [B, H, Da]; cond: [B, Ds] (global state, here we use s_0)
-    """
+    """DDPM denoiser for joint action trajectories. x:[B,H,Da], cond:[B,Ds]."""
     def __init__(self, horizon, action_dim, cond_dim, hidden_dim=256):
         super().__init__()
         self.horizon = horizon
         self.action_dim = action_dim
-
         self.time_mlp = nn.Sequential(
-            nn.Linear(1, hidden_dim),
-            nn.ReLU(),
-            nn.Linear(hidden_dim, hidden_dim),
-        )
+            nn.Linear(1, hidden_dim), nn.ReLU(), nn.Linear(hidden_dim, hidden_dim))
         self.cond_mlp = nn.Sequential(
-            nn.Linear(cond_dim, hidden_dim),
-            nn.ReLU(),
-            nn.Linear(hidden_dim, hidden_dim),
-        )
+            nn.Linear(cond_dim, hidden_dim), nn.ReLU(), nn.Linear(hidden_dim, hidden_dim))
         self.net = nn.Sequential(
             nn.Linear(horizon * action_dim + hidden_dim, hidden_dim),
             nn.ReLU(),
-            nn.Linear(hidden_dim, horizon * action_dim),
-        )
+            nn.Linear(hidden_dim, horizon * action_dim))
 
     def forward(self, x_noisy, t, cond):
-        """
-        x_noisy: [B,H,Da]
-        t      : [B] (0..T-1)
-        cond   : [B,Ds]
-        """
         B = x_noisy.shape[0]
-        x_flat = x_noisy.reshape(B, -1)
-
-        t_norm = t.float().unsqueeze(-1) / 1000.0
-        t_emb = self.time_mlp(t_norm)
+        t_emb = self.time_mlp(t.float().unsqueeze(-1) / 1000.0)
         c_emb = self.cond_mlp(cond)
-        h = t_emb + c_emb
-
-        h_cat = torch.cat([x_flat, h], dim=-1)
-        eps_pred = self.net(h_cat)
-        eps_pred = eps_pred.view(B, self.horizon, self.action_dim)
-        return eps_pred
+        h = torch.cat([x_noisy.reshape(B, -1), t_emb + c_emb], dim=-1)
+        return self.net(h).view(B, self.horizon, self.action_dim)
 
 
 def make_beta_schedule(T, beta_start=1e-4, beta_end=2e-2):
     betas = torch.linspace(beta_start, beta_end, T)
     alphas = 1.0 - betas
-    alphas_bar = torch.cumprod(alphas, dim=0)
-    return betas, alphas, alphas_bar
+    return betas, alphas, torch.cumprod(alphas, dim=0)
 
 
 def q_sample(x0, t, eps, alphas_bar):
-    """
-    Forward diffusion q(x_t | x_0)
-    x0 : [B,H,Da]
-    t  : [B]
-    eps: [B,H,Da]
-    """
-    a_bar = alphas_bar[t].view(-1, 1, 1).to(x0.device)
+    a_bar = alphas_bar[t].view(-1, 1, 1)
     return torch.sqrt(a_bar) * x0 + torch.sqrt(1.0 - a_bar) * eps
 
 
+def collect_diffusion_data(arglist):
+    """Roll out the trained policy and save clean (state, action) trajectories."""
+    tf.reset_default_graph()
+    H = arglist.diffusion_horizon
+    with U.single_threaded_session():
+        env = make_env(arglist.scenario, arglist, arglist.benchmark)
+        obs_shape_n = [env.observation_space[i].shape for i in range(env.n)]
+        num_adversaries = min(env.n, arglist.num_adversaries)
+        trainers = get_trainers(env, num_adversaries, obs_shape_n, arglist)
+        U.initialize()
+        load_dir, exp_name = resolve_checkpoint(arglist)
+        U.load_state(load_dir, exp_name=exp_name)
+        print("[Diffusion] Collecting from checkpoint: {}".format(exp_name))
+
+        state_dim = sum(int(np.prod(s)) for s in obs_shape_n)
+        action_dim = get_total_action_dim(env)
+        print("[Diffusion] state_dim={}, action_dim={}, horizon={}".format(state_dim, action_dim, H))
+
+        state_trajs, action_trajs = [], []
+        for ep in range(arglist.num_episodes):
+            obs_n = env.reset()
+            ep_states, ep_actions = [], []
+            for _ in range(arglist.max_episode_len):
+                state_vec = np.concatenate(obs_n, axis=0)
+                action_n = [agent.action(obs) for agent, obs in zip(trainers, obs_n)]
+                action_vec = np.concatenate(action_n, axis=0)
+                ep_states.append(state_vec)
+                ep_actions.append(action_vec)
+                obs_n, _, done_n, _ = env.step(action_n)
+                if all(done_n):
+                    break
+            ep_states = np.asarray(ep_states, dtype=np.float32)
+            ep_actions = np.asarray(ep_actions, dtype=np.float32)
+            if ep_states.shape[0] < H:
+                continue
+            state_trajs.append(ep_states[:H])
+            action_trajs.append(ep_actions[:H])
+            if (ep + 1) % 500 == 0:
+                print("[Diffusion] Collected {} episodes".format(ep + 1))
+
+        states = np.stack(state_trajs, axis=0)
+        actions = np.stack(action_trajs, axis=0)
+        np.savez(arglist.diffusion_data_path, states=states, actions=actions)
+        print("[Diffusion] Saved {} trajectories to {}".format(len(state_trajs), arglist.diffusion_data_path))
+
+
 def train_diffusion(arglist):
-    """
-    Train a diffusion model from the dataset created by collect_diffusion_data().
-    """
+    """Train the DDPM denoiser on trajectories from collect_diffusion_data()."""
     data = np.load(arglist.diffusion_data_path)
-    states = data["states"]   # [N,H,Ds]
-    actions = data["actions"] # [N,H,Da]
-
+    states = data["states"]
+    actions = data["actions"]
     N, H, Ds = states.shape
-    _, H2, Da = actions.shape
-    assert H == H2 == arglist.diffusion_horizon
+    _, _, Da = actions.shape
+    print("[Diffusion] Loaded {} trajectories — state_dim={}, action_dim={}".format(N, Ds, Da))
 
-    print("[Diffusion] Loaded dataset:", states.shape, actions.shape)
-
-    # Force CPU to avoid CUDA / CUBLAS issues
     device = torch.device("cpu")
-    print("[Diffusion] Forcing device to CPU")
-
-    # Convert to tensors
     states_t = torch.from_numpy(states).float()
     actions_t = torch.from_numpy(actions).float()
 
-    # Optional: simple normalization (you can save mean/std if you like)
     act_mean = actions_t.mean(dim=(0, 1), keepdim=True)
     act_std = actions_t.std(dim=(0, 1), keepdim=True) + 1e-6
     actions_t = (actions_t - act_mean) / act_std
 
-    model = TrajectoryDiffusion(
-        horizon=H,
-        action_dim=Da,
-        cond_dim=Ds,
-        hidden_dim=256
-    ).to(device)
-
+    model = TrajectoryDiffusion(H, Da, Ds).to(device)
     betas, alphas, alphas_bar = make_beta_schedule(arglist.diffusion_steps)
-    betas = betas.to(device)
-    alphas = alphas.to(device)
-    alphas_bar = alphas_bar.to(device)
-
+    betas, alphas, alphas_bar = betas.to(device), alphas.to(device), alphas_bar.to(device)
     opt = torch.optim.Adam(model.parameters(), lr=arglist.diffusion_lr)
-    batch_size = arglist.diffusion_batch_size
-    num_batches = max(1, N // batch_size)
 
-    print("[Diffusion] Training on {} trajectories".format(N))
     for epoch in range(arglist.diffusion_epochs):
         perm = torch.randperm(N)
-        states_t = states_t[perm]
-        actions_t = actions_t[perm]
-
+        states_t, actions_t = states_t[perm], actions_t[perm]
         epoch_loss = 0.0
-        for b in range(num_batches):
-            start = b * batch_size
-            end = min(N, (b + 1) * batch_size)
-
-            x0 = actions_t[start:end].to(device)          # [B,H,Da]
-            cond = states_t[start:end, 0, :].to(device)   # condition on s_0
-
+        for b in range(max(1, N // arglist.diffusion_batch_size)):
+            sl = slice(b * arglist.diffusion_batch_size, min(N, (b + 1) * arglist.diffusion_batch_size))
+            x0 = actions_t[sl].to(device)
+            cond = states_t[sl, 0, :].to(device)
             B = x0.shape[0]
             t = torch.randint(0, arglist.diffusion_steps, (B,), device=device)
             eps = torch.randn_like(x0)
-
-            x_t = q_sample(x0, t, eps, alphas_bar)
-            eps_pred = model(x_t, t, cond)
-
+            eps_pred = model(q_sample(x0, t, eps, alphas_bar), t, cond)
             loss = F.mse_loss(eps_pred, eps)
-
-            opt.zero_grad()
-            loss.backward()
-            opt.step()
-
+            opt.zero_grad(); loss.backward(); opt.step()
             epoch_loss += loss.item() * B
+        print("[Diffusion] Epoch {}/{} loss={:.6f}".format(epoch + 1, arglist.diffusion_epochs, epoch_loss / N))
 
-        epoch_loss /= N
-        print("[Diffusion] Epoch {}/{} - loss {:.6f}".format(
-            epoch + 1, arglist.diffusion_epochs, epoch_loss))
-
-    # save model + normalization info
-    os.makedirs(os.path.dirname(arglist.diffusion_model_path), exist_ok=True)
-    torch.save(
-        {
-            "model_state_dict": model.state_dict(),
-            "horizon": H,
-            "action_dim": Da,
-            "cond_dim": Ds,
-            "diffusion_steps": arglist.diffusion_steps,
-            "act_mean": act_mean,
-            "act_std": act_std,
-        },
-        arglist.diffusion_model_path,
-    )
+    os.makedirs(os.path.dirname(os.path.abspath(arglist.diffusion_model_path)), exist_ok=True)
+    torch.save({"model_state_dict": model.state_dict(),
+                "horizon": H, "action_dim": Da, "cond_dim": Ds,
+                "diffusion_steps": arglist.diffusion_steps,
+                "act_mean": act_mean, "act_std": act_std},
+               arglist.diffusion_model_path)
     print("[Diffusion] Saved model to {}".format(arglist.diffusion_model_path))
+
 
 def load_diffusion_model(arglist):
     global DIFFUSION_MODEL, DIFFUSION_CONSTS
-
     ckpt = torch.load(arglist.diffusion_model_path, map_location="cpu")
-
-    model = TrajectoryDiffusion(
-        horizon=ckpt["horizon"],
-        action_dim=ckpt["action_dim"],
-        cond_dim=ckpt["cond_dim"],
-        hidden_dim=256,
-    )
+    model = TrajectoryDiffusion(ckpt["horizon"], ckpt["action_dim"], ckpt["cond_dim"])
     model.load_state_dict(ckpt["model_state_dict"])
     model.eval()
-
-    betas, alphas, alphas_bar = make_beta_schedule(ckpt["diffusion_steps"])
-
+    _, alphas, alphas_bar = make_beta_schedule(ckpt["diffusion_steps"])
+    betas_full = 1.0 - alphas
     DIFFUSION_MODEL = model
-    DIFFUSION_CONSTS = {
-        "betas": betas,
-        "alphas": alphas,
-        "alphas_bar": alphas_bar,
-        "act_mean": ckpt["act_mean"],
-        "act_std": ckpt["act_std"],
-        "T": ckpt["diffusion_steps"],
-        "H": ckpt["horizon"],
-    }
+    DIFFUSION_CONSTS = {"betas": betas_full, "alphas": alphas, "alphas_bar": alphas_bar,
+                        "act_mean": ckpt["act_mean"], "act_std": ckpt["act_std"],
+                        "T": ckpt["diffusion_steps"], "H": ckpt["horizon"]}
+    print("[Diffusion] Loaded model from {}".format(arglist.diffusion_model_path))
 
-    print("[Diffusion] Loaded trained diffusion model")
 
 @torch.no_grad()
-def diffusion_denoise_action(
-    noisy_action_vec,
-    state_vec,
-    t_start=40
-):
-    """
-    noisy_action_vec: [Da]
-    state_vec       : [Ds]
-    returns clean_action_vec [Da]
-    """
+def diffusion_denoise_action(noisy_action_vec, state_vec, t_start=40):
+    """Denoise a single flat action vector using DDPM reverse diffusion."""
     model = DIFFUSION_MODEL
     C = DIFFUSION_CONSTS
+    alphas, alphas_bar = C["alphas"], C["alphas_bar"]
 
-    H = C["H"]
-    betas = C["betas"]
-    alphas = C["alphas"]
-    alphas_bar = C["alphas_bar"]
-
-    # ---- normalize noisy action ----
     a = torch.from_numpy(noisy_action_vec).float()
     a = (a - C["act_mean"][0, 0]) / C["act_std"][0, 0]
-
-    # ---- build x_t ----
-    x = torch.zeros((1, H, a.shape[0]))
+    x = torch.zeros((1, C["H"], a.shape[0]))
     x[0, 0] = a
-
     cond = torch.from_numpy(state_vec).float().unsqueeze(0)
 
-    # ---- reverse diffusion ----
     for t in reversed(range(t_start + 1)):
         t_tensor = torch.tensor([t])
-
         eps_pred = model(x, t_tensor, cond)
-
-        alpha = alphas[t]
-        alpha_bar = alphas_bar[t]
-
+        alpha, alpha_bar = alphas[t], alphas_bar[t]
         x0_hat = (x - torch.sqrt(1 - alpha_bar) * eps_pred) / torch.sqrt(alpha_bar)
-
         if t > 0:
-            noise = torch.randn_like(x)
-            x = torch.sqrt(alpha) * x0_hat + torch.sqrt(1 - alpha) * noise
+            x = torch.sqrt(alpha) * x0_hat + torch.sqrt(1 - alpha) * torch.randn_like(x)
         else:
             x = x0_hat
 
-    # ---- unnormalize ----
     clean = x[0, 0] * C["act_std"][0, 0] + C["act_mean"][0, 0]
     return clean.numpy()
+
 
 def concat_actions(action_n):
     return np.concatenate(action_n, axis=0)
 
-def split_actions(action_vec, n_agents, action_dim_per_agent):
-    """
-    Split a flat action vector into a list of per-agent actions.
-    
-    Args:
-        action_vec: flat np.array of shape (n_agents * action_dim_per_agent,)
-        n_agents: int, number of agents
-        action_dim_per_agent: int, dimension of action for each agent
-        
-    Returns:
-        List of np.arrays of shape (action_dim_per_agent,) for each agent
-    """
-    # assert len(action_vec) == n_agents * action_dim_per_agent, \
-    #     f"Length mismatch: {len(action_vec)} != {n_agents}*{action_dim_per_agent}"
-    
-    # split = []
-    # for i in range(n_agents):
-    #     start = i * action_dim_per_agent
-    #     end = start + action_dim_per_agent
-    #     split.append(action_vec[start:end])
 
-    split = []
-    start = 0
+def split_actions(action_vec, n_agents, action_dim_per_agent):
+    split, start = [], 0
     for dim in action_dim_per_agent:
-        end = start + dim
-        split.append(action_vec[start:end])
-        start = end
+        split.append(action_vec[start:start + dim])
+        start += dim
     return split
 
 
@@ -1656,120 +1383,6 @@ def r2(x):
     return "{:.2f}".format(float(x))
 
 
-def run_action_noise_comparison(arglist):
-    baseline_load_dir, baseline_exp_name = resolve_checkpoint(
-        arglist,
-        arglist.baseline_load_dir,
-        arglist.baseline_exp_name,
-    )
-    adv_load_dir, adv_exp_name = resolve_checkpoint(
-        arglist,
-        arglist.adv_load_dir,
-        arglist.adv_exp_name,
-    )
-
-    act_std_list = [0.0, 0.4, 0.8, 1.2, 1.6, 2.0]
-    t_start_list = arglist.t_start_list
-
-    exp_name = arglist.exp_name if arglist.exp_name is not None else "default_exp"
-    csv_filename = "{}_compare_actstd_tstart_sweep.csv".format(exp_name)
-    results = []
-
-    reward_clean = testWithoutP(
-        arglist,
-        load_dir=baseline_load_dir,
-        exp_name=baseline_exp_name,
-    )
-    print("Baseline (clean/no noise): {:.3f}".format(reward_clean))
-
-    for act_std in act_std_list:
-        arglist.act_noise = act_std
-        print("\n=== Action noise std = {} ===".format(act_std))
-
-        reward_base_noisy = testRobustnessAP(
-            arglist,
-            deffusion=False,
-            load_dir=baseline_load_dir,
-            exp_name=baseline_exp_name,
-        )
-        print("  Base model noisy reward: {:.3f}".format(reward_base_noisy))
-
-        reward_adv_noisy = testRobustnessAP(
-            arglist,
-            deffusion=False,
-            load_dir=adv_load_dir,
-            exp_name=adv_exp_name,
-        )
-        print("  Adv model noisy reward: {:.3f}".format(reward_adv_noisy))
-
-        row = [
-            r2(act_std),
-            r2(reward_clean),
-            r2(reward_base_noisy),
-            r2(reward_adv_noisy),
-        ]
-
-        if not arglist.skip_diffusion:
-            diff_rewards = {}
-
-            for t_start in t_start_list:
-                print("  -> t_start = {}".format(t_start))
-                reward_adv_diff = testRobustnessAP(
-                    arglist,
-                    deffusion=True,
-                    t_start=t_start,
-                    load_dir=adv_load_dir,
-                    exp_name=adv_exp_name,
-                )
-                diff_rewards[t_start] = reward_adv_diff
-                print(
-                    "     adv model + diffusion (t_start={}): {:.3f}".format(
-                        t_start, reward_adv_diff
-                    )
-                )
-
-            best_diff_reward = max(diff_rewards.values())
-            pct_inc_vs_adv_no_diff = (
-                (best_diff_reward - reward_adv_noisy) / abs(reward_adv_noisy)
-            ) * 100.0 if reward_adv_noisy != 0 else 0.0
-            pct_inc_vs_base_noisy = (
-                (best_diff_reward - reward_base_noisy) / abs(reward_base_noisy)
-            ) * 100.0 if reward_base_noisy != 0 else 0.0
-
-            for t_start in t_start_list:
-                row.append(r2(diff_rewards[t_start]))
-
-            row.extend([
-                r2(best_diff_reward),
-                r2(pct_inc_vs_adv_no_diff),
-                r2(pct_inc_vs_base_noisy),
-            ])
-
-        results.append(row)
-
-    header = [
-        "action_noise_std",
-        "reward_clean_no_noise",
-        "reward_base_noise_no_diffusion",
-        "reward_adv_noise_no_diffusion",
-    ]
-
-    if not arglist.skip_diffusion:
-        for t_start in t_start_list:
-            header.append("reward_adv_with_diff_t{}".format(t_start))
-
-        header.extend([
-            "best_reward_adv_with_diffusion",
-            "pct_inc_vs_adv_no_diffusion",
-            "pct_inc_vs_base_noisy",
-        ])
-
-    with open(csv_filename, mode="w", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(header)
-        writer.writerows(results)
-
-    print("Saved comparison results to {}".format(csv_filename))
 
 
 if __name__ == '__main__':
@@ -1783,334 +1396,60 @@ if __name__ == '__main__':
     elif arglist.mode == "test":
         arglist.noise_type = "gauss"
 
-        if arglist.compare_baseline_adv:
-            run_action_noise_comparison(arglist)
-        else:
-            act_std_list = [0.0, 0.4, 0.8, 1.2, 1.6, 2.0]
-            t_start_list = arglist.t_start_list
+        use_denoiser = not arglist.skip_diffusion
+        if use_denoiser:
+            load_diffusion_model(arglist)
 
-            csv_filename = "{}_actstd_tstart_sweep.csv".format(arglist.exp_name)
-            results = []
+        t_start_list = arglist.t_start_list
+        act_std_list = [0.0, 0.4, 0.8, 1.2, 1.6, 2.0]
+        csv_filename = "{}_actstd_tstart_sweep.csv".format(arglist.exp_name)
+        results = []
 
-            # Baseline (no noise, no diffusion)
-            rew_no_noise = testWithoutP(arglist)
-            print("Baseline (no noise): {:.3f}".format(rew_no_noise))
+        rew_no_noise = testWithoutP(arglist)
+        print("Baseline (no noise): {:.3f}".format(rew_no_noise))
 
-            for act_std in act_std_list:
-                arglist.act_noise = act_std
-                print("\n=== Action noise std = {} ===".format(act_std))
+        for act_std in act_std_list:
+            arglist.act_noise = act_std
+            print("\n=== Action noise std = {} ===".format(act_std))
 
-                # Noise, no diffusion
-                rew_no_diff = testRobustnessAP(
-                    arglist,
-                    deffusion=False
-                )
+            rew_noisy = testRobustnessAP(arglist, use_denoiser=False)
+            print("  Noisy (no denoiser): {:.3f}".format(rew_noisy))
 
-                print("  No diffusion reward: {:.3f}".format(rew_no_diff))
+            row = [r2(act_std), r2(rew_no_noise), r2(rew_noisy)]
 
-                # Assemble row
-                row = [
-                    r2(act_std),
-                    r2(rew_no_noise),
-                    r2(rew_no_diff)
-                ]
-
-                if not arglist.skip_diffusion:
-                    # Store diffusion rewards per t_start
-                    diff_rewards = {}
-
-                    for t_start in t_start_list:
-                        print("  -> t_start = {}".format(t_start))
-
-                        rew_with_diff = testRobustnessAP(
-                            arglist,
-                            deffusion=True,
-                            t_start=t_start
-                        )
-
-                        diff_rewards[t_start] = rew_with_diff
-
-                        print(
-                            "     with diffusion (t_start={}): {:.3f}".format(
-                                t_start, rew_with_diff
-                            )
-                        )
-
-                    # Derived metrics
-                    best_diff_reward = max(diff_rewards.values())
-
-                    pct_inc_vs_no_diff = (
-                        (best_diff_reward - rew_no_diff) / abs(rew_no_diff)
-                    ) * 100.0
-
-                    pct_inc_vs_no_noise = (
-                        (best_diff_reward - rew_no_noise) / abs(rew_no_noise)
-                    ) * 100.0
-
-                    for t_start in t_start_list:
-                        row.append(r2(diff_rewards[t_start]))
-
-                    row.extend([
-                        r2(best_diff_reward),
-                        r2(pct_inc_vs_no_diff),
-                        r2(pct_inc_vs_no_noise)
-                    ])
-
-                results.append(row)
-
-
-            # -----------------------------
-            # Dynamic CSV header
-            # -----------------------------
-            header = [
-                "action_noise_std",
-                "reward_no_noise",
-                "reward_noise_no_diffusion"
-            ]
-
-            if not arglist.skip_diffusion:
+            if use_denoiser:
+                diff_rewards = {}
                 for t_start in t_start_list:
-                    header.append("reward_with_diff_t{}".format(t_start))
+                    print("  -> t_start = {}".format(t_start))
+                    rew_d = testRobustnessAP(arglist, use_denoiser=True, t_start=t_start)
+                    diff_rewards[t_start] = rew_d
+                    print("     with denoiser (t_start={}): {:.3f}".format(t_start, rew_d))
+                best = max(diff_rewards.values())
+                for t_start in t_start_list:
+                    row.append(r2(diff_rewards[t_start]))
+                row.extend([r2(best),
+                             r2(((best - rew_noisy) / abs(rew_noisy)) * 100.0 if rew_noisy else 0.0)])
 
-                header.extend([
-                    "best_reward_with_diffusion",
-                    "pct_inc_vs_no_diffusion",
-                    "pct_inc_vs_no_noise_worst"
-                ])
+            results.append(row)
 
-            with open(csv_filename, mode="w", newline="") as f:
-                writer = csv.writer(f)
-                writer.writerow(header)
-                writer.writerows(results)
+        header = ["action_noise_std", "reward_no_noise", "reward_noise_no_diffusion"]
+        if use_denoiser:
+            for t_start in t_start_list:
+                header.append("reward_with_diff_t{}".format(t_start))
+            header += ["best_reward_with_diffusion", "pct_inc_vs_no_diffusion"]
 
-            print("Saved robustness results to {}".format(csv_filename))
+        with open(csv_filename, mode="w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(header)
+            writer.writerows(results)
 
+        print("Saved robustness results to {}".format(csv_filename))
 
     elif arglist.mode == "collect_diffusion":
         collect_diffusion_data(arglist)
 
     elif arglist.mode == "train_diffusion":
         train_diffusion(arglist)
-
-    elif arglist.mode == "collect_joint_diffusion":
-        tf.reset_default_graph()
-        with U.single_threaded_session():
-            env = make_env(arglist.scenario, arglist, arglist.benchmark)
-            obs_shape_n = [env.observation_space[i].shape for i in range(env.n)]
-            num_adversaries = min(env.n, arglist.num_adversaries)
-            trainers = get_trainers(env, num_adversaries, obs_shape_n, arglist)
-            U.initialize()
-            best_exp_name = arglist.exp_name + "best" if arglist.exp_name else None
-            U.load_state(arglist.save_dir, exp_name=best_exp_name)
-            print("[JointData] Loaded best checkpoint: {}".format(best_exp_name))
-            collect_joint_data.collect_joint_diffusion_data(env, trainers, arglist)
-
-    elif arglist.mode == "train_joint_denoiser":
-        joint_diffusion.train_joint_denoiser(arglist)
-
-    elif arglist.mode == "test_joint":
-        joint_diffusion.load_joint_denoiser(arglist)
-
-        if arglist.exp_name and not arglist.exp_name.endswith("best"):
-            arglist.exp_name = arglist.exp_name + "best"
-
-        arglist.noise_type = "gauss"
-
-        obs_noise_list = [0.0, 0.4, 0.8, 1.2]
-        act_noise_list = [0.0, 0.4, 0.8, 1.2, 1.6, 2.0]
-        k_start_list = [5, 10, 20, 40]
-
-        rew_clean = testWithoutP(arglist)
-        print("Clean baseline: {:.3f}".format(rew_clean))
-
-        results = []
-
-        for obs_std in obs_noise_list:
-            for act_std in act_noise_list:
-                arglist.act_noise = act_std
-                print("\n=== obs_noise={} act_noise={} ===".format(obs_std, act_std))
-
-                rew_noisy = joint_diffusion.testRobustnessAP_joint(
-                    arglist, use_denoiser=False, obs_noise_std=obs_std
-                )
-                print("  No denoiser: {:.3f}".format(rew_noisy))
-
-                diff_rewards = {}
-                for k_s in k_start_list:
-                    rew_d = joint_diffusion.testRobustnessAP_joint(
-                        arglist, use_denoiser=True, k_start=k_s, obs_noise_std=obs_std
-                    )
-                    diff_rewards[k_s] = rew_d
-                    print("  k_start={}: {:.3f}".format(k_s, rew_d))
-
-                best_rew = max(diff_rewards.values())
-                best_k = max(diff_rewards, key=diff_rewards.get)
-
-                denom = abs(rew_clean - rew_noisy)
-                recovery = (best_rew - rew_noisy) / denom if denom > 1e-6 else 1.0
-
-                row = {
-                    "obs_noise_std": obs_std,
-                    "act_noise_std": act_std,
-                    "reward_clean": r2(rew_clean),
-                    "reward_noisy": r2(rew_noisy),
-                    "best_reward_denoised": r2(best_rew),
-                    "best_k_start": best_k,
-                    "recovery_ratio": "{:.3f}".format(recovery),
-                }
-                for k_s in k_start_list:
-                    row["reward_k{}".format(k_s)] = r2(diff_rewards[k_s])
-                results.append(row)
-
-        anchor_tag = arglist.anchor_type
-        csv_path = "{}_joint_denoiser_{}_sweep.csv".format(
-            arglist.exp_name if arglist.exp_name else "exp", anchor_tag
-        )
-        df = pd.DataFrame(results)
-        df.to_csv(csv_path, index=False)
-        print("Saved joint denoiser sweep to {}".format(csv_path))
-
-    elif arglist.mode == "noise_sweep":
-        if arglist.exp_name and not arglist.exp_name.endswith("best"):
-            arglist.exp_name = arglist.exp_name + "best"
-
-        arglist.noise_type = "gauss"
-
-        rew_clean = testWithoutP(arglist)
-        print("Clean baseline: {:.3f}".format(rew_clean))
-
-        # Evaluate each one-dimensional slice once, then fill the joint grid.
-        act_only_rewards = {}
-        for act_std in arglist.act_noise_list:
-            arglist.act_noise = act_std
-            rew_act = joint_diffusion.testRobustnessAP_joint(
-                arglist, use_denoiser=False, obs_noise_std=0.0
-            )
-            act_only_rewards[act_std] = rew_act
-            print("act_only  (act_noise={}): {:.3f}".format(act_std, rew_act))
-
-        obs_only_rewards = {}
-        arglist.act_noise = 0.0
-        for obs_std in arglist.obs_noise_list:
-            rew_obs = joint_diffusion.testRobustnessAP_joint(
-                arglist, use_denoiser=False, obs_noise_std=obs_std
-            )
-            obs_only_rewards[obs_std] = rew_obs
-            print("obs_only  (obs_noise={}): {:.3f}".format(obs_std, rew_obs))
-
-        results = []
-        for act_std in arglist.act_noise_list:
-            for obs_std in arglist.obs_noise_list:
-                print("\n=== act_noise={} obs_noise={} ===".format(act_std, obs_std))
-
-                arglist.act_noise = act_std
-                rew_joint = joint_diffusion.testRobustnessAP_joint(
-                    arglist, use_denoiser=False, obs_noise_std=obs_std
-                )
-                print("  joint:     {:.3f}".format(rew_joint))
-
-                results.append({
-                    "act_noise_std":   act_std,
-                    "obs_noise_std":   obs_std,
-                    "act_only_reward": r2(act_only_rewards[act_std]),
-                    "obs_only_reward": r2(obs_only_rewards[obs_std]),
-                    "joint_reward":    r2(rew_joint),
-                })
-
-        csv_path = "{}_noise_sweep.csv".format(
-            arglist.exp_name if arglist.exp_name else "exp"
-        )
-        df = pd.DataFrame(results)
-        df.to_csv(csv_path, index=False)
-        print("Saved noise sweep to {}".format(csv_path))
-
-    elif arglist.mode == "train_score":
-        # Train the score network with Denoising Score Matching.
-        # Requires joint trajectory data at --joint-diffusion-data-path.
-        score_diffusion.train_score_network(arglist)
-
-    elif arglist.mode == "test_score":
-        # Evaluate score-based Langevin correction across the act x obs noise grid.
-        # Loads score network from --score-model-path and policy from --load-dir.
-        score_diffusion.load_score_network(arglist)
-
-        if arglist.exp_name and not arglist.exp_name.endswith("best"):
-            arglist.exp_name = arglist.exp_name + "best"
-        arglist.noise_type = "gauss"
-
-        n_steps_list = [1, 3]
-        results = []
-
-        for act_std in arglist.act_noise_list:
-            arglist.act_noise = act_std
-            for obs_std in arglist.obs_noise_list:
-                print("\n=== act_noise={} obs_noise={} ===".format(act_std, obs_std))
-
-                # No-correction baseline
-                rew_noisy = joint_diffusion.testRobustnessAP_joint(
-                    arglist, use_denoiser=False, obs_noise_std=obs_std
-                )
-                print("  noisy (no correction): {:.3f}".format(rew_noisy))
-
-                row = {
-                    "act_noise_std": act_std,
-                    "obs_noise_std": obs_std,
-                    "reward_noisy": r2(rew_noisy),
-                }
-
-                for n_s in n_steps_list:
-                    rew_score = score_diffusion.testRobustnessScore(
-                        arglist,
-                        sigma_est=arglist.score_sigma_est,
-                        eta=arglist.score_eta,
-                        n_steps=n_s,
-                        lam_q=arglist.lam_q,
-                        obs_noise_std=obs_std,
-                    )
-                    col = "reward_score_n{}".format(n_s)
-                    row[col] = r2(rew_score)
-                    print("  score n_steps={}: {:.3f}".format(n_s, rew_score))
-
-                results.append(row)
-
-        anchor_tag = getattr(arglist, "anchor_type", "none")
-        csv_path = "{}_score_sweep_{}.csv".format(
-            arglist.exp_name if arglist.exp_name else "exp", anchor_tag
-        )
-        pd.DataFrame(results).to_csv(csv_path, index=False)
-        print("Saved score sweep to {}".format(csv_path))
-
-        # all_results = []
-
-        # for run_id in range(arglist.num_test_runs):
-        #     print("\n================ Run {}/{} ================".format(run_id + 1, arglist.num_test_runs))
-        #     run_results = {"run": run_id + 1}
-
-        #     # baseline (no noise)
-        #     rew = testWithoutP(arglist)
-        #     run_results["none"] = rew
-
-        #     # for noise in ["gauss", "shift", "uniform"]:
-        #     for noise in ["gauss"]:
-        #         arglist.noise_type = noise
-
-        #         rew = testRobustnessOP(arglist)
-        #         run_results["{}_obs_only".format(noise)] = rew
-
-        #         rew = testRobustnessAP(arglist)
-        #         run_results["{}_act_only".format(noise)] = rew
-
-        #         rew = testRobustnessOA(arglist)
-        #         run_results["{}_obs+action".format(noise)] = rew
-
-        #     all_results.append(run_results)
-
-        # # convert to dataframe
-        # df = pd.DataFrame(all_results)
-
-        # # # save to CSV
-        # exp_name = arglist.exp_name if arglist.exp_name is not None else "default_exp"
-        # df.to_csv(exp_name +"_test_rewards.csv", index=False)
 
 # from send_email import *
 # if __name__ == '__main__':
