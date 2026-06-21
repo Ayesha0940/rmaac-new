@@ -55,7 +55,7 @@ def parse_args():
     parser.add_argument("--exp-name", type=str, default=None, help="name of the experiment")
     parser.add_argument("--save-dir", type=str, default="./model", help="directory in which training state and model should be saved")
     parser.add_argument("--save-rate", type=int, default=1000, help="save model once every time this many episodes are completed")
-    parser.add_argument("--load-dir", type=str, default="./model", help="directory in which training state and model are loaded")
+    parser.add_argument("--load-dir", type=str, default="", help="directory in which training state and model are loaded (defaults to --save-dir when empty)")
     # Evaluation
     parser.add_argument("--restore", action="store_true", default=False)
     parser.add_argument("--display", action="store_true", default=False)
@@ -1401,7 +1401,7 @@ if __name__ == '__main__':
             load_diffusion_model(arglist)
 
         t_start_list = arglist.t_start_list
-        act_std_list = [0.0, 0.4, 0.8, 1.2, 1.6, 2.0]
+        act_std_list = [0.0, 0.4, 0.8, 1.2, 1.6, 2.0, 2.4, 2.8, 3]
         csv_filename = "{}_actstd_tstart_sweep.csv".format(arglist.exp_name)
         results = []
 

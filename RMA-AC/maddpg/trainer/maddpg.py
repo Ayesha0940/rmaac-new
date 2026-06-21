@@ -76,12 +76,14 @@ def p_train(make_obs_ph_n, act_space_n, p_index, p_func, q_func, obs_shape_n, op
                     reuse=True,
                 )
                 diff = p_orig - p_pert
-                distance = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(diff), axis=1) + 1e-12))
+                distance = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(diff), axis=1) + 1e-8))
                 grad = tf.gradients(distance, [perturbed_obs])[0]
-                grad = _normalize_per_example(grad)
-                perturbed_obs = perturbed_obs + perturb_alpha * grad
-                delta = tf.clip_by_value(perturbed_obs - p_input, -perturb_epsilon, perturb_epsilon)
-                perturbed_obs = p_input + delta
+                # stop_gradient so the outer optimizer does not differentiate through
+                # the inner PGD step (avoids numerically unstable second-order gradients)
+                grad = tf.stop_gradient(_normalize_per_example(grad))
+                perturbed_obs = tf.stop_gradient(p_input + tf.clip_by_value(
+                    perturbed_obs + perturb_alpha * grad - p_input,
+                    -perturb_epsilon, perturb_epsilon))
 
             p_pert_final = p_func(
                 perturbed_obs,
@@ -91,7 +93,7 @@ def p_train(make_obs_ph_n, act_space_n, p_index, p_func, q_func, obs_shape_n, op
                 reuse=True,
             )
             diff_final = p_orig - p_pert_final
-            adv_reg_loss = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(diff_final), axis=1) + 1e-12))
+            adv_reg_loss = tf.reduce_mean(tf.sqrt(tf.reduce_sum(tf.square(diff_final), axis=1) + 1e-8))
         else:
             adv_reg_loss = 0.0
 

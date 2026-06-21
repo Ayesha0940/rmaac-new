@@ -6,6 +6,7 @@ cd "$PROJECT_ROOT/experiments"
 
 export SUPPRESS_MA_PROMPT=1
 export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
+export PYTHONPATH="${PROJECT_ROOT}:${PYTHONPATH:-}"
 
 LOG_DIR="$PROJECT_ROOT/experiments/logs/action_noise_ablation"
 mkdir -p "$LOG_DIR"
