@@ -41,7 +41,7 @@ run_phase() {
 
 # Keep evaluation manageable; train.py already sweeps action-noise std internally
 # in test mode, so the bash script only needs to call it once per trained model.
-NUM_TEST_EPISODES="${NUM_TEST_EPISODES:-200}"
+NUM_TEST_EPISODES="${NUM_TEST_EPISODES:-800}"
 SAVE_RATE="${SAVE_RATE:-500}"
 BASE_TRAIN_EPISODES="${BASE_TRAIN_EPISODES:-30000}"
 TAG_TRAIN_EPISODES="${TAG_TRAIN_EPISODES:-30000}"

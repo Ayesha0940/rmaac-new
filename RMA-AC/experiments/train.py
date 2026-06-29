@@ -132,6 +132,9 @@ def parse_args():
                         help="disable DDPM denoising during the test sweep")
     parser.add_argument("--t-start-list", type=int, nargs="*", default=[20, 40, 60],
                         help="reverse-diffusion start steps to sweep at test time")
+    parser.add_argument("--act-std-list", type=float, nargs="*",
+                        default=[0.0, 0.4, 0.8, 1.2, 1.6, 2.0, 2.4, 2.8, 3.0],
+                        help="action noise std values to sweep in test mode")
 
     return parser.parse_args()
 
@@ -286,7 +289,7 @@ def get_trainers(env, num_adversaries, obs_shape_n, arglist):
     q_model = mlp_model
     trainer = MADDPGAgentTrainer
     for i in range(num_adversaries):
-        policy_name = arglist.bad_policy if arglist.variant == "m3ddpg" else None
+        policy_name = arglist.adv_policy if arglist.variant == "m3ddpg" else None
         trainers.append(trainer(
             "r_agent_%d" % i, p_model, q_model, obs_shape_n, env.observation_space, env.action_space, i, arglist,
             local_q_func=(arglist.adv_policy=='ddpg'),
@@ -1371,7 +1374,7 @@ def apply_action_disruption(action, reward, env, args):
     
 
     if args.noise_type == "gauss":
-        action_orig = action_orig + np.random.normal(0, args.act_noise, size=action_orig.shape)
+        action_orig = action_orig + np.random.normal(args.noise_mu, args.act_noise, size=action_orig.shape)
     elif args.noise_type == "shift":
         action_orig = action_orig + args.noise_shift
     elif args.noise_type == "uniform":
@@ -1401,8 +1404,8 @@ if __name__ == '__main__':
             load_diffusion_model(arglist)
 
         t_start_list = arglist.t_start_list
-        act_std_list = [0.0, 0.4, 0.8, 1.2, 1.6, 2.0, 2.4, 2.8, 3]
-        csv_filename = "{}_actstd_tstart_sweep.csv".format(arglist.exp_name)
+        act_std_list = arglist.act_std_list
+        csv_filename = "{}_mu{}_actstd_tstart_sweep.csv".format(arglist.exp_name, arglist.noise_mu)
         results = []
 
         rew_no_noise = testWithoutP(arglist)
@@ -1415,7 +1418,7 @@ if __name__ == '__main__':
             rew_noisy = testRobustnessAP(arglist, use_denoiser=False)
             print("  Noisy (no denoiser): {:.3f}".format(rew_noisy))
 
-            row = [r2(act_std), r2(rew_no_noise), r2(rew_noisy)]
+            row = [r2(arglist.noise_mu), r2(act_std), r2(rew_no_noise), r2(rew_noisy)]
 
             if use_denoiser:
                 diff_rewards = {}
@@ -1432,7 +1435,7 @@ if __name__ == '__main__':
 
             results.append(row)
 
-        header = ["action_noise_std", "reward_no_noise", "reward_noise_no_diffusion"]
+        header = ["noise_mu", "action_noise_std", "reward_no_noise", "reward_noise_no_diffusion"]
         if use_denoiser:
             for t_start in t_start_list:
                 header.append("reward_with_diff_t{}".format(t_start))

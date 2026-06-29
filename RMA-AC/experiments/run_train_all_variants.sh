@@ -45,11 +45,11 @@ run_phase() {
 
 smoke_test() {
     local exp_name="$1"
-    local best_dir="${MODEL_DIR}/${exp_name}best"
-    if compgen -G "${best_dir}/*.index" > /dev/null 2>&1; then
+    local best_prefix="${MODEL_DIR}/${exp_name}best"
+    if compgen -G "${best_prefix}.index" > /dev/null 2>&1; then
         printf "[smoke] %-45s → PASS (checkpoint found)\n" "${exp_name}best"
     else
-        printf "[smoke] %-45s → FAIL (no checkpoint in %s)\n" "${exp_name}best" "$best_dir"
+        printf "[smoke] %-45s → FAIL (no checkpoint at %s.index)\n" "${exp_name}best" "$best_prefix"
         return 1
     fi
 }
@@ -83,6 +83,11 @@ for entry in "${VARIANTS[@]}"; do
     echo "────────────────────────────────────────────────────────────"
     echo "Variant : ${VARIANT}  →  exp-name: ${EXP_NAME}"
     echo "────────────────────────────────────────────────────────────"
+
+    if compgen -G "${MODEL_DIR}/${EXP_NAME}best.index" > /dev/null 2>&1; then
+        echo "[skip] ${EXP_NAME}best checkpoint already exists — skipping training"
+        continue
+    fi
 
     run_phase "${EXP_NAME}:train" "${LOG_DIR}/${EXP_NAME}.train.log" \
         env SUPPRESS_MA_PROMPT=1 CUDA_VISIBLE_DEVICES="" PYTHONUNBUFFERED=1 \
