@@ -28,6 +28,8 @@ from gym.spaces import Box, Discrete
 DIFFUSION_MODEL = None
 DIFFUSION_CONSTS = {}
 
+from action_attacks import ActionAttack
+
 
 
 def parse_args():
@@ -89,6 +91,37 @@ def parse_args():
     parser.add_argument("--noise-shift", type=float, default=0.05, help="shift noise magnitude")
     parser.add_argument("--uniform-low", type=float, default=-0.1, help="low bound for uniform noise")
     parser.add_argument("--uniform-high", type=float, default=0.1, help="high bound for uniform noise")
+
+    # --- ActionAttack args ---
+    parser.add_argument("--attack", type=str, default="gauss",
+        choices=["none","gauss","biased_gauss",
+                 "timevarying_gauss","heavy_tail","colored_ou","dist_shift",
+                 "stuck_at","dropout","saturate","gain","deadzone","signflip",
+                 "delay","quantize"])
+    parser.add_argument("--attack-sigma",  type=float, default=0.5)
+    parser.add_argument("--attack-mu",     type=float, default=0.0)
+    parser.add_argument("--tv-profile",    type=str,   default="sin",
+                        choices=["ramp","sin","randwalk"])
+    parser.add_argument("--tv-period",     type=int,   default=25)
+    parser.add_argument("--heavy-dist",    type=str,   default="laplace",
+                        choices=["laplace","student_t","saltpepper"])
+    parser.add_argument("--heavy-df",      type=float, default=2.0)
+    parser.add_argument("--sp-prob",       type=float, default=0.1)
+    parser.add_argument("--ou-theta",      type=float, default=0.15)
+    parser.add_argument("--ou-sigma",      type=float, default=0.3)
+    parser.add_argument("--shift-low",     type=float, default=-0.5)
+    parser.add_argument("--shift-high",    type=float, default=0.5)
+    parser.add_argument("--dropout-fill",  type=str,   default="zero",
+                        choices=["zero","hold"])
+    parser.add_argument("--gain-factor",   type=float, default=1.5)
+    parser.add_argument("--deadzone",      type=float, default=0.1)
+    parser.add_argument("--delay-k",       type=int,   default=3)
+    parser.add_argument("--quant-levels",  type=int,   default=8)
+    parser.add_argument("--act-low",       type=float, default=-1.0)
+    parser.add_argument("--act-high",      type=float, default=1.0)
+    parser.add_argument("--delay-k-list",  type=int,   nargs='+', default=[0],
+                        help="list of delay-k values to sweep (used when --attack delay)")
+
     parser.add_argument("--llm-disturb-interval", type=int, default=5, help="steps between disturbances")
     parser.add_argument("--num-test-episodes", type=int, default=800, help="number of testing episodes")
         # --- LLM-guided adversary ---
@@ -1094,9 +1127,11 @@ def testRobustnessAP(arglist, use_denoiser=False, t_start=40, load_dir=None, exp
 
         print('Starting testing with robustness perturbations...')
 
+        attack = ActionAttack(arglist)
         for ep in range(n_episodes):
             obs_n = env.reset()
             episode_reward = np.zeros(env.n)
+            attack.reset(n_agents=env.n)
 
             for step in range(max_episode_len):
 
@@ -1130,10 +1165,7 @@ def testRobustnessAP(arglist, use_denoiser=False, t_start=40, load_dir=None, exp
                 # print("Action dimension per agent:", action_dim_per_agent)
 
                 # --- adversarial noise ---
-                action_n_noisy = [
-                    apply_action_disruption(action, 0, env, arglist)
-                    for action in action_n
-                ]
+                action_n_noisy = [attack.perturb(a, i) for i, a in enumerate(action_n)]
                 action_n_clean = action_n_noisy
 
                 # --- optional DDPM denoising ---
@@ -1145,6 +1177,7 @@ def testRobustnessAP(arglist, use_denoiser=False, t_start=40, load_dir=None, exp
 
                 # --- env step ---
                 new_obs_n, rew_n, done_n, info_n = env.step(action_n_clean)
+                attack.step()
 
                 # --- Track reward ---
                 episode_reward += rew_n
@@ -1404,49 +1437,97 @@ if __name__ == '__main__':
             load_diffusion_model(arglist)
 
         t_start_list = arglist.t_start_list
-        act_std_list = arglist.act_std_list
-        csv_filename = "{}_mu{}_actstd_tstart_sweep.csv".format(arglist.exp_name, arglist.noise_mu)
-        results = []
 
-        rew_no_noise = testWithoutP(arglist)
-        print("Baseline (no noise): {:.3f}".format(rew_no_noise))
+        # --- delay-k sweep ---
+        if getattr(arglist, "attack", "gauss") == "delay":
+            delay_k_list = arglist.delay_k_list
+            csv_filename = "{}_delay_sweep.csv".format(arglist.exp_name)
+            results = []
 
-        for act_std in act_std_list:
-            arglist.act_noise = act_std
-            print("\n=== Action noise std = {} ===".format(act_std))
+            for k in delay_k_list:
+                arglist.delay_k = k
+                print("\n=== Delay k = {} ===".format(k))
 
-            rew_noisy = testRobustnessAP(arglist, use_denoiser=False)
-            print("  Noisy (no denoiser): {:.3f}".format(rew_noisy))
+                rew_noisy = testRobustnessAP(arglist, use_denoiser=False)
+                print("  Noisy (no denoiser): {:.3f}".format(rew_noisy))
 
-            row = [r2(arglist.noise_mu), r2(act_std), r2(rew_no_noise), r2(rew_noisy)]
+                row = [k, r2(rew_noisy)]
 
+                if use_denoiser:
+                    diff_rewards = {}
+                    for t_start in t_start_list:
+                        print("  -> t_start = {}".format(t_start))
+                        rew_d = testRobustnessAP(arglist, use_denoiser=True, t_start=t_start)
+                        diff_rewards[t_start] = rew_d
+                        print("     with denoiser (t_start={}): {:.3f}".format(t_start, rew_d))
+                    best = max(diff_rewards.values())
+                    for t_start in t_start_list:
+                        row.append(r2(diff_rewards[t_start]))
+                    row.extend([r2(best),
+                                 r2(((best - rew_noisy) / abs(rew_noisy)) * 100.0 if rew_noisy else 0.0)])
+
+                results.append(row)
+
+            header = ["delay_k", "reward_noisy"]
             if use_denoiser:
-                diff_rewards = {}
                 for t_start in t_start_list:
-                    print("  -> t_start = {}".format(t_start))
-                    rew_d = testRobustnessAP(arglist, use_denoiser=True, t_start=t_start)
-                    diff_rewards[t_start] = rew_d
-                    print("     with denoiser (t_start={}): {:.3f}".format(t_start, rew_d))
-                best = max(diff_rewards.values())
+                    header.append("reward_with_diff_t{}".format(t_start))
+                header += ["best_reward_with_diffusion", "pct_inc_vs_no_diffusion"]
+
+            with open(csv_filename, mode="w", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(header)
+                writer.writerows(results)
+
+            print("Saved delay sweep results to {}".format(csv_filename))
+
+        # --- act-std sweep (default) ---
+        else:
+            act_std_list = arglist.act_std_list
+            csv_filename = "{}_mu{}_actstd_tstart_sweep.csv".format(arglist.exp_name, arglist.noise_mu)
+            results = []
+
+            rew_no_noise = testWithoutP(arglist)
+            print("Baseline (no noise): {:.3f}".format(rew_no_noise))
+
+            for act_std in act_std_list:
+                arglist.act_noise = act_std
+                arglist.attack_sigma = act_std        # bridge --act-std-list → ActionAttack
+                arglist.attack_mu = arglist.noise_mu  # bridge --noise-mu → ActionAttack
+                print("\n=== Action noise std = {} ===".format(act_std))
+
+                rew_noisy = testRobustnessAP(arglist, use_denoiser=False)
+                print("  Noisy (no denoiser): {:.3f}".format(rew_noisy))
+
+                row = [r2(arglist.noise_mu), r2(act_std), r2(rew_no_noise), r2(rew_noisy)]
+
+                if use_denoiser:
+                    diff_rewards = {}
+                    for t_start in t_start_list:
+                        print("  -> t_start = {}".format(t_start))
+                        rew_d = testRobustnessAP(arglist, use_denoiser=True, t_start=t_start)
+                        diff_rewards[t_start] = rew_d
+                        print("     with denoiser (t_start={}): {:.3f}".format(t_start, rew_d))
+                    best = max(diff_rewards.values())
+                    for t_start in t_start_list:
+                        row.append(r2(diff_rewards[t_start]))
+                    row.extend([r2(best),
+                                 r2(((best - rew_noisy) / abs(rew_noisy)) * 100.0 if rew_noisy else 0.0)])
+
+                results.append(row)
+
+            header = ["noise_mu", "action_noise_std", "reward_no_noise", "reward_noise_no_diffusion"]
+            if use_denoiser:
                 for t_start in t_start_list:
-                    row.append(r2(diff_rewards[t_start]))
-                row.extend([r2(best),
-                             r2(((best - rew_noisy) / abs(rew_noisy)) * 100.0 if rew_noisy else 0.0)])
+                    header.append("reward_with_diff_t{}".format(t_start))
+                header += ["best_reward_with_diffusion", "pct_inc_vs_no_diffusion"]
 
-            results.append(row)
+            with open(csv_filename, mode="w", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(header)
+                writer.writerows(results)
 
-        header = ["noise_mu", "action_noise_std", "reward_no_noise", "reward_noise_no_diffusion"]
-        if use_denoiser:
-            for t_start in t_start_list:
-                header.append("reward_with_diff_t{}".format(t_start))
-            header += ["best_reward_with_diffusion", "pct_inc_vs_no_diffusion"]
-
-        with open(csv_filename, mode="w", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(header)
-            writer.writerows(results)
-
-        print("Saved robustness results to {}".format(csv_filename))
+            print("Saved robustness results to {}".format(csv_filename))
 
     elif arglist.mode == "collect_diffusion":
         collect_diffusion_data(arglist)
