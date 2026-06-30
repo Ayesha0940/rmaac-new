@@ -74,6 +74,7 @@ echo "Num adversaries: ${NUM_ADVERSARIES}"
 echo "Model dir     : ${MODEL_DIR}"
 echo "============================================================"
 
+pids=()
 for entry in "${VARIANTS[@]}"; do
     VARIANT="${entry%%:*}"
     SUFFIX="${entry##*:}"
@@ -89,17 +90,34 @@ for entry in "${VARIANTS[@]}"; do
         continue
     fi
 
-    run_phase "${EXP_NAME}:train" "${LOG_DIR}/${EXP_NAME}.train.log" \
-        env SUPPRESS_MA_PROMPT=1 CUDA_VISIBLE_DEVICES="" PYTHONUNBUFFERED=1 \
-        python -u "${PROJECT_ROOT}/experiments/train.py" \
-            --scenario        "$SCENARIO" \
-            --variant         "$VARIANT" \
-            --num-episodes    "$NUM_EPISODES" \
-            --save-rate       "$SAVE_RATE" \
-            --num-adversaries "$NUM_ADVERSARIES" \
-            --save-dir        "$MODEL_DIR" \
-            --exp-name        "$EXP_NAME"
+    (
+        run_phase "${EXP_NAME}:train" "${LOG_DIR}/${EXP_NAME}.train.log" \
+            env SUPPRESS_MA_PROMPT=1 CUDA_VISIBLE_DEVICES="" PYTHONUNBUFFERED=1 \
+                OMP_NUM_THREADS=16 MKL_NUM_THREADS=16 \
+            python -u "${PROJECT_ROOT}/experiments/train.py" \
+                --scenario        "$SCENARIO" \
+                --variant         "$VARIANT" \
+                --num-episodes    "$NUM_EPISODES" \
+                --save-rate       "$SAVE_RATE" \
+                --num-adversaries "$NUM_ADVERSARIES" \
+                --save-dir        "$MODEL_DIR" \
+                --exp-name        "$EXP_NAME"
+    ) &
+    pids+=($!)
+    echo "[$(timestamp)] Launched ${EXP_NAME} (PID $!)"
 done
+
+echo ""
+echo "[$(timestamp)] Waiting for ${#pids[@]} parallel training jobs..."
+any_failed=false
+for pid in "${pids[@]}"; do
+    wait "$pid" || any_failed=true
+done
+if [[ "$any_failed" == "true" ]]; then
+    echo "[$(timestamp)] One or more training jobs failed — check logs in ${LOG_DIR}/"
+    exit 1
+fi
+echo "[$(timestamp)] All training jobs completed."
 
 # ─── Smoke tests ───────────────────────────────────────────────────────────────
 echo ""

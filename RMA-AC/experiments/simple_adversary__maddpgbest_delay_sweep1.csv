@@ -1,6 +1,0 @@
-delay_k,reward_noisy,reward_with_diff_t20,reward_with_diff_t40,best_reward_with_diffusion,pct_inc_vs_no_diffusion
-1,2.48,1.26,2.92,2.92,17.92
-2,-0.30,0.99,1.12,1.12,478.03
-3,-3.27,0.27,-0.97,0.27,108.16
-5,-8.39,-0.39,-4.08,-0.39,95.38
-8,-21.96,-1.75,-8.99,-1.75,92.05

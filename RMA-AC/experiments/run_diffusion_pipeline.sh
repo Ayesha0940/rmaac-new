@@ -115,24 +115,39 @@ echo "Evaluating 4 best checkpoints with diffusion denoiser"
 echo "t_start sweep: ${T_START_LIST}"
 echo "============================================================"
 
+pids=()
 for algo in maddpg earnie rmaac m3ddpg; do
     vflag="${VARIANT_FLAG[$algo]}"
     exp_name="${SCENARIO}__${algo}best"
 
-    run_phase "eval:${algo}" "${LOG_DIR}/eval_${algo}.log" \
-        env SUPPRESS_MA_PROMPT=1 CUDA_VISIBLE_DEVICES="" PYTHONUNBUFFERED=1 \
-        python -u "${PROJECT_ROOT}/experiments/train.py" \
-            --scenario             "$SCENARIO" \
-            --variant              "$vflag" \
-            --mode                 test \
-            --num-adversaries      "$NUM_ADVERSARIES" \
-            --save-dir             "$MODEL_DIR" \
-            --exp-name             "$exp_name" \
-            --num-test-episodes    "$NUM_TEST_EPISODES" \
-            --diffusion-model-path "$DIFFUSION_MODEL" \
-            --diffusion-steps      "$DIFFUSION_STEPS" \
-            --t-start-list         $T_START_LIST
+    (
+        run_phase "eval:${algo}" "${LOG_DIR}/eval_${algo}.log" \
+            env SUPPRESS_MA_PROMPT=1 CUDA_VISIBLE_DEVICES="" PYTHONUNBUFFERED=1 \
+                OMP_NUM_THREADS=16 MKL_NUM_THREADS=16 \
+            python -u "${PROJECT_ROOT}/experiments/train.py" \
+                --scenario             "$SCENARIO" \
+                --variant              "$vflag" \
+                --mode                 test \
+                --num-adversaries      "$NUM_ADVERSARIES" \
+                --save-dir             "$MODEL_DIR" \
+                --exp-name             "$exp_name" \
+                --num-test-episodes    "$NUM_TEST_EPISODES" \
+                --diffusion-model-path "$DIFFUSION_MODEL" \
+                --diffusion-steps      "$DIFFUSION_STEPS" \
+                --t-start-list         $T_START_LIST
+    ) &
+    pids+=($!)
+    echo "[$(timestamp)] Launched eval:${algo} (PID $!)"
 done
+
+any_failed=false
+for pid in "${pids[@]}"; do
+    wait "$pid" || any_failed=true
+done
+if [[ "$any_failed" == "true" ]]; then
+    echo "[$(timestamp)] One or more eval jobs failed — check logs in ${LOG_DIR}/"
+    exit 1
+fi
 
 echo ""
 echo "============================================================"
