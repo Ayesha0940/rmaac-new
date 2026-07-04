@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Run stuck_at sweep for each scenario sequentially.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+declare -A NUM_ADV
+NUM_ADV["simple_push"]=0
+NUM_ADV["simple_speaker_listener"]=0
+NUM_ADV["simple_spread"]=0
+NUM_ADV["simple_tag"]=3
+
+SCENARIOS=(simple_push simple_speaker_listener simple_spread simple_tag)
+
+for SCENARIO in "${SCENARIOS[@]}"; do
+    echo ""
+    echo "========================================"
+    echo "=== Scenario: ${SCENARIO} (adv=${NUM_ADV[$SCENARIO]}) ==="
+    echo "========================================"
+    bash "${SCRIPT_DIR}/run_stuck_at_sweep.sh" "${SCENARIO}" "${NUM_ADV[$SCENARIO]}"
+done
+
+echo ""
+echo "=== All scenarios (stuck_at) complete ==="

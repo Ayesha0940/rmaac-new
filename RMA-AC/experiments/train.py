@@ -121,6 +121,10 @@ def parse_args():
     parser.add_argument("--act-high",      type=float, default=1.0)
     parser.add_argument("--delay-k-list",  type=int,   nargs='+', default=[0],
                         help="list of delay-k values to sweep (used when --attack delay)")
+    parser.add_argument("--sp-prob-list",  type=float, nargs='+', default=[0.1],
+                        help="list of sp-prob values to sweep (used when --attack stuck_at)")
+    parser.add_argument("--attack-sigma-list", type=float, nargs='+', default=[0.5],
+                        help="list of attack-sigma values to sweep (used when --attack timevarying_gauss)")
 
     parser.add_argument("--llm-disturb-interval", type=int, default=5, help="steps between disturbances")
     parser.add_argument("--num-test-episodes", type=int, default=800, help="number of testing episodes")
@@ -168,6 +172,13 @@ def parse_args():
     parser.add_argument("--act-std-list", type=float, nargs="*",
                         default=[0.0, 0.4, 0.8, 1.2, 1.6, 2.0, 2.4, 2.8, 3.0],
                         help="action noise std values to sweep in test mode")
+    parser.add_argument("--eval-diffusion-policy", action="store_true", default=False,
+                        help="also evaluate the unconditional diffusion-policy control "
+                             "(samples a fresh action from noise, ignoring the input action) "
+                             "in the act-std sweep, written to a separate CSV")
+    parser.add_argument("--diffusion-policy-t-start", type=int, default=None,
+                        help="reverse-diffusion start step for the diffusion-policy "
+                             "(from-noise) control; default None = full chain (T-1)")
 
     return parser.parse_args()
 
@@ -1094,7 +1105,7 @@ def testRobustnessOA(arglist, load_dir=None, exp_name=None):
         print("Average total reward: {}".format(np.mean(np.sum(all_rewards, axis=1))))
         return np.mean(np.sum(all_rewards, axis=1))
     
-def testRobustnessAP(arglist, use_denoiser=False, t_start=40, load_dir=None, exp_name=None):
+def testRobustnessAP(arglist, use_denoiser=False, t_start=None, load_dir=None, exp_name=None, diffusion_policy=False):
     tf.reset_default_graph()
     with U.single_threaded_session():
         # Create environment
@@ -1168,12 +1179,18 @@ def testRobustnessAP(arglist, use_denoiser=False, t_start=40, load_dir=None, exp
                 action_n_noisy = [attack.perturb(a, i) for i, a in enumerate(action_n)]
                 action_n_clean = action_n_noisy
 
-                # --- optional DDPM denoising ---
-                if use_denoiser:
+                # --- optional DDPM denoising / diffusion-policy control ---
+                if diffusion_policy:
+                    state_vec = np.concatenate(obs_n, axis=0)
+                    action_vec_clean = diffusion_denoise_action(None, state_vec, t_start=t_start, from_noise=True)
+                    action_n_clean = split_actions(action_vec_clean, n_agents, action_dim_per_agent)
+                    action_n_clean = [np.clip(a, arglist.act_low, arglist.act_high) for a in action_n_clean]
+                elif use_denoiser:
                     action_vec_noisy = concat_actions(action_n_noisy)
                     state_vec = np.concatenate(obs_n, axis=0)
                     action_vec_clean = diffusion_denoise_action(action_vec_noisy, state_vec, t_start=t_start)
                     action_n_clean = split_actions(action_vec_clean, n_agents, action_dim_per_agent)
+                    action_n_clean = [np.clip(a, arglist.act_low, arglist.act_high) for a in action_n_clean]
 
                 # --- env step ---
                 new_obs_n, rew_n, done_n, info_n = env.step(action_n_clean)
@@ -1345,17 +1362,33 @@ def load_diffusion_model(arglist):
 
 
 @torch.no_grad()
-def diffusion_denoise_action(noisy_action_vec, state_vec, t_start=40):
-    """Denoise a single flat action vector using DDPM reverse diffusion."""
+def diffusion_denoise_action(noisy_action_vec, state_vec, t_start=None, from_noise=False):
+    """Denoise a single flat action vector using DDPM reverse diffusion.
+
+    If from_noise=True, ignore noisy_action_vec entirely and instead sample a
+    fresh action from pure Gaussian noise, conditioned only on state_vec. This
+    is the "diffusion policy" control: same weights/architecture as the
+    denoiser, but with zero dependence on the intended action. By default
+    (t_start=None) it runs the full reverse chain (t_start = T-1); pass an
+    explicit t_start (e.g. 20) to run only a partial chain, matching one of
+    the denoiser's own t_start values for an apples-to-apples comparison.
+    """
     model = DIFFUSION_MODEL
     C = DIFFUSION_CONSTS
     alphas, alphas_bar = C["alphas"], C["alphas_bar"]
-
-    a = torch.from_numpy(noisy_action_vec).float()
-    a = (a - C["act_mean"][0, 0]) / C["act_std"][0, 0]
-    x = torch.zeros((1, C["H"], a.shape[0]))
-    x[0, 0] = a
     cond = torch.from_numpy(state_vec).float().unsqueeze(0)
+
+    if from_noise:
+        x = torch.randn((1, C["H"], model.action_dim))
+        if t_start is None:
+            t_start = C["T"] - 1
+    else:
+        a = torch.from_numpy(noisy_action_vec).float()
+        a = (a - C["act_mean"][0, 0]) / C["act_std"][0, 0]
+        x = torch.zeros((1, C["H"], a.shape[0]))
+        x[0, 0] = a
+        if t_start is None:
+            t_start = 40
 
     for t in reversed(range(t_start + 1)):
         t_tensor = torch.tensor([t])
@@ -1481,10 +1514,101 @@ if __name__ == '__main__':
 
             print("Saved delay sweep results to {}".format(csv_filename))
 
+        # --- stuck_at sp_prob sweep ---
+        elif getattr(arglist, "attack", "gauss") == "stuck_at":
+            sp_prob_list = arglist.sp_prob_list
+            csv_filename = "{}_stuck_at_sweep.csv".format(arglist.exp_name)
+            results = []
+
+            for p in sp_prob_list:
+                arglist.sp_prob = p
+                print("\n=== stuck_at sp_prob = {} ===".format(p))
+
+                rew_noisy = testRobustnessAP(arglist, use_denoiser=False)
+                print("  Noisy (no denoiser): {:.3f}".format(rew_noisy))
+
+                row = [r2(p), r2(rew_noisy)]
+
+                if use_denoiser:
+                    diff_rewards = {}
+                    for t_start in t_start_list:
+                        print("  -> t_start = {}".format(t_start))
+                        rew_d = testRobustnessAP(arglist, use_denoiser=True, t_start=t_start)
+                        diff_rewards[t_start] = rew_d
+                        print("     with denoiser (t_start={}): {:.3f}".format(t_start, rew_d))
+                    best = max(diff_rewards.values())
+                    for t_start in t_start_list:
+                        row.append(r2(diff_rewards[t_start]))
+                    row.extend([r2(best),
+                                 r2(((best - rew_noisy) / abs(rew_noisy)) * 100.0 if rew_noisy else 0.0)])
+
+                results.append(row)
+
+            header = ["sp_prob", "reward_noisy"]
+            if use_denoiser:
+                for t_start in t_start_list:
+                    header.append("reward_with_diff_t{}".format(t_start))
+                header += ["best_reward_with_diffusion", "pct_inc_vs_no_diffusion"]
+
+            with open(csv_filename, mode="w", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(header)
+                writer.writerows(results)
+
+            print("Saved stuck_at sweep results to {}".format(csv_filename))
+
+        # --- timevarying_gauss sigma sweep ---
+        elif getattr(arglist, "attack", "gauss") == "timevarying_gauss":
+            attack_sigma_list = arglist.attack_sigma_list
+            csv_filename = "{}_tv_gauss_sweep.csv".format(arglist.exp_name)
+            results = []
+
+            for s0 in attack_sigma_list:
+                arglist.attack_sigma = s0
+                print("\n=== timevarying_gauss sigma = {} ===".format(s0))
+
+                rew_noisy = testRobustnessAP(arglist, use_denoiser=False)
+                print("  Noisy (no denoiser): {:.3f}".format(rew_noisy))
+
+                row = [r2(s0), r2(rew_noisy)]
+
+                if use_denoiser:
+                    diff_rewards = {}
+                    for t_start in t_start_list:
+                        print("  -> t_start = {}".format(t_start))
+                        rew_d = testRobustnessAP(arglist, use_denoiser=True, t_start=t_start)
+                        diff_rewards[t_start] = rew_d
+                        print("     with denoiser (t_start={}): {:.3f}".format(t_start, rew_d))
+                    best = max(diff_rewards.values())
+                    for t_start in t_start_list:
+                        row.append(r2(diff_rewards[t_start]))
+                    row.extend([r2(best),
+                                 r2(((best - rew_noisy) / abs(rew_noisy)) * 100.0 if rew_noisy else 0.0)])
+
+                results.append(row)
+
+            header = ["attack_sigma", "reward_noisy"]
+            if use_denoiser:
+                for t_start in t_start_list:
+                    header.append("reward_with_diff_t{}".format(t_start))
+                header += ["best_reward_with_diffusion", "pct_inc_vs_no_diffusion"]
+
+            with open(csv_filename, mode="w", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(header)
+                writer.writerows(results)
+
+            print("Saved timevarying_gauss sweep results to {}".format(csv_filename))
+
         # --- act-std sweep (default) ---
         else:
             act_std_list = arglist.act_std_list
-            csv_filename = "{}_mu{}_actstd_tstart_sweep.csv".format(arglist.exp_name, arglist.noise_mu)
+            if arglist.eval_diffusion_policy:
+                dp_suffix = ("_dpfull" if arglist.diffusion_policy_t_start is None
+                             else "_dpt{}".format(arglist.diffusion_policy_t_start))
+                csv_filename = "{}_diffusion_policy_ablation{}.csv".format(arglist.exp_name, dp_suffix)
+            else:
+                csv_filename = "{}_mu{}_actstd_tstart_sweep.csv".format(arglist.exp_name, arglist.noise_mu)
             results = []
 
             rew_no_noise = testWithoutP(arglist)
@@ -1514,6 +1638,13 @@ if __name__ == '__main__':
                     row.extend([r2(best),
                                  r2(((best - rew_noisy) / abs(rew_noisy)) * 100.0 if rew_noisy else 0.0)])
 
+                if arglist.eval_diffusion_policy:
+                    rew_diffpolicy = testRobustnessAP(arglist, diffusion_policy=True,
+                                                       t_start=arglist.diffusion_policy_t_start)
+                    print("  Diffusion policy (control, t_start={}): {:.3f}".format(
+                        arglist.diffusion_policy_t_start, rew_diffpolicy))
+                    row.append(r2(rew_diffpolicy))
+
                 results.append(row)
 
             header = ["noise_mu", "action_noise_std", "reward_no_noise", "reward_noise_no_diffusion"]
@@ -1521,6 +1652,8 @@ if __name__ == '__main__':
                 for t_start in t_start_list:
                     header.append("reward_with_diff_t{}".format(t_start))
                 header += ["best_reward_with_diffusion", "pct_inc_vs_no_diffusion"]
+            if arglist.eval_diffusion_policy:
+                header.append("reward_diffusion_policy")
 
             with open(csv_filename, mode="w", newline="") as f:
                 writer = csv.writer(f)
