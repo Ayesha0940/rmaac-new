@@ -1,0 +1,5 @@
+noise_mu,action_noise_std,reward_no_noise,reward_noise_no_diffusion,reward_with_diff_t20,reward_with_diff_t40,reward_with_diff_t60,best_reward_with_diffusion,pct_inc_vs_no_diffusion
+-1.00,0.00,-8.41,-8.33,-10.26,-13.27,-14.68,-10.26,-23.27
+-1.00,1.00,-8.41,-17.27,-12.13,-13.38,-14.78,-12.13,29.75
+-1.00,2.00,-8.41,-24.19,-12.92,-14.23,-15.44,-12.92,46.60
+-1.00,3.00,-8.41,-27.66,-13.21,-14.04,-16.01,-13.21,52.23

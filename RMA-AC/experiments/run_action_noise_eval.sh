@@ -7,8 +7,14 @@ EXPERIMENTS_DIR="$PROJECT_ROOT/experiments"
 MODEL_DIR="${MODEL_DIR:-$EXPERIMENTS_DIR/model}"
 DIFFUSION_MODELS_DIR="${DIFFUSION_MODELS_DIR:-$EXPERIMENTS_DIR/diffusion_models}"
 LOG_DIR="$EXPERIMENTS_DIR/logs/action_noise_eval"
-NUM_ADVERSARIES="${NUM_ADVERSARIES:-0}"
 NUM_TEST_EPISODES="${NUM_TEST_EPISODES:-800}"
+
+declare -A SCENARIO_NUM_ADVERSARIES
+SCENARIO_NUM_ADVERSARIES["simple_adversary"]=0
+SCENARIO_NUM_ADVERSARIES["simple_push"]=0
+SCENARIO_NUM_ADVERSARIES["simple_speaker_listener"]=0
+SCENARIO_NUM_ADVERSARIES["simple_spread"]=0
+SCENARIO_NUM_ADVERSARIES["simple_tag"]=3
 
 export SUPPRESS_MA_PROMPT=1
 export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-}"
@@ -16,7 +22,6 @@ export PYTHONPATH="${PROJECT_ROOT}:${PYTHONPATH:-}"
 
 SCENARIOS=(
     simple_adversary
-    simple_crypto
     simple_push
     simple_speaker_listener
     simple_spread
@@ -62,6 +67,8 @@ for SCENARIO in "${SCENARIOS[@]}"; do
         continue
     fi
     echo "[$(timestamp)] Diffusion model found: $DIFFUSION_MODEL"
+
+    NUM_ADVERSARIES="${SCENARIO_NUM_ADVERSARIES[$SCENARIO]}"
 
     for ENTRY in "${VARIANTS[@]}"; do
         VARIANT="${ENTRY%%:*}"
