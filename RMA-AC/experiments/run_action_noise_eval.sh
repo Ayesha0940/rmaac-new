@@ -37,7 +37,7 @@ VARIANTS=(
 )
 
 # Biased Gaussian noise means to evaluate
-NOISE_MU_LIST=(-1 1)
+NOISE_MU_LIST=(-1 0 1)
 
 mkdir -p "$LOG_DIR"
 
@@ -103,7 +103,7 @@ for SCENARIO in "${SCENARIOS[@]}"; do
                 --act-std-list         0 1 2 3 \
                 --diffusion-model-path "$DIFFUSION_MODEL" \
                 --diffusion-steps      100 \
-                --t-start-list         20 40 60 \
+                --t-start-list         20 40 \
             2>&1 | tee "$LOG_FILE"
 
             echo "[$(timestamp)] [DONE] $EXP_NAME  mu=$MU → $CSV_OUT"
