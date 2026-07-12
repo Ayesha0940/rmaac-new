@@ -6,12 +6,13 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 declare -A NUM_ADV
+NUM_ADV["simple_adversary"]=0
 NUM_ADV["simple_push"]=0
 NUM_ADV["simple_speaker_listener"]=0
 NUM_ADV["simple_spread"]=0
 NUM_ADV["simple_tag"]=3
 
-SCENARIOS=(simple_push simple_speaker_listener simple_spread simple_tag)
+SCENARIOS=(simple_adversary simple_push simple_speaker_listener simple_spread simple_tag)
 
 for SCENARIO in "${SCENARIOS[@]}"; do
     echo ""
