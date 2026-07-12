@@ -6,9 +6,7 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 EXPERIMENTS_DIR="$PROJECT_ROOT/experiments"
 MODEL_DIR="${MODEL_DIR:-$EXPERIMENTS_DIR/model}"
 DIFFUSION_MODELS_DIR="${DIFFUSION_MODELS_DIR:-$EXPERIMENTS_DIR/diffusion_models}"
-SEED="${SEED:-0}"
-LOG_DIR="$EXPERIMENTS_DIR/logs/action_noise_eval/seed${SEED}"
-OUT_DIR="$PROJECT_ROOT/../noise_sweeps/guassian_noise/seed${SEED}"
+SEEDS=(5 10)
 NUM_TEST_EPISODES="${NUM_TEST_EPISODES:-800}"
 
 declare -A SCENARIO_NUM_ADVERSARIES
@@ -41,8 +39,6 @@ VARIANTS=(
 # Biased Gaussian noise means to evaluate
 NOISE_MU_LIST=(-1 0 1)
 
-mkdir -p "$LOG_DIR" "$OUT_DIR"
-
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 timestamp() { date "+%Y-%m-%d %H:%M:%S"; }
 
@@ -53,11 +49,20 @@ echo "Scenarios    : ${SCENARIOS[*]}"
 echo "Noise mu     : ${NOISE_MU_LIST[*]}"
 echo "Noise sigma  : 0 1 2 3"
 echo "t-start list : 20 40"
-echo "Seed         : $SEED"
+echo "Seeds        : ${SEEDS[*]}"
 echo "Model dir    : $MODEL_DIR"
 echo "Diffusion dir: $DIFFUSION_MODELS_DIR"
-echo "Output dir   : $OUT_DIR"
 echo "============================================================"
+
+for SEED in "${SEEDS[@]}"; do
+echo ""
+echo "############################################################"
+echo "### Seed: ${SEED}"
+echo "############################################################"
+
+LOG_DIR="$EXPERIMENTS_DIR/logs/action_noise_eval/seed${SEED}"
+OUT_DIR="$PROJECT_ROOT/../noise_sweeps/guassian_noise/seed${SEED}"
+mkdir -p "$LOG_DIR" "$OUT_DIR"
 
 for SCENARIO in "${SCENARIOS[@]}"; do
     echo ""
@@ -118,9 +123,11 @@ for SCENARIO in "${SCENARIOS[@]}"; do
     done
 done
 
+done # SEED
+
 echo ""
 echo "============================================================"
 echo "All evaluations complete."
-echo "Logs : $LOG_DIR/"
-echo "CSVs : $OUT_DIR/*_actstd_tstart_sweep.csv"
+echo "Logs : $EXPERIMENTS_DIR/logs/action_noise_eval/seed{5,10}/"
+echo "CSVs : $PROJECT_ROOT/../noise_sweeps/guassian_noise/seed{5,10}/*_actstd_tstart_sweep.csv"
 echo "============================================================"
