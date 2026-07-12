@@ -1480,6 +1480,11 @@ if __name__ == '__main__':
         train_multiple_runs(arglist, seed_list)
 
     elif arglist.mode == "test":
+        if arglist.seed is not None:
+            np.random.seed(arglist.seed)
+            random.seed(arglist.seed)
+            tf.set_random_seed(arglist.seed)
+
         arglist.noise_type = "gauss"
 
         use_denoiser = not arglist.skip_diffusion

@@ -2,11 +2,11 @@
 # run_stuck_at_sweep.sh — sweep stuck_at attack across all 4 variants
 #
 # Usage (run from experiments/):
-#   bash run_stuck_at_sweep.sh [SCENARIO] [NUM_ADVERSARIES]
+#   bash run_stuck_at_sweep.sh [SCENARIO] [NUM_ADVERSARIES] [SEED]
 #
 # Examples:
 #   bash run_stuck_at_sweep.sh simple_adversary 0
-#   bash run_stuck_at_sweep.sh simple_tag 3
+#   bash run_stuck_at_sweep.sh simple_tag 3 5
 
 set -euo pipefail
 
@@ -15,10 +15,12 @@ export CUDA_VISIBLE_DEVICES=""
 
 SCENARIO="${1:-simple_adversary}"
 NUM_ADVERSARIES="${2:-0}"
+SEED="${3:-0}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MODEL_DIR="${SCRIPT_DIR}/model"
 DIFFUSION_MODEL="${SCRIPT_DIR}/diffusion_models/${SCENARIO}_m3ddpg.pt"
+OUT_DIR="${SCRIPT_DIR}/../../noise_sweeps/actuation_fault/seed${SEED}"
 
 NUM_TEST_EPISODES=800
 DIFFUSION_STEPS=100
@@ -31,10 +33,11 @@ VARIANT_FLAG["earnie"]="maddpg-earnie"
 VARIANT_FLAG["rmaac"]="maddpg-act_adv"
 VARIANT_FLAG["m3ddpg"]="m3ddpg"
 
-echo "=== stuck_at sweep | scenario=${SCENARIO} | num_adversaries=${NUM_ADVERSARIES} ==="
+echo "=== stuck_at sweep | scenario=${SCENARIO} | num_adversaries=${NUM_ADVERSARIES} | seed=${SEED} ==="
 echo "=== Diffusion model: ${DIFFUSION_MODEL} ==="
 
 cd "${SCRIPT_DIR}"
+mkdir -p "${OUT_DIR}"
 
 for SUFFIX in maddpg earnie rmaac m3ddpg; do
     VARIANT="${VARIANT_FLAG[$SUFFIX]}"
@@ -57,9 +60,11 @@ for SUFFIX in maddpg earnie rmaac m3ddpg; do
         --act-high     1.0                   \
         --diffusion-model-path "${DIFFUSION_MODEL}" \
         --diffusion-steps      "${DIFFUSION_STEPS}" \
-        --t-start-list ${T_START_LIST}
+        --t-start-list ${T_START_LIST}       \
+        --seed        "${SEED}"
 
-    echo "  => Results: ${EXP_NAME}_stuck_at_sweep.csv"
+    mv "${EXP_NAME}_stuck_at_sweep.csv" "${OUT_DIR}/"
+    echo "  => Results: ${OUT_DIR}/${EXP_NAME}_stuck_at_sweep.csv"
 done
 
 echo ""

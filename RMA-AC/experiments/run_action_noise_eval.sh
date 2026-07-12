@@ -6,7 +6,9 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 EXPERIMENTS_DIR="$PROJECT_ROOT/experiments"
 MODEL_DIR="${MODEL_DIR:-$EXPERIMENTS_DIR/model}"
 DIFFUSION_MODELS_DIR="${DIFFUSION_MODELS_DIR:-$EXPERIMENTS_DIR/diffusion_models}"
-LOG_DIR="$EXPERIMENTS_DIR/logs/action_noise_eval"
+SEED="${SEED:-0}"
+LOG_DIR="$EXPERIMENTS_DIR/logs/action_noise_eval/seed${SEED}"
+OUT_DIR="$PROJECT_ROOT/../noise_sweeps/guassian_noise/seed${SEED}"
 NUM_TEST_EPISODES="${NUM_TEST_EPISODES:-800}"
 
 declare -A SCENARIO_NUM_ADVERSARIES
@@ -39,7 +41,7 @@ VARIANTS=(
 # Biased Gaussian noise means to evaluate
 NOISE_MU_LIST=(-1 0 1)
 
-mkdir -p "$LOG_DIR"
+mkdir -p "$LOG_DIR" "$OUT_DIR"
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 timestamp() { date "+%Y-%m-%d %H:%M:%S"; }
@@ -51,8 +53,10 @@ echo "Scenarios    : ${SCENARIOS[*]}"
 echo "Noise mu     : ${NOISE_MU_LIST[*]}"
 echo "Noise sigma  : 0 1 2 3"
 echo "t-start list : 20 40"
+echo "Seed         : $SEED"
 echo "Model dir    : $MODEL_DIR"
 echo "Diffusion dir: $DIFFUSION_MODELS_DIR"
+echo "Output dir   : $OUT_DIR"
 echo "============================================================"
 
 for SCENARIO in "${SCENARIOS[@]}"; do
@@ -84,14 +88,15 @@ for SCENARIO in "${SCENARIOS[@]}"; do
 
         for MU in "${NOISE_MU_LIST[@]}"; do
             LOG_FILE="$LOG_DIR/${EXP_NAME}_mu${MU}.log"
-            CSV_OUT="${EXPERIMENTS_DIR}/${EXP_NAME}_mu${MU}_actstd_tstart_sweep.csv"
+            MU_FMT=$(printf '%.1f' "$MU")
+            CSV_FILE="${EXP_NAME}_mu${MU_FMT}_actstd_tstart_sweep.csv"
 
             echo ""
             echo "────────────────────────────────────────────────────────────"
-            echo "[$(timestamp)] [RUN] $EXP_NAME  noise_mu=$MU"
+            echo "[$(timestamp)] [RUN] $EXP_NAME  noise_mu=$MU  seed=$SEED"
             echo "────────────────────────────────────────────────────────────"
 
-            python -u "$EXPERIMENTS_DIR/train.py" \
+            (cd "$EXPERIMENTS_DIR" && python -u train.py \
                 --scenario             "$SCENARIO" \
                 --variant              "$VARIANT" \
                 --mode                 test \
@@ -104,9 +109,11 @@ for SCENARIO in "${SCENARIOS[@]}"; do
                 --diffusion-model-path "$DIFFUSION_MODEL" \
                 --diffusion-steps      100 \
                 --t-start-list         20 40 \
+                --seed                 "$SEED") \
             2>&1 | tee "$LOG_FILE"
 
-            echo "[$(timestamp)] [DONE] $EXP_NAME  mu=$MU → $CSV_OUT"
+            mv "$EXPERIMENTS_DIR/$CSV_FILE" "$OUT_DIR/"
+            echo "[$(timestamp)] [DONE] $EXP_NAME  mu=$MU → $OUT_DIR/$CSV_FILE"
         done
     done
 done
@@ -115,5 +122,5 @@ echo ""
 echo "============================================================"
 echo "All evaluations complete."
 echo "Logs : $LOG_DIR/"
-echo "CSVs : $EXPERIMENTS_DIR/*_actstd_tstart_sweep.csv"
+echo "CSVs : $OUT_DIR/*_actstd_tstart_sweep.csv"
 echo "============================================================"
