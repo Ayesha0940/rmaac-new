@@ -931,6 +931,10 @@ def testWithoutP(arglist, load_dir=None, exp_name=None):
         print("Average reward per agent over {} episodes: {}".format(n_episodes, mean_rewards))
         print("Average total reward: {}".format(np.mean(np.sum(all_rewards, axis=1))))
         mean_call_time = total_action_time / total_steps if total_steps else 0.0
+        if arglist.benchmark:
+            pred_reward = np.mean([np.sum(r[:num_adversaries]) for r in all_rewards])
+            prey_reward = np.mean([np.sum(r[num_adversaries:]) for r in all_rewards])
+            return pred_reward, prey_reward, mean_call_time
         return np.mean(np.sum(all_rewards, axis=1)), mean_call_time
 
 
@@ -1112,7 +1116,7 @@ def testRobustnessOA(arglist, load_dir=None, exp_name=None):
         print("Average total reward: {}".format(np.mean(np.sum(all_rewards, axis=1))))
         return np.mean(np.sum(all_rewards, axis=1))
     
-def testRobustnessAP(arglist, use_denoiser=False, t_start=None, load_dir=None, exp_name=None, diffusion_policy=False):
+def testRobustnessAP(arglist, use_denoiser=False, t_start=None, load_dir=None, exp_name=None, diffusion_policy=False, denoise_agents="all"):
     tf.reset_default_graph()
     with U.single_threaded_session():
         # Create environment
@@ -1138,6 +1142,8 @@ def testRobustnessAP(arglist, use_denoiser=False, t_start=None, load_dir=None, e
         n_episodes = arglist.num_test_episodes
         max_episode_len = arglist.max_episode_len
         all_rewards = []
+        all_captures = []
+        all_survivals = []
         total_action_time = 0.0
         total_steps = 0
 
@@ -1152,6 +1158,8 @@ def testRobustnessAP(arglist, use_denoiser=False, t_start=None, load_dir=None, e
             obs_n = env.reset()
             episode_reward = np.zeros(env.n)
             attack.reset(n_agents=env.n)
+            capture_count = 0
+            survival_step = None
 
             for step in range(max_episode_len):
 
@@ -1201,13 +1209,30 @@ def testRobustnessAP(arglist, use_denoiser=False, t_start=None, load_dir=None, e
                     action_vec_clean = diffusion_denoise_action(action_vec_noisy, state_vec, t_start=t_start)
                     action_n_clean = split_actions(action_vec_clean, n_agents, action_dim_per_agent)
                     action_n_clean = [np.clip(a, arglist.act_low, arglist.act_high) for a in action_n_clean]
+                # --- per-role cross-play: choose clean vs noisy action by agent index ---
+                if denoise_agents == "predator":
+                    action_n_final = [action_n_clean[i] if i < num_adversaries else action_n_noisy[i]
+                                       for i in range(n_agents)]
+                elif denoise_agents == "prey":
+                    action_n_final = [action_n_clean[i] if i >= num_adversaries else action_n_noisy[i]
+                                       for i in range(n_agents)]
+                else:
+                    action_n_final = action_n_clean
+
                 _t1 = time.perf_counter()
                 total_action_time += (_t1 - _t0)
                 total_steps += 1
 
                 # --- env step ---
-                new_obs_n, rew_n, done_n, info_n = env.step(action_n_clean)
+                new_obs_n, rew_n, done_n, info_n = env.step(action_n_final)
                 attack.step()
+
+                # --- Track predator/prey benchmark info (only populated when arglist.benchmark) ---
+                if arglist.benchmark:
+                    step_collisions = sum(info_n['n'][:num_adversaries])
+                    capture_count += step_collisions
+                    if survival_step is None and step_collisions > 0:
+                        survival_step = step
 
                 # --- Track reward ---
                 episode_reward += rew_n
@@ -1222,13 +1247,25 @@ def testRobustnessAP(arglist, use_denoiser=False, t_start=None, load_dir=None, e
                     break
 
             all_rewards.append(episode_reward)
+            if arglist.benchmark:
+                if survival_step is None:
+                    survival_step = step  # never caught within the episode
+                all_captures.append(capture_count)
+                all_survivals.append(survival_step)
             # print("Episode {} reward (per agent): {}".format(ep + 1, episode_reward))
 
         mean_rewards = np.mean(all_rewards, axis=0)
         print("Average reward per agent over {} episodes: {}".format(n_episodes, mean_rewards))
         print("Average total reward: {}".format(np.mean(np.sum(all_rewards, axis=1))))
         mean_call_time = total_action_time / total_steps if total_steps else 0.0
-        return np.mean(np.sum(all_rewards, axis=1)), mean_call_time
+        mean_total_reward = np.mean(np.sum(all_rewards, axis=1))
+        if arglist.benchmark:
+            pred_reward = np.mean([np.sum(r[:num_adversaries]) for r in all_rewards])
+            prey_reward = np.mean([np.sum(r[num_adversaries:]) for r in all_rewards])
+            mean_captures = np.mean(all_captures)
+            mean_survival = np.mean(all_survivals)
+            return pred_reward, prey_reward, mean_call_time, mean_captures, mean_survival
+        return mean_total_reward, mean_call_time
 
 
 
@@ -1503,35 +1540,101 @@ if __name__ == '__main__':
                 arglist.delay_k = k
                 print("\n=== Delay k = {} ===".format(k))
 
-                rew_noisy, time_noisy = testRobustnessAP(arglist, use_denoiser=False)
-                print("  Noisy (no denoiser): {:.3f}".format(rew_noisy))
-
-                row = [k, r2(rew_noisy), r2ms(time_noisy)]
+                if arglist.benchmark:
+                    pred_noisy, prey_noisy, time_noisy, cap_noisy, surv_noisy = testRobustnessAP(
+                        arglist, use_denoiser=False)
+                    print("  Noisy (no denoiser): pred={:.3f} prey={:.3f}".format(pred_noisy, prey_noisy))
+                    row = [k, r2(pred_noisy), r2(prey_noisy), r2(cap_noisy), r2(surv_noisy)]
+                else:
+                    rew_noisy, time_noisy = testRobustnessAP(arglist, use_denoiser=False)
+                    print("  Noisy (no denoiser): {:.3f}".format(rew_noisy))
+                    row = [k, r2(rew_noisy), r2ms(time_noisy)]
 
                 if use_denoiser:
-                    diff_rewards = {}
-                    diff_times = {}
-                    for t_start in t_start_list:
-                        print("  -> t_start = {}".format(t_start))
-                        rew_d, time_d = testRobustnessAP(arglist, use_denoiser=True, t_start=t_start)
-                        diff_rewards[t_start] = rew_d
-                        diff_times[t_start] = time_d
-                        print("     with denoiser (t_start={}): {:.3f}".format(t_start, rew_d))
-                    best = max(diff_rewards.values())
-                    for t_start in t_start_list:
-                        row.append(r2(diff_rewards[t_start]))
-                        row.append(r2ms(diff_times[t_start]))
-                    row.extend([r2(best),
-                                 r2(((best - rew_noisy) / abs(rew_noisy)) * 100.0 if rew_noisy else 0.0)])
+                    if arglist.benchmark:
+                        diff_pred_rewards = {}
+                        diff_prey_rewards = {}
+                        diff_captures = {}
+                        diff_survivals = {}
+                        pred_only = {}
+                        prey_only = {}
+                        for t_start in t_start_list:
+                            print("  -> t_start = {}".format(t_start))
+                            pred_d, prey_d, _time_d, cap_d, surv_d = testRobustnessAP(
+                                arglist, use_denoiser=True, t_start=t_start)
+                            diff_pred_rewards[t_start] = pred_d
+                            diff_prey_rewards[t_start] = prey_d
+                            diff_captures[t_start] = cap_d
+                            diff_survivals[t_start] = surv_d
+                            print("     with denoiser (t_start={}): pred={:.3f} prey={:.3f}".format(
+                                t_start, pred_d, prey_d))
+
+                            pp, py, _tp, cp, sp = testRobustnessAP(
+                                arglist, use_denoiser=True, t_start=t_start, denoise_agents="predator")
+                            print("     predator-only denoise (t_start={}): pred={:.3f} prey={:.3f}".format(
+                                t_start, pp, py))
+                            yp, yy, _ty, cy, sy = testRobustnessAP(
+                                arglist, use_denoiser=True, t_start=t_start, denoise_agents="prey")
+                            print("     prey-only denoise (t_start={}): pred={:.3f} prey={:.3f}".format(
+                                t_start, yp, yy))
+                            pred_only[t_start] = (pp, py, cp, sp)
+                            prey_only[t_start] = (yp, yy, cy, sy)
+
+                        best_pred = max(diff_pred_rewards.values())
+                        best_prey = max(diff_prey_rewards.values())
+                        for t_start in t_start_list:
+                            row += [r2(diff_pred_rewards[t_start]), r2(diff_prey_rewards[t_start]),
+                                    r2(diff_captures[t_start]), r2(diff_survivals[t_start])]
+                            pp, py, cp, sp = pred_only[t_start]
+                            row += [r2(pp), r2(py), r2(cp), r2(sp)]
+                            yp, yy, cy, sy = prey_only[t_start]
+                            row += [r2(yp), r2(yy), r2(cy), r2(sy)]
+                        row += [r2(best_pred), r2(best_prey),
+                                r2(((best_pred - pred_noisy) / abs(pred_noisy)) * 100.0 if pred_noisy else 0.0),
+                                r2(((best_prey - prey_noisy) / abs(prey_noisy)) * 100.0 if prey_noisy else 0.0)]
+                    else:
+                        diff_rewards = {}
+                        diff_times = {}
+                        for t_start in t_start_list:
+                            print("  -> t_start = {}".format(t_start))
+                            rew_d, time_d = testRobustnessAP(arglist, use_denoiser=True, t_start=t_start)
+                            diff_rewards[t_start] = rew_d
+                            diff_times[t_start] = time_d
+                            print("     with denoiser (t_start={}): {:.3f}".format(t_start, rew_d))
+                        best = max(diff_rewards.values())
+                        for t_start in t_start_list:
+                            row.append(r2(diff_rewards[t_start]))
+                            row.append(r2ms(diff_times[t_start]))
+                        row.extend([r2(best),
+                                     r2(((best - rew_noisy) / abs(rew_noisy)) * 100.0 if rew_noisy else 0.0)])
 
                 results.append(row)
 
-            header = ["delay_k", "reward_noisy", "no_noise_time"]
-            if use_denoiser:
-                for t_start in t_start_list:
-                    header.append("reward_with_diff_t{}".format(t_start))
-                    header.append("t{}_time".format(t_start))
-                header += ["best_reward_with_diffusion", "pct_inc_vs_no_diffusion"]
+            if arglist.benchmark:
+                header = ["delay_k", "reward_pred_noisy", "reward_prey_noisy", "captures_noisy", "survival_noisy"]
+                if use_denoiser:
+                    for t_start in t_start_list:
+                        header += ["reward_pred_with_diff_t{}".format(t_start),
+                                   "reward_prey_with_diff_t{}".format(t_start),
+                                   "captures_diff_t{}".format(t_start),
+                                   "survival_diff_t{}".format(t_start),
+                                   "reward_pred_predator_only_t{}".format(t_start),
+                                   "reward_prey_predator_only_t{}".format(t_start),
+                                   "captures_predator_only_t{}".format(t_start),
+                                   "survival_predator_only_t{}".format(t_start),
+                                   "reward_pred_prey_only_t{}".format(t_start),
+                                   "reward_prey_prey_only_t{}".format(t_start),
+                                   "captures_prey_only_t{}".format(t_start),
+                                   "survival_prey_only_t{}".format(t_start)]
+                    header += ["best_reward_pred_with_diffusion", "best_reward_prey_with_diffusion",
+                               "pct_inc_pred_vs_no_diffusion", "pct_inc_prey_vs_no_diffusion"]
+            else:
+                header = ["delay_k", "reward_noisy", "no_noise_time"]
+                if use_denoiser:
+                    for t_start in t_start_list:
+                        header.append("reward_with_diff_t{}".format(t_start))
+                        header.append("t{}_time".format(t_start))
+                    header += ["best_reward_with_diffusion", "pct_inc_vs_no_diffusion"]
 
             with open(csv_filename, mode="w", newline="") as f:
                 writer = csv.writer(f)
@@ -1550,35 +1653,101 @@ if __name__ == '__main__':
                 arglist.sp_prob = p
                 print("\n=== stuck_at sp_prob = {} ===".format(p))
 
-                rew_noisy, time_noisy = testRobustnessAP(arglist, use_denoiser=False)
-                print("  Noisy (no denoiser): {:.3f}".format(rew_noisy))
-
-                row = [r2(p), r2(rew_noisy), r2ms(time_noisy)]
+                if arglist.benchmark:
+                    pred_noisy, prey_noisy, time_noisy, cap_noisy, surv_noisy = testRobustnessAP(
+                        arglist, use_denoiser=False)
+                    print("  Noisy (no denoiser): pred={:.3f} prey={:.3f}".format(pred_noisy, prey_noisy))
+                    row = [r2(p), r2(pred_noisy), r2(prey_noisy), r2(cap_noisy), r2(surv_noisy)]
+                else:
+                    rew_noisy, time_noisy = testRobustnessAP(arglist, use_denoiser=False)
+                    print("  Noisy (no denoiser): {:.3f}".format(rew_noisy))
+                    row = [r2(p), r2(rew_noisy), r2ms(time_noisy)]
 
                 if use_denoiser:
-                    diff_rewards = {}
-                    diff_times = {}
-                    for t_start in t_start_list:
-                        print("  -> t_start = {}".format(t_start))
-                        rew_d, time_d = testRobustnessAP(arglist, use_denoiser=True, t_start=t_start)
-                        diff_rewards[t_start] = rew_d
-                        diff_times[t_start] = time_d
-                        print("     with denoiser (t_start={}): {:.3f}".format(t_start, rew_d))
-                    best = max(diff_rewards.values())
-                    for t_start in t_start_list:
-                        row.append(r2(diff_rewards[t_start]))
-                        row.append(r2ms(diff_times[t_start]))
-                    row.extend([r2(best),
-                                 r2(((best - rew_noisy) / abs(rew_noisy)) * 100.0 if rew_noisy else 0.0)])
+                    if arglist.benchmark:
+                        diff_pred_rewards = {}
+                        diff_prey_rewards = {}
+                        diff_captures = {}
+                        diff_survivals = {}
+                        pred_only = {}
+                        prey_only = {}
+                        for t_start in t_start_list:
+                            print("  -> t_start = {}".format(t_start))
+                            pred_d, prey_d, _time_d, cap_d, surv_d = testRobustnessAP(
+                                arglist, use_denoiser=True, t_start=t_start)
+                            diff_pred_rewards[t_start] = pred_d
+                            diff_prey_rewards[t_start] = prey_d
+                            diff_captures[t_start] = cap_d
+                            diff_survivals[t_start] = surv_d
+                            print("     with denoiser (t_start={}): pred={:.3f} prey={:.3f}".format(
+                                t_start, pred_d, prey_d))
+
+                            pp, py, _tp, cp, sp = testRobustnessAP(
+                                arglist, use_denoiser=True, t_start=t_start, denoise_agents="predator")
+                            print("     predator-only denoise (t_start={}): pred={:.3f} prey={:.3f}".format(
+                                t_start, pp, py))
+                            yp, yy, _ty, cy, sy = testRobustnessAP(
+                                arglist, use_denoiser=True, t_start=t_start, denoise_agents="prey")
+                            print("     prey-only denoise (t_start={}): pred={:.3f} prey={:.3f}".format(
+                                t_start, yp, yy))
+                            pred_only[t_start] = (pp, py, cp, sp)
+                            prey_only[t_start] = (yp, yy, cy, sy)
+
+                        best_pred = max(diff_pred_rewards.values())
+                        best_prey = max(diff_prey_rewards.values())
+                        for t_start in t_start_list:
+                            row += [r2(diff_pred_rewards[t_start]), r2(diff_prey_rewards[t_start]),
+                                    r2(diff_captures[t_start]), r2(diff_survivals[t_start])]
+                            pp, py, cp, sp = pred_only[t_start]
+                            row += [r2(pp), r2(py), r2(cp), r2(sp)]
+                            yp, yy, cy, sy = prey_only[t_start]
+                            row += [r2(yp), r2(yy), r2(cy), r2(sy)]
+                        row += [r2(best_pred), r2(best_prey),
+                                r2(((best_pred - pred_noisy) / abs(pred_noisy)) * 100.0 if pred_noisy else 0.0),
+                                r2(((best_prey - prey_noisy) / abs(prey_noisy)) * 100.0 if prey_noisy else 0.0)]
+                    else:
+                        diff_rewards = {}
+                        diff_times = {}
+                        for t_start in t_start_list:
+                            print("  -> t_start = {}".format(t_start))
+                            rew_d, time_d = testRobustnessAP(arglist, use_denoiser=True, t_start=t_start)
+                            diff_rewards[t_start] = rew_d
+                            diff_times[t_start] = time_d
+                            print("     with denoiser (t_start={}): {:.3f}".format(t_start, rew_d))
+                        best = max(diff_rewards.values())
+                        for t_start in t_start_list:
+                            row.append(r2(diff_rewards[t_start]))
+                            row.append(r2ms(diff_times[t_start]))
+                        row.extend([r2(best),
+                                     r2(((best - rew_noisy) / abs(rew_noisy)) * 100.0 if rew_noisy else 0.0)])
 
                 results.append(row)
 
-            header = ["sp_prob", "reward_noisy", "no_noise_time"]
-            if use_denoiser:
-                for t_start in t_start_list:
-                    header.append("reward_with_diff_t{}".format(t_start))
-                    header.append("t{}_time".format(t_start))
-                header += ["best_reward_with_diffusion", "pct_inc_vs_no_diffusion"]
+            if arglist.benchmark:
+                header = ["sp_prob", "reward_pred_noisy", "reward_prey_noisy", "captures_noisy", "survival_noisy"]
+                if use_denoiser:
+                    for t_start in t_start_list:
+                        header += ["reward_pred_with_diff_t{}".format(t_start),
+                                   "reward_prey_with_diff_t{}".format(t_start),
+                                   "captures_diff_t{}".format(t_start),
+                                   "survival_diff_t{}".format(t_start),
+                                   "reward_pred_predator_only_t{}".format(t_start),
+                                   "reward_prey_predator_only_t{}".format(t_start),
+                                   "captures_predator_only_t{}".format(t_start),
+                                   "survival_predator_only_t{}".format(t_start),
+                                   "reward_pred_prey_only_t{}".format(t_start),
+                                   "reward_prey_prey_only_t{}".format(t_start),
+                                   "captures_prey_only_t{}".format(t_start),
+                                   "survival_prey_only_t{}".format(t_start)]
+                    header += ["best_reward_pred_with_diffusion", "best_reward_prey_with_diffusion",
+                               "pct_inc_pred_vs_no_diffusion", "pct_inc_prey_vs_no_diffusion"]
+            else:
+                header = ["sp_prob", "reward_noisy", "no_noise_time"]
+                if use_denoiser:
+                    for t_start in t_start_list:
+                        header.append("reward_with_diff_t{}".format(t_start))
+                        header.append("t{}_time".format(t_start))
+                    header += ["best_reward_with_diffusion", "pct_inc_vs_no_diffusion"]
 
             with open(csv_filename, mode="w", newline="") as f:
                 writer = csv.writer(f)
@@ -1645,8 +1814,12 @@ if __name__ == '__main__':
                 csv_filename = "{}_mu{}_actstd_tstart_sweep.csv".format(arglist.exp_name, arglist.noise_mu)
             results = []
 
-            rew_no_noise, time_no_noise = testWithoutP(arglist)
-            print("Baseline (no noise): {:.3f}".format(rew_no_noise))
+            if arglist.benchmark:
+                pred_no_noise, prey_no_noise, time_no_noise = testWithoutP(arglist)
+                print("Baseline (no noise): pred={:.3f} prey={:.3f}".format(pred_no_noise, prey_no_noise))
+            else:
+                rew_no_noise, time_no_noise = testWithoutP(arglist)
+                print("Baseline (no noise): {:.3f}".format(rew_no_noise))
 
             for act_std in act_std_list:
                 arglist.act_noise = act_std
@@ -1654,46 +1827,128 @@ if __name__ == '__main__':
                 arglist.attack_mu = arglist.noise_mu  # bridge --noise-mu → ActionAttack
                 print("\n=== Action noise std = {} ===".format(act_std))
 
-                rew_noisy, time_noisy = testRobustnessAP(arglist, use_denoiser=False)
-                print("  Noisy (no denoiser): {:.3f}".format(rew_noisy))
-
-                row = [r2(arglist.noise_mu), r2(act_std), r2(rew_no_noise), r2ms(time_no_noise),
-                       r2(rew_noisy), r2ms(time_noisy)]
+                if arglist.benchmark:
+                    pred_noisy, prey_noisy, time_noisy, cap_noisy, surv_noisy = testRobustnessAP(
+                        arglist, use_denoiser=False)
+                    print("  Noisy (no denoiser): pred={:.3f} prey={:.3f}".format(pred_noisy, prey_noisy))
+                    row = [r2(arglist.noise_mu), r2(act_std),
+                           r2(pred_no_noise), r2(prey_no_noise),
+                           r2(pred_noisy), r2(prey_noisy),
+                           r2(cap_noisy), r2(surv_noisy)]
+                else:
+                    rew_noisy, time_noisy = testRobustnessAP(arglist, use_denoiser=False)
+                    print("  Noisy (no denoiser): {:.3f}".format(rew_noisy))
+                    row = [r2(arglist.noise_mu), r2(act_std), r2(rew_no_noise), r2ms(time_no_noise),
+                           r2(rew_noisy), r2ms(time_noisy)]
 
                 if use_denoiser:
-                    diff_rewards = {}
-                    diff_times = {}
-                    for t_start in t_start_list:
-                        print("  -> t_start = {}".format(t_start))
-                        rew_d, time_d = testRobustnessAP(arglist, use_denoiser=True, t_start=t_start)
-                        diff_rewards[t_start] = rew_d
-                        diff_times[t_start] = time_d
-                        print("     with denoiser (t_start={}): {:.3f}".format(t_start, rew_d))
-                    best = max(diff_rewards.values())
-                    for t_start in t_start_list:
-                        row.append(r2(diff_rewards[t_start]))
-                        row.append(r2ms(diff_times[t_start]))
-                    row.extend([r2(best),
-                                 r2(((best - rew_noisy) / abs(rew_noisy)) * 100.0 if rew_noisy else 0.0)])
+                    if arglist.benchmark:
+                        diff_pred_rewards = {}
+                        diff_prey_rewards = {}
+                        diff_captures = {}
+                        diff_survivals = {}
+                        pred_only = {}
+                        prey_only = {}
+                        for t_start in t_start_list:
+                            print("  -> t_start = {}".format(t_start))
+                            pred_d, prey_d, _time_d, cap_d, surv_d = testRobustnessAP(
+                                arglist, use_denoiser=True, t_start=t_start)
+                            diff_pred_rewards[t_start] = pred_d
+                            diff_prey_rewards[t_start] = prey_d
+                            diff_captures[t_start] = cap_d
+                            diff_survivals[t_start] = surv_d
+                            print("     with denoiser (t_start={}): pred={:.3f} prey={:.3f}".format(
+                                t_start, pred_d, prey_d))
+
+                            # --- cross-play: denoise predators only / prey only ---
+                            pp, py, _tp, cp, sp = testRobustnessAP(
+                                arglist, use_denoiser=True, t_start=t_start, denoise_agents="predator")
+                            print("     predator-only denoise (t_start={}): pred={:.3f} prey={:.3f}".format(
+                                t_start, pp, py))
+                            yp, yy, _ty, cy, sy = testRobustnessAP(
+                                arglist, use_denoiser=True, t_start=t_start, denoise_agents="prey")
+                            print("     prey-only denoise (t_start={}): pred={:.3f} prey={:.3f}".format(
+                                t_start, yp, yy))
+                            pred_only[t_start] = (pp, py, cp, sp)
+                            prey_only[t_start] = (yp, yy, cy, sy)
+
+                        best_pred = max(diff_pred_rewards.values())
+                        best_prey = max(diff_prey_rewards.values())
+                        for t_start in t_start_list:
+                            row += [r2(diff_pred_rewards[t_start]), r2(diff_prey_rewards[t_start]),
+                                    r2(diff_captures[t_start]), r2(diff_survivals[t_start])]
+                            pp, py, cp, sp = pred_only[t_start]
+                            row += [r2(pp), r2(py), r2(cp), r2(sp)]
+                            yp, yy, cy, sy = prey_only[t_start]
+                            row += [r2(yp), r2(yy), r2(cy), r2(sy)]
+                        row += [r2(best_pred), r2(best_prey),
+                                r2(((best_pred - pred_noisy) / abs(pred_noisy)) * 100.0 if pred_noisy else 0.0),
+                                r2(((best_prey - prey_noisy) / abs(prey_noisy)) * 100.0 if prey_noisy else 0.0)]
+                    else:
+                        diff_rewards = {}
+                        diff_times = {}
+                        for t_start in t_start_list:
+                            print("  -> t_start = {}".format(t_start))
+                            rew_d, time_d = testRobustnessAP(arglist, use_denoiser=True, t_start=t_start)
+                            diff_rewards[t_start] = rew_d
+                            diff_times[t_start] = time_d
+                            print("     with denoiser (t_start={}): {:.3f}".format(t_start, rew_d))
+                        best = max(diff_rewards.values())
+                        for t_start in t_start_list:
+                            row.append(r2(diff_rewards[t_start]))
+                            row.append(r2ms(diff_times[t_start]))
+                        row.extend([r2(best),
+                                     r2(((best - rew_noisy) / abs(rew_noisy)) * 100.0 if rew_noisy else 0.0)])
 
                 if arglist.eval_diffusion_policy:
-                    rew_diffpolicy, _ = testRobustnessAP(arglist, diffusion_policy=True,
-                                                          t_start=arglist.diffusion_policy_t_start)
-                    print("  Diffusion policy (control, t_start={}): {:.3f}".format(
-                        arglist.diffusion_policy_t_start, rew_diffpolicy))
-                    row.append(r2(rew_diffpolicy))
+                    if arglist.benchmark:
+                        pred_dp, prey_dp, _, _, _ = testRobustnessAP(
+                            arglist, diffusion_policy=True, t_start=arglist.diffusion_policy_t_start)
+                        print("  Diffusion policy (control, t_start={}): pred={:.3f} prey={:.3f}".format(
+                            arglist.diffusion_policy_t_start, pred_dp, prey_dp))
+                        row += [r2(pred_dp), r2(prey_dp)]
+                    else:
+                        rew_diffpolicy, _ = testRobustnessAP(
+                            arglist, diffusion_policy=True, t_start=arglist.diffusion_policy_t_start)
+                        print("  Diffusion policy (control, t_start={}): {:.3f}".format(
+                            arglist.diffusion_policy_t_start, rew_diffpolicy))
+                        row.append(r2(rew_diffpolicy))
 
                 results.append(row)
 
-            header = ["noise_mu", "action_noise_std", "reward_no_noise", "clean_time",
-                      "reward_noise_no_diffusion", "no_noise_time"]
-            if use_denoiser:
-                for t_start in t_start_list:
-                    header.append("reward_with_diff_t{}".format(t_start))
-                    header.append("t{}_time".format(t_start))
-                header += ["best_reward_with_diffusion", "pct_inc_vs_no_diffusion"]
-            if arglist.eval_diffusion_policy:
-                header.append("reward_diffusion_policy")
+            if arglist.benchmark:
+                header = ["noise_mu", "action_noise_std",
+                          "reward_pred_no_noise", "reward_prey_no_noise",
+                          "reward_pred_noise_no_diffusion", "reward_prey_noise_no_diffusion",
+                          "captures_noisy", "survival_noisy"]
+                if use_denoiser:
+                    for t_start in t_start_list:
+                        header += ["reward_pred_with_diff_t{}".format(t_start),
+                                   "reward_prey_with_diff_t{}".format(t_start),
+                                   "captures_diff_t{}".format(t_start),
+                                   "survival_diff_t{}".format(t_start),
+                                   "reward_pred_predator_only_t{}".format(t_start),
+                                   "reward_prey_predator_only_t{}".format(t_start),
+                                   "captures_predator_only_t{}".format(t_start),
+                                   "survival_predator_only_t{}".format(t_start),
+                                   "reward_pred_prey_only_t{}".format(t_start),
+                                   "reward_prey_prey_only_t{}".format(t_start),
+                                   "captures_prey_only_t{}".format(t_start),
+                                   "survival_prey_only_t{}".format(t_start)]
+                    header += ["best_reward_pred_with_diffusion", "best_reward_prey_with_diffusion",
+                               "pct_inc_pred_vs_no_diffusion", "pct_inc_prey_vs_no_diffusion"]
+                if arglist.eval_diffusion_policy:
+                    header += ["reward_pred_diffusion_policy", "reward_prey_diffusion_policy"]
+            else:
+                header = ["noise_mu", "action_noise_std", "reward_no_noise", "clean_time",
+                          "reward_noise_no_diffusion", "no_noise_time"]
+                if use_denoiser:
+                    for t_start in t_start_list:
+                        header.append("reward_with_diff_t{}".format(t_start))
+                        header.append("t{}_time".format(t_start))
+                    header += ["best_reward_with_diffusion", "pct_inc_vs_no_diffusion"]
+                if arglist.eval_diffusion_policy:
+                    header.append("reward_diffusion_policy")
 
             with open(csv_filename, mode="w", newline="") as f:
                 writer = csv.writer(f)
