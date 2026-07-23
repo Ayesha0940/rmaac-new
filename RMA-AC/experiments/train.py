@@ -179,6 +179,11 @@ def parse_args():
     parser.add_argument("--diffusion-policy-t-start", type=int, default=None,
                         help="reverse-diffusion start step for the diffusion-policy "
                              "(from-noise) control; default None = full chain (T-1)")
+    parser.add_argument("--attack-target", type=str, default="all",
+                        choices=["all", "predator", "prey"],
+                        help="which role's actions receive noise/denoising; the other "
+                             "role always plays its raw policy action (only meaningful "
+                             "with --benchmark)")
 
     return parser.parse_args()
 
@@ -1116,7 +1121,7 @@ def testRobustnessOA(arglist, load_dir=None, exp_name=None):
         print("Average total reward: {}".format(np.mean(np.sum(all_rewards, axis=1))))
         return np.mean(np.sum(all_rewards, axis=1))
     
-def testRobustnessAP(arglist, use_denoiser=False, t_start=None, load_dir=None, exp_name=None, diffusion_policy=False, denoise_agents="all"):
+def testRobustnessAP(arglist, use_denoiser=False, t_start=None, load_dir=None, exp_name=None, diffusion_policy=False, denoise_agents="all", attack_target="all"):
     tf.reset_default_graph()
     with U.single_threaded_session():
         # Create environment
@@ -1193,8 +1198,15 @@ def testRobustnessAP(arglist, use_denoiser=False, t_start=None, load_dir=None, e
                 # print("Number of agents:", n_agents)
                 # print("Action dimension per agent:", action_dim_per_agent)
 
-                # --- adversarial noise ---
-                action_n_noisy = [attack.perturb(a, i) for i, a in enumerate(action_n)]
+                # --- adversarial noise (only on the targeted role, if restricted) ---
+                if attack_target == "predator":
+                    attacked_idx = range(num_adversaries)
+                elif attack_target == "prey":
+                    attacked_idx = range(num_adversaries, n_agents)
+                else:
+                    attacked_idx = range(n_agents)
+                action_n_noisy = [attack.perturb(a, i) if i in attacked_idx else a
+                                  for i, a in enumerate(action_n)]
                 action_n_clean = action_n_noisy
 
                 # --- optional DDPM denoising / diffusion-policy control ---
@@ -1218,6 +1230,14 @@ def testRobustnessAP(arglist, use_denoiser=False, t_start=None, load_dir=None, e
                                        for i in range(n_agents)]
                 else:
                     action_n_final = action_n_clean
+
+                # --- force the untargeted role back to its true clean policy action ---
+                if attack_target == "predator":
+                    action_n_final = [action_n_final[i] if i < num_adversaries else action_n[i]
+                                       for i in range(n_agents)]
+                elif attack_target == "prey":
+                    action_n_final = [action_n_final[i] if i >= num_adversaries else action_n[i]
+                                       for i in range(n_agents)]
 
                 _t1 = time.perf_counter()
                 total_action_time += (_t1 - _t0)
@@ -1533,14 +1553,22 @@ if __name__ == '__main__':
         # --- delay-k sweep ---
         if getattr(arglist, "attack", "gauss") == "delay":
             delay_k_list = arglist.delay_k_list
-            csv_filename = "{}_delay_sweep.csv".format(arglist.exp_name)
+            attack_target_suffix = ("" if arglist.attack_target == "all"
+                                     else "_{}only".format(arglist.attack_target))
+            csv_filename = "{}_delay_sweep{}.csv".format(arglist.exp_name, attack_target_suffix)
             results = []
 
             for k in delay_k_list:
                 arglist.delay_k = k
                 print("\n=== Delay k = {} ===".format(k))
 
-                if arglist.benchmark:
+                if arglist.benchmark and arglist.attack_target != "all":
+                    pred_noisy, prey_noisy, time_noisy, cap_noisy, surv_noisy = testRobustnessAP(
+                        arglist, use_denoiser=False, attack_target=arglist.attack_target)
+                    print("  Noisy (no denoiser, attack_target={}): pred={:.3f} prey={:.3f}".format(
+                        arglist.attack_target, pred_noisy, prey_noisy))
+                    row = [k, r2(pred_noisy), r2(prey_noisy), r2(cap_noisy), r2(surv_noisy)]
+                elif arglist.benchmark:
                     pred_noisy, prey_noisy, time_noisy, cap_noisy, surv_noisy = testRobustnessAP(
                         arglist, use_denoiser=False)
                     print("  Noisy (no denoiser): pred={:.3f} prey={:.3f}".format(pred_noisy, prey_noisy))
@@ -1551,7 +1579,31 @@ if __name__ == '__main__':
                     row = [k, r2(rew_noisy), r2ms(time_noisy)]
 
                 if use_denoiser:
-                    if arglist.benchmark:
+                    if arglist.benchmark and arglist.attack_target != "all":
+                        diff_pred_rewards = {}
+                        diff_prey_rewards = {}
+                        diff_captures = {}
+                        diff_survivals = {}
+                        for t_start in t_start_list:
+                            print("  -> t_start = {}".format(t_start))
+                            pred_d, prey_d, _time_d, cap_d, surv_d = testRobustnessAP(
+                                arglist, use_denoiser=True, t_start=t_start,
+                                attack_target=arglist.attack_target)
+                            diff_pred_rewards[t_start] = pred_d
+                            diff_prey_rewards[t_start] = prey_d
+                            diff_captures[t_start] = cap_d
+                            diff_survivals[t_start] = surv_d
+                            print("     with denoiser (t_start={}): pred={:.3f} prey={:.3f}".format(
+                                t_start, pred_d, prey_d))
+                        best_pred = max(diff_pred_rewards.values())
+                        best_prey = max(diff_prey_rewards.values())
+                        for t_start in t_start_list:
+                            row += [r2(diff_pred_rewards[t_start]), r2(diff_prey_rewards[t_start]),
+                                    r2(diff_captures[t_start]), r2(diff_survivals[t_start])]
+                        row += [r2(best_pred), r2(best_prey),
+                                r2(((best_pred - pred_noisy) / abs(pred_noisy)) * 100.0 if pred_noisy else 0.0),
+                                r2(((best_prey - prey_noisy) / abs(prey_noisy)) * 100.0 if prey_noisy else 0.0)]
+                    elif arglist.benchmark:
                         diff_pred_rewards = {}
                         diff_prey_rewards = {}
                         diff_captures = {}
@@ -1610,7 +1662,17 @@ if __name__ == '__main__':
 
                 results.append(row)
 
-            if arglist.benchmark:
+            if arglist.benchmark and arglist.attack_target != "all":
+                header = ["delay_k", "reward_pred_noisy", "reward_prey_noisy", "captures_noisy", "survival_noisy"]
+                if use_denoiser:
+                    for t_start in t_start_list:
+                        header += ["reward_pred_with_diff_t{}".format(t_start),
+                                   "reward_prey_with_diff_t{}".format(t_start),
+                                   "captures_diff_t{}".format(t_start),
+                                   "survival_diff_t{}".format(t_start)]
+                    header += ["best_reward_pred_with_diffusion", "best_reward_prey_with_diffusion",
+                               "pct_inc_pred_vs_no_diffusion", "pct_inc_prey_vs_no_diffusion"]
+            elif arglist.benchmark:
                 header = ["delay_k", "reward_pred_noisy", "reward_prey_noisy", "captures_noisy", "survival_noisy"]
                 if use_denoiser:
                     for t_start in t_start_list:
@@ -1646,14 +1708,22 @@ if __name__ == '__main__':
         # --- stuck_at sp_prob sweep ---
         elif getattr(arglist, "attack", "gauss") == "stuck_at":
             sp_prob_list = arglist.sp_prob_list
-            csv_filename = "{}_stuck_at_sweep.csv".format(arglist.exp_name)
+            attack_target_suffix = ("" if arglist.attack_target == "all"
+                                     else "_{}only".format(arglist.attack_target))
+            csv_filename = "{}_stuck_at_sweep{}.csv".format(arglist.exp_name, attack_target_suffix)
             results = []
 
             for p in sp_prob_list:
                 arglist.sp_prob = p
                 print("\n=== stuck_at sp_prob = {} ===".format(p))
 
-                if arglist.benchmark:
+                if arglist.benchmark and arglist.attack_target != "all":
+                    pred_noisy, prey_noisy, time_noisy, cap_noisy, surv_noisy = testRobustnessAP(
+                        arglist, use_denoiser=False, attack_target=arglist.attack_target)
+                    print("  Noisy (no denoiser, attack_target={}): pred={:.3f} prey={:.3f}".format(
+                        arglist.attack_target, pred_noisy, prey_noisy))
+                    row = [r2(p), r2(pred_noisy), r2(prey_noisy), r2(cap_noisy), r2(surv_noisy)]
+                elif arglist.benchmark:
                     pred_noisy, prey_noisy, time_noisy, cap_noisy, surv_noisy = testRobustnessAP(
                         arglist, use_denoiser=False)
                     print("  Noisy (no denoiser): pred={:.3f} prey={:.3f}".format(pred_noisy, prey_noisy))
@@ -1664,7 +1734,31 @@ if __name__ == '__main__':
                     row = [r2(p), r2(rew_noisy), r2ms(time_noisy)]
 
                 if use_denoiser:
-                    if arglist.benchmark:
+                    if arglist.benchmark and arglist.attack_target != "all":
+                        diff_pred_rewards = {}
+                        diff_prey_rewards = {}
+                        diff_captures = {}
+                        diff_survivals = {}
+                        for t_start in t_start_list:
+                            print("  -> t_start = {}".format(t_start))
+                            pred_d, prey_d, _time_d, cap_d, surv_d = testRobustnessAP(
+                                arglist, use_denoiser=True, t_start=t_start,
+                                attack_target=arglist.attack_target)
+                            diff_pred_rewards[t_start] = pred_d
+                            diff_prey_rewards[t_start] = prey_d
+                            diff_captures[t_start] = cap_d
+                            diff_survivals[t_start] = surv_d
+                            print("     with denoiser (t_start={}): pred={:.3f} prey={:.3f}".format(
+                                t_start, pred_d, prey_d))
+                        best_pred = max(diff_pred_rewards.values())
+                        best_prey = max(diff_prey_rewards.values())
+                        for t_start in t_start_list:
+                            row += [r2(diff_pred_rewards[t_start]), r2(diff_prey_rewards[t_start]),
+                                    r2(diff_captures[t_start]), r2(diff_survivals[t_start])]
+                        row += [r2(best_pred), r2(best_prey),
+                                r2(((best_pred - pred_noisy) / abs(pred_noisy)) * 100.0 if pred_noisy else 0.0),
+                                r2(((best_prey - prey_noisy) / abs(prey_noisy)) * 100.0 if prey_noisy else 0.0)]
+                    elif arglist.benchmark:
                         diff_pred_rewards = {}
                         diff_prey_rewards = {}
                         diff_captures = {}
@@ -1723,7 +1817,17 @@ if __name__ == '__main__':
 
                 results.append(row)
 
-            if arglist.benchmark:
+            if arglist.benchmark and arglist.attack_target != "all":
+                header = ["sp_prob", "reward_pred_noisy", "reward_prey_noisy", "captures_noisy", "survival_noisy"]
+                if use_denoiser:
+                    for t_start in t_start_list:
+                        header += ["reward_pred_with_diff_t{}".format(t_start),
+                                   "reward_prey_with_diff_t{}".format(t_start),
+                                   "captures_diff_t{}".format(t_start),
+                                   "survival_diff_t{}".format(t_start)]
+                    header += ["best_reward_pred_with_diffusion", "best_reward_prey_with_diffusion",
+                               "pct_inc_pred_vs_no_diffusion", "pct_inc_prey_vs_no_diffusion"]
+            elif arglist.benchmark:
                 header = ["sp_prob", "reward_pred_noisy", "reward_prey_noisy", "captures_noisy", "survival_noisy"]
                 if use_denoiser:
                     for t_start in t_start_list:
@@ -1806,12 +1910,16 @@ if __name__ == '__main__':
         # --- act-std sweep (default) ---
         else:
             act_std_list = arglist.act_std_list
+            attack_target_suffix = ("" if arglist.attack_target == "all"
+                                     else "_{}only".format(arglist.attack_target))
             if arglist.eval_diffusion_policy:
                 dp_suffix = ("_dpfull" if arglist.diffusion_policy_t_start is None
                              else "_dpt{}".format(arglist.diffusion_policy_t_start))
-                csv_filename = "{}_diffusion_policy_ablation{}.csv".format(arglist.exp_name, dp_suffix)
+                csv_filename = "{}_diffusion_policy_ablation{}{}.csv".format(
+                    arglist.exp_name, dp_suffix, attack_target_suffix)
             else:
-                csv_filename = "{}_mu{}_actstd_tstart_sweep.csv".format(arglist.exp_name, arglist.noise_mu)
+                csv_filename = "{}_mu{}_actstd_tstart_sweep{}.csv".format(
+                    arglist.exp_name, arglist.noise_mu, attack_target_suffix)
             results = []
 
             if arglist.benchmark:
@@ -1827,7 +1935,16 @@ if __name__ == '__main__':
                 arglist.attack_mu = arglist.noise_mu  # bridge --noise-mu → ActionAttack
                 print("\n=== Action noise std = {} ===".format(act_std))
 
-                if arglist.benchmark:
+                if arglist.benchmark and arglist.attack_target != "all":
+                    pred_noisy, prey_noisy, time_noisy, cap_noisy, surv_noisy = testRobustnessAP(
+                        arglist, use_denoiser=False, attack_target=arglist.attack_target)
+                    print("  Noisy (no denoiser, attack_target={}): pred={:.3f} prey={:.3f}".format(
+                        arglist.attack_target, pred_noisy, prey_noisy))
+                    row = [r2(arglist.noise_mu), r2(act_std),
+                           r2(pred_no_noise), r2(prey_no_noise),
+                           r2(pred_noisy), r2(prey_noisy),
+                           r2(cap_noisy), r2(surv_noisy)]
+                elif arglist.benchmark:
                     pred_noisy, prey_noisy, time_noisy, cap_noisy, surv_noisy = testRobustnessAP(
                         arglist, use_denoiser=False)
                     print("  Noisy (no denoiser): pred={:.3f} prey={:.3f}".format(pred_noisy, prey_noisy))
@@ -1842,7 +1959,31 @@ if __name__ == '__main__':
                            r2(rew_noisy), r2ms(time_noisy)]
 
                 if use_denoiser:
-                    if arglist.benchmark:
+                    if arglist.benchmark and arglist.attack_target != "all":
+                        diff_pred_rewards = {}
+                        diff_prey_rewards = {}
+                        diff_captures = {}
+                        diff_survivals = {}
+                        for t_start in t_start_list:
+                            print("  -> t_start = {}".format(t_start))
+                            pred_d, prey_d, _time_d, cap_d, surv_d = testRobustnessAP(
+                                arglist, use_denoiser=True, t_start=t_start,
+                                attack_target=arglist.attack_target)
+                            diff_pred_rewards[t_start] = pred_d
+                            diff_prey_rewards[t_start] = prey_d
+                            diff_captures[t_start] = cap_d
+                            diff_survivals[t_start] = surv_d
+                            print("     with denoiser (t_start={}): pred={:.3f} prey={:.3f}".format(
+                                t_start, pred_d, prey_d))
+                        best_pred = max(diff_pred_rewards.values())
+                        best_prey = max(diff_prey_rewards.values())
+                        for t_start in t_start_list:
+                            row += [r2(diff_pred_rewards[t_start]), r2(diff_prey_rewards[t_start]),
+                                    r2(diff_captures[t_start]), r2(diff_survivals[t_start])]
+                        row += [r2(best_pred), r2(best_prey),
+                                r2(((best_pred - pred_noisy) / abs(pred_noisy)) * 100.0 if pred_noisy else 0.0),
+                                r2(((best_prey - prey_noisy) / abs(prey_noisy)) * 100.0 if prey_noisy else 0.0)]
+                    elif arglist.benchmark:
                         diff_pred_rewards = {}
                         diff_prey_rewards = {}
                         diff_captures = {}
@@ -1901,7 +2042,15 @@ if __name__ == '__main__':
                                      r2(((best - rew_noisy) / abs(rew_noisy)) * 100.0 if rew_noisy else 0.0)])
 
                 if arglist.eval_diffusion_policy:
-                    if arglist.benchmark:
+                    if arglist.benchmark and arglist.attack_target != "all":
+                        pred_dp, prey_dp, _, _, _ = testRobustnessAP(
+                            arglist, diffusion_policy=True, t_start=arglist.diffusion_policy_t_start,
+                            attack_target=arglist.attack_target)
+                        print("  Diffusion policy (control, t_start={}, attack_target={}): "
+                              "pred={:.3f} prey={:.3f}".format(
+                                  arglist.diffusion_policy_t_start, arglist.attack_target, pred_dp, prey_dp))
+                        row += [r2(pred_dp), r2(prey_dp)]
+                    elif arglist.benchmark:
                         pred_dp, prey_dp, _, _, _ = testRobustnessAP(
                             arglist, diffusion_policy=True, t_start=arglist.diffusion_policy_t_start)
                         print("  Diffusion policy (control, t_start={}): pred={:.3f} prey={:.3f}".format(
@@ -1916,7 +2065,22 @@ if __name__ == '__main__':
 
                 results.append(row)
 
-            if arglist.benchmark:
+            if arglist.benchmark and arglist.attack_target != "all":
+                header = ["noise_mu", "action_noise_std",
+                          "reward_pred_no_noise", "reward_prey_no_noise",
+                          "reward_pred_noise_no_diffusion", "reward_prey_noise_no_diffusion",
+                          "captures_noisy", "survival_noisy"]
+                if use_denoiser:
+                    for t_start in t_start_list:
+                        header += ["reward_pred_with_diff_t{}".format(t_start),
+                                   "reward_prey_with_diff_t{}".format(t_start),
+                                   "captures_diff_t{}".format(t_start),
+                                   "survival_diff_t{}".format(t_start)]
+                    header += ["best_reward_pred_with_diffusion", "best_reward_prey_with_diffusion",
+                               "pct_inc_pred_vs_no_diffusion", "pct_inc_prey_vs_no_diffusion"]
+                if arglist.eval_diffusion_policy:
+                    header += ["reward_pred_diffusion_policy", "reward_prey_diffusion_policy"]
+            elif arglist.benchmark:
                 header = ["noise_mu", "action_noise_std",
                           "reward_pred_no_noise", "reward_prey_no_noise",
                           "reward_pred_noise_no_diffusion", "reward_prey_noise_no_diffusion",
