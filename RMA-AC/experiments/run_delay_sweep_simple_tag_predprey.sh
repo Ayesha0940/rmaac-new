@@ -34,7 +34,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 MODEL_DIR="${SCRIPT_DIR}/model"
 DIFFUSION_MODEL="${SCRIPT_DIR}/diffusion_models/${SCENARIO}_m3ddpg.pt"
 
-NUM_TEST_EPISODES="${NUM_TEST_EPISODES:-200}"
+NUM_TEST_EPISODES="${NUM_TEST_EPISODES:-800}"
 DIFFUSION_STEPS=100
 T_START_LIST="20 40"
 DELAY_K_LIST="1 2 3 5 8"
@@ -73,7 +73,7 @@ for SEED in "${SEEDS[@]}"; do
     OUT_DIR="${SCRIPT_DIR}/../../noise_sweeps/delay_sweeps/seed${SEED}/predprey"
     mkdir -p "${LOG_DIR}" "${OUT_DIR}"
 
-    for SUFFIX in maddpg earnie rmaac m3ddpg; do
+    for SUFFIX in maddpg earnie rmaac; do
         VARIANT="${VARIANT_FLAG[$SUFFIX]}"
         EXP_NAME="${SCENARIO}__${SUFFIX}best"
         BASE_CKPT="${MODEL_DIR}/${EXP_NAME}.index"
@@ -105,8 +105,7 @@ for SEED in "${SEEDS[@]}"; do
             --diffusion-steps      "${DIFFUSION_STEPS}" \
             --t-start-list ${T_START_LIST}       \
             --benchmark                          \
-            --seed        "${SEED}"              \
-        2>&1 | tee "${LOG_FILE}"
+            --seed        "${SEED}"              
 
         mv "${EXP_NAME}_delay_sweep.csv" "${OUT_DIR}/"
         echo "[$(timestamp)] [DONE] ${EXP_NAME} → ${OUT_DIR}/${EXP_NAME}_delay_sweep.csv"

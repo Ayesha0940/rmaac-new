@@ -12,7 +12,7 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 EXPERIMENTS_DIR="$PROJECT_ROOT/experiments"
 MODEL_DIR="${MODEL_DIR:-$EXPERIMENTS_DIR/model}"
 DIFFUSION_MODELS_DIR="${DIFFUSION_MODELS_DIR:-$EXPERIMENTS_DIR/diffusion_models}"
-SEEDS=(49)
+SEEDS=(48)
 NUM_TEST_EPISODES="${NUM_TEST_EPISODES:-800}"
 
 declare -A SCENARIO_NUM_ADVERSARIES
@@ -118,8 +118,7 @@ for SCENARIO in "${SCENARIOS[@]}"; do
                 --diffusion-steps      100 \
                 --t-start-list         20 40 \
                 --benchmark \
-                --seed                 "$SEED") \
-            2>&1 | tee "$LOG_FILE"
+                --seed                 "$SEED") 
 
             mv "$EXPERIMENTS_DIR/$CSV_FILE" "$OUT_DIR/"
             echo "[$(timestamp)] [DONE] $EXP_NAME  mu=$MU → $OUT_DIR/$CSV_FILE"

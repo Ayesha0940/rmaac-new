@@ -7,8 +7,8 @@ from matplotlib.lines import Line2D
 from matplotlib.ticker import MaxNLocator
 import pandas as pd
 
-DATA_DIR = Path(__file__).parent / "guassian_noise" / "seed49" / "predprey"
-OUT_DIR  = Path(__file__).parent / "plots"
+NOISE_DIR = Path(__file__).parent
+OUT_DIR   = NOISE_DIR / "plots"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 plt.rcParams.update({
@@ -42,65 +42,160 @@ COLORS = {
 }
 ALGO_ORDER = ["earniebest", "m3ddpgbest", "maddpgbest", "rmaacbest"]
 
-FILE_RE = re.compile(r"^(simple_.+?)__(.+?)(?:_mu[-\d.]+)?_actstd_tstart_sweep\.csv$")
+NOISE_RE = re.compile(r"^(simple_.+?)__(.+?)(?:_mu[-\d.]+)?_actstd_tstart_sweep\.csv$")
+DELAY_RE = re.compile(r"^(simple_.+?)__(.+?)_delay_sweep\.csv$")
+FAULT_RE = re.compile(r"^(simple_.+?)__(.+?)_stuck_at_sweep\.csv$")
 
-# ── load ──────────────────────────────────────────────────────────────────────
-algo_dfs = defaultdict(list)
-for f in sorted(DATA_DIR.glob("*.csv")):
-    m = FILE_RE.match(f.name)
+# Columns to keep from delay/fault CSVs (t20/t40 intermediates dropped after computing best)
+_DF_COLS = [
+    "reward_pred_noisy", "reward_prey_noisy",
+    "captures_noisy", "survival_noisy",
+    "captures_diff_t20", "captures_diff_t40",
+    "survival_diff_t20", "survival_diff_t40",
+    "best_reward_pred_with_diffusion", "best_reward_prey_with_diffusion",
+]
+# Columns to keep from noise CSVs
+_NOISE_COLS = [
+    "noise_mu", "action_noise_std",
+    "reward_pred_noise_no_diffusion", "reward_prey_noise_no_diffusion",
+    "captures_noisy", "survival_noisy",
+    "captures_diff_t20", "captures_diff_t40",
+    "survival_diff_t20", "survival_diff_t40",
+    "best_reward_pred_with_diffusion", "best_reward_prey_with_diffusion",
+]
+
+
+def _add_best_cap_surv(df):
+    df["best_captures_with_diffusion"] = df[["captures_diff_t20", "captures_diff_t40"]].max(axis=1)
+    df["best_survival_with_diffusion"]  = df[["survival_diff_t20",  "survival_diff_t40"]].max(axis=1)
+    return df.drop(columns=["captures_diff_t20", "captures_diff_t40",
+                             "survival_diff_t20",  "survival_diff_t40"])
+
+
+# ── load all seeds ────────────────────────────────────────────────────────────
+
+_noise_raw = defaultdict(list)
+for f in sorted((NOISE_DIR / "guassian_noise").glob("*/predprey/*.csv")):
+    m = NOISE_RE.match(f.name)
     if not m or m.group(2) not in ALGO_MAP:
         continue
-    df = pd.read_csv(f)[["noise_mu", "action_noise_std",
-                          "reward_prey_noise_no_diffusion",
-                          "best_reward_prey_with_diffusion"]]
+    df = pd.read_csv(f)[_NOISE_COLS]
     df["noise_mu"] = df["noise_mu"].round().astype(int)
-    algo_dfs[m.group(2)].append(df)
+    _noise_raw[m.group(2)].append(_add_best_cap_surv(df))
 
-# merge mu files per algo
-merged = {}
-for algo_key, dfs in algo_dfs.items():
-    merged[algo_key] = pd.concat(dfs, ignore_index=True).sort_values(
-        ["noise_mu", "action_noise_std"])
+_delay_raw = defaultdict(list)
+for f in sorted((NOISE_DIR / "delay_sweeps").glob("*/predprey/*.csv")):
+    m = DELAY_RE.match(f.name)
+    if not m or m.group(2) not in ALGO_MAP:
+        continue
+    df = pd.read_csv(f)[["delay_k"] + _DF_COLS]
+    _delay_raw[m.group(2)].append(_add_best_cap_surv(df))
 
-# ── plot ──────────────────────────────────────────────────────────────────────
-fig, axes = plt.subplots(1, 3, figsize=(7.16, 2.6), sharex=True)
-fig.suptitle("Predator–Prey (simple_tag) — prey reward", fontsize=8, fontweight="bold")
+_fault_raw = defaultdict(list)
+for f in sorted((NOISE_DIR / "actuation_fault").glob("*/predprey/*.csv")):
+    m = FAULT_RE.match(f.name)
+    if not m or m.group(2) not in ALGO_MAP:
+        continue
+    df = pd.read_csv(f)[["sp_prob"] + _DF_COLS]
+    _fault_raw[m.group(2)].append(_add_best_cap_surv(df))
 
-legend_handles, legend_labels = [], []
+# ── aggregate across seeds ────────────────────────────────────────────────────
 
-for ax_idx, mu_val in enumerate([-1, 0, 1]):
-    ax = axes[ax_idx]
-    ax.set_title(f"Biased noise $\\mu={'+' if mu_val > 0 else ''}{mu_val}$",
-                 fontweight="bold", pad=3)
-    ax.set_xlabel(r"$\alpha$")
-    ax.grid(True, alpha=0.3)
-    ax.tick_params(length=2, pad=1.5)
-    ax.yaxis.set_major_locator(MaxNLocator(nbins=4))
-    ax.xaxis.set_major_locator(MaxNLocator(nbins=5))
-    if ax_idx == 0:
-        ax.set_ylabel("Prey reward")
+_METRICS = [
+    "reward_pred_noisy", "reward_prey_noisy",
+    "captures_noisy", "survival_noisy",
+    "best_reward_pred_with_diffusion", "best_reward_prey_with_diffusion",
+    "best_captures_with_diffusion", "best_survival_with_diffusion",
+]
+_NOISE_METRICS = [
+    "reward_pred_noise_no_diffusion", "reward_prey_noise_no_diffusion",
+    "captures_noisy", "survival_noisy",
+    "best_reward_pred_with_diffusion", "best_reward_prey_with_diffusion",
+    "best_captures_with_diffusion", "best_survival_with_diffusion",
+]
 
-    for algo_key in ALGO_ORDER:
-        if algo_key not in merged:
-            continue
-        subset = merged[algo_key][merged[algo_key]["noise_mu"] == mu_val] \
-                     .sort_values("action_noise_std")
+
+def _agg(dfs, x_col, y_cols):
+    combined = pd.concat(dfs, ignore_index=True)
+    return combined.groupby(x_col)[y_cols].agg(["mean", "std"]).reset_index()
+
+
+delay_agg = {k: _agg(v, "delay_k", _METRICS) for k, v in _delay_raw.items()}
+fault_agg = {k: _agg(v, "sp_prob", _METRICS) for k, v in _fault_raw.items()}
+
+noise_agg = {}   # mu_val -> {algo_key: agg_df}
+for mu_val in [-1, 0, 1]:
+    mu_map = {}
+    for algo_key, dfs in _noise_raw.items():
+        combined = pd.concat(dfs, ignore_index=True)
+        subset = combined[combined["noise_mu"] == mu_val]
         if subset.empty:
             continue
-        display = ALGO_MAP[algo_key]
-        color = COLORS[display]
-        x = subset["action_noise_std"]
+        agg = subset.groupby("action_noise_std")[_NOISE_METRICS].agg(["mean", "std"]).reset_index()
+        mu_map[algo_key] = agg
+    if mu_map:
+        noise_agg[mu_val] = mu_map
 
-        (line_nd,) = ax.plot(x, subset["reward_prey_noise_no_diffusion"],
-                             color=color, linestyle="-", linewidth=1.0)
-        (line_wd,) = ax.plot(x, subset["best_reward_prey_with_diffusion"],
-                             color=color, linestyle=":", linewidth=1.1)
+# ── row/column specs ──────────────────────────────────────────────────────────
 
-        label_nd = f"{display}: no diffusion"
-        label_wd = f"{display}: with diffusion"
-        if label_nd not in legend_labels:
-            legend_handles += [line_nd, line_wd]
-            legend_labels  += [label_nd, label_wd]
+# (row label, y_nd for delay/fault, y_nd for noise, y_wd shared)
+ROWS = [
+    ("Predator reward", "reward_pred_noisy",           "reward_pred_noise_no_diffusion", "best_reward_pred_with_diffusion"),
+    ("Prey reward",     "reward_prey_noisy",           "reward_prey_noise_no_diffusion", "best_reward_prey_with_diffusion"),
+    ("Captures",        "captures_noisy",              "captures_noisy",                 "best_captures_with_diffusion"),
+    ("Survival",        "survival_noisy",              "survival_noisy",                 "best_survival_with_diffusion"),
+]
+
+# (col title, algo_dfs dict, x_col, xlabel, is_noise)
+COLUMNS = [
+    ("Delay ($k$ steps)",      delay_agg,          "delay_k",          "$k$",                       False),
+    ("Actuation fault ($p$)",  fault_agg,          "sp_prob",          "$p_\\mathrm{stuck}$",        False),
+    ("Biased noise $\\mu=-1$", noise_agg.get(-1, {}), "action_noise_std", r"$\alpha$",               True),
+    ("Biased noise $\\mu=0$",  noise_agg.get(0,  {}), "action_noise_std", r"$\alpha$",               True),
+    ("Biased noise $\\mu=+1$", noise_agg.get(1,  {}), "action_noise_std", r"$\alpha$",               True),
+]
+
+# ── plot helper ───────────────────────────────────────────────────────────────
+
+def plot_lines(ax, algo_dfs, x_col, y_nd_col, y_wd_col):
+    for algo_key in ALGO_ORDER:
+        if algo_key not in algo_dfs:
+            continue
+        df = algo_dfs[algo_key]
+        color = COLORS[ALGO_MAP[algo_key]]
+        x = df[x_col]
+        for y_col, ls in [(y_nd_col, "-"), (y_wd_col, ":")]:
+            mean = df[(y_col, "mean")]
+            std  = df[(y_col, "std")].fillna(0)
+            ax.plot(x, mean, color=color, linestyle=ls, linewidth=1.0)
+            ax.fill_between(x, mean - std, mean + std,
+                            color=color, alpha=0.12, linewidth=0)
+
+# ── figure ────────────────────────────────────────────────────────────────────
+
+n_rows = len(ROWS)
+fig, axes = plt.subplots(n_rows, 5, figsize=(7.16, 4.5), sharex=False)
+fig.suptitle("Predator–Prey (simple_tag)", fontsize=8, fontweight="bold", y=1.005)
+
+for row_idx, (row_label, y_nd_df, y_nd_noise, y_wd) in enumerate(ROWS):
+    for col_idx, (col_title, algo_dfs, x_col, xlabel, is_noise) in enumerate(COLUMNS):
+        ax = axes[row_idx, col_idx]
+        ax.grid(True, alpha=0.3)
+        ax.tick_params(length=2, pad=1.5)
+        ax.yaxis.set_major_locator(MaxNLocator(nbins=3))
+        ax.xaxis.set_major_locator(MaxNLocator(nbins=5))
+
+        if row_idx == 0:
+            ax.set_title(col_title, fontweight="bold", pad=3)
+        if row_idx == n_rows - 1:
+            ax.set_xlabel(xlabel)
+        if col_idx == 0:
+            ax.set_ylabel(row_label, rotation=0, ha="right", va="center", labelpad=8)
+
+        y_nd = y_nd_noise if is_noise else y_nd_df
+        plot_lines(ax, algo_dfs, x_col, y_nd, y_wd)
+
+# ── compact legend ────────────────────────────────────────────────────────────
 
 color_handles = [Line2D([], [], color=COLORS[ALGO_MAP[k]], lw=1.5,
                         label=ALGO_MAP[k]) for k in ALGO_ORDER]
@@ -110,12 +205,13 @@ style_handles = [
 ]
 fig.legend(handles=color_handles + style_handles,
            loc="lower center", ncol=6, frameon=False,
-           bbox_to_anchor=(0.5, -0.02), columnspacing=1.2, handlelength=1.8)
+           bbox_to_anchor=(0.5, -0.015), columnspacing=1.2, handlelength=1.8)
 
-fig.tight_layout(rect=(0, 0.08, 1, 1))
+fig.tight_layout(rect=(0, 0.02, 1, 1))
+fig.subplots_adjust(wspace=0.35, hspace=0.18)
 
 for ext, kw in (("pdf", {}), ("png", {"dpi": 300})):
-    out_path = OUT_DIR / f"predprey_seed49.{ext}"
+    out_path = OUT_DIR / f"predprey_all_metrics.{ext}"
     fig.savefig(out_path, bbox_inches="tight", **kw)
     print(f"Saved {out_path}")
 plt.close(fig)

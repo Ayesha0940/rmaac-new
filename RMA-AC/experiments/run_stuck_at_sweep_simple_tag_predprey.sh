@@ -74,7 +74,7 @@ for SEED in "${SEEDS[@]}"; do
     OUT_DIR="${SCRIPT_DIR}/../../noise_sweeps/actuation_fault/seed${SEED}/predprey"
     mkdir -p "${LOG_DIR}" "${OUT_DIR}"
 
-    for SUFFIX in m3ddpg; do
+    for SUFFIX in maddpg earnie rmaac; do
         VARIANT="${VARIANT_FLAG[$SUFFIX]}"
         EXP_NAME="${SCENARIO}__${SUFFIX}best"
         BASE_CKPT="${MODEL_DIR}/${EXP_NAME}.index"
@@ -106,8 +106,7 @@ for SEED in "${SEEDS[@]}"; do
             --diffusion-steps      "${DIFFUSION_STEPS}" \
             --t-start-list ${T_START_LIST}       \
             --benchmark                          \
-            --seed        "${SEED}"              \
-        2>&1 | tee "${LOG_FILE}"
+            --seed        "${SEED}"              
 
         mv "${EXP_NAME}_stuck_at_sweep.csv" "${OUT_DIR}/"
         echo "[$(timestamp)] [DONE] ${EXP_NAME} → ${OUT_DIR}/${EXP_NAME}_stuck_at_sweep.csv"
