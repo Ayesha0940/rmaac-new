@@ -1,0 +1,5 @@
+noise_mu,action_noise_std,reward_pred_no_noise,reward_prey_no_noise,reward_pred_noise_no_diffusion,reward_prey_noise_no_diffusion,captures_noisy,survival_noisy,reward_pred_with_diff_t20,reward_prey_with_diff_t20,captures_diff_t20,survival_diff_t20,reward_pred_with_diff_t40,reward_prey_with_diff_t40,captures_diff_t40,survival_diff_t40,best_reward_pred_with_diffusion,best_reward_prey_with_diffusion,pct_inc_pred_vs_no_diffusion,pct_inc_prey_vs_no_diffusion
+0.00,0.00,85.50,-30.24,79.12,-28.32,2.64,16.07,92.70,-32.27,3.09,15.45,59.74,-22.78,1.99,16.92,92.70,-22.78,17.16,19.58
+0.00,1.00,85.50,-30.24,53.55,-24.25,1.78,16.20,61.91,-25.37,2.06,15.23,51.15,-24.25,1.71,15.49,61.91,-24.25,15.62,-0.03
+0.00,2.00,85.50,-30.24,51.23,-28.16,1.71,15.36,54.30,-27.59,1.81,15.77,49.01,-27.73,1.63,15.87,54.30,-27.59,6.00,1.99
+0.00,3.00,85.50,-30.24,49.50,-30.07,1.65,15.69,52.91,-30.37,1.76,15.61,46.09,-29.45,1.54,16.17,52.91,-29.45,6.89,2.07

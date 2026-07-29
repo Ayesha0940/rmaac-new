@@ -55,10 +55,10 @@ SCENARIOS=(
 
 # Each entry: "VARIANT_FLAG:EXP_SUFFIX"
 VARIANTS=(
-    # "maddpg-none:maddpg"
-    # "maddpg-earnie:earnie"
-    # "maddpg-act_adv:rmaac"
-    "m3ddpg:m3ddpg"
+    "maddpg-none:maddpg"
+    "maddpg-earnie:earnie"
+    "maddpg-act_adv:rmaac"
+    # "m3ddpg:m3ddpg"
 )
 
 # Biased Gaussian noise means to evaluate
