@@ -1,0 +1,4 @@
+sp_prob,reward_no_filter,reward_ema,reward_median,reward_kalman,ema_best_hparam,median_best_hparam,kalman_best_hparam
+0.0,-30.39,-27.29,-30.15,-27.83,alpha=0.95,window=3,"q=0.2,r=0.05"
+0.5,-132.41,-135.76,-140.33,-119.69,alpha=0.95,window=3,"q=0.05,r=0.01"
+1.0,-383.48,-380.74,-388.00,-383.05,alpha=0.95,window=3,"q=0.05,r=0.05"

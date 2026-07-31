@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"import py_compile; py_compile.compile\\('filter_eval.py', doraise=True\\); print\\('OK'\\)\")",
+      "Bash(tmux -V)",
+      "Bash(tmux list-sessions *)",
+      "Bash(python3 -c ' *)",
+      "Bash(tmux new-session *)",
+      "Bash(python3 -c \"import py_compile; py_compile.compile\\('run_full_filter_sweeps_biased.py', doraise=True\\); print\\('OK'\\)\")",
+      "Bash(tmux kill-session *)",
+      "Bash(cat /tmp/oracle_dryrun/noise/seed0/simple_adversary__maddpgbest_gauss_oracle_sweep.csv; rm -rf /tmp/oracle_dryrun)",
+      "Bash(python3 -c \"import py_compile; py_compile.compile\\('plot_filter_combined.py', doraise=True\\); print\\('OK'\\)\")",
+      "Bash(python3 -c \"import py_compile; py_compile.compile\\('plot_diffusion_and_filters_combined.py', doraise=True\\); print\\('OK'\\)\")",
+      "Bash(python3 plot_diffusion_and_filters_combined.py)",
+      "Bash(tmux new-session -d -s filter_multiseed -c /home/axs0940/rmaac-new/RMA-AC/experiments 'export SUPPRESS_MA_PROMPT=1 CUDA_VISIBLE_DEVICES='\\\\'''\\\\'' *)"
+    ],
+    "additionalDirectories": [
+      "/tmp/oracle_dryrun"
+    ]
+  }
+}

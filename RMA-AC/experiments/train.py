@@ -185,6 +185,25 @@ def parse_args():
                              "role always plays its raw policy action (only meaningful "
                              "with --benchmark)")
 
+    # --- classical action-recovery filters (EMA / median / Kalman) ---
+    # Used by the standalone filter_eval.py sweep script (see action_filters.py).
+    parser.add_argument("--filter-list", type=str, nargs="+",
+                        default=["ema", "median", "kalman"],
+                        choices=["ema", "median", "kalman"],
+                        help="which recovery filters to evaluate in a filter_eval.py sweep")
+    parser.add_argument("--ema-alpha", type=float, default=0.3,
+                        help="EMA smoothing factor (higher = less smoothing)")
+    parser.add_argument("--median-window", type=int, default=5,
+                        help="sliding window length (in steps) for the median filter")
+    parser.add_argument("--kalman-q", type=float, default=0.05,
+                        help="Kalman filter process-noise variance (actions are "
+                             "non-stationary control signals, not a fixed point, so "
+                             "this needs to be large enough that the filter doesn't "
+                             "lag behind a moving action; too small and the Kalman "
+                             "gain decays to ~0 and the filter freezes on stale values)")
+    parser.add_argument("--kalman-r", type=float, default=0.1,
+                        help="Kalman filter measurement-noise variance")
+
     return parser.parse_args()
 
 

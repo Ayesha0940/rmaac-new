@@ -1,0 +1,4 @@
+action_noise_std,reward_no_filter,reward_ema,reward_median,reward_kalman,ema_best_hparam,median_best_hparam,kalman_best_hparam
+0.0,-412.44,-407.71,-419.46,-405.42,alpha=0.95,window=3,"q=0.2,r=0.2"
+1.5,-582.64,-580.34,-625.87,-580.93,alpha=0.95,window=3,"q=1.0,r=0.05"
+3.0,-674.29,-678.35,-756.56,-675.78,alpha=0.95,window=3,"q=1.0,r=0.01"

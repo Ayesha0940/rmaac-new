@@ -1,0 +1,4 @@
+filter,best_hparam,mean_reward,baseline_mean_reward,pct_improvement,oracle_mean_reward,oracle_pct_improvement,oracle_gap
+median,window=3,-632.72,-591.78,-6.92,-632.04,-6.80,0.69
+ema,alpha=0.9,-592.00,-591.78,-0.04,-588.24,0.60,3.76
+kalman,"q=1.0,r=0.02",-587.61,-591.78,0.70,-578.99,2.16,8.62

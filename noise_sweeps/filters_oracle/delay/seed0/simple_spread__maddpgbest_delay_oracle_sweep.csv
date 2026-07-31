@@ -1,0 +1,4 @@
+delay_k,reward_no_filter,reward_ema,reward_median,reward_kalman,ema_best_hparam,median_best_hparam,kalman_best_hparam
+0,-407.41,-408.20,-413.98,-405.33,alpha=0.6,window=3,"q=1.0,r=0.01"
+3,-486.59,-485.16,-529.67,-485.97,alpha=0.95,window=3,"q=1.0,r=0.05"
+8,-676.27,-677.23,-735.52,-675.67,alpha=0.95,window=3,"q=1.0,r=0.05"
