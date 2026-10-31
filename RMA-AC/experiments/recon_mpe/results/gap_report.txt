@@ -1,0 +1,24 @@
+"random" = uniform over the projection bounds [-1, 1] per action dim (the policy's own actions lie in [0, 1]), for the protocol's agents only; other agents clean; no fault; 800 episodes; seeds 0-2.
+
+task                      varied    level           J(clean)     J(BC) J(random) s0/s1/s2 mean       G      G3
+simple_speaker_listener   speaker   full              -33.69    -33.68 -68.1/-66.7/-67.6 -67.5  -0.000        
+simple_speaker_listener   speaker   removed           -33.69    -67.88 -68.1/-66.7/-67.6 -67.5   1.012   0.969
+simple_speaker_listener   speaker   bottleneck-1      -33.69    -33.66 -68.1/-66.7/-67.6 -67.5  -0.001        
+simple_speaker_listener   speaker   bottleneck-2      -33.69    -33.64 -68.1/-66.7/-67.6 -67.5  -0.001        
+simple_speaker_listener   listener  full              -33.69    -33.20-184.2/-186.0/-179.4 -183.2  -0.003        
+simple_speaker_listener   listener  removed           -33.69    -84.91-184.2/-186.0/-179.4 -183.2   0.343        
+simple_speaker_listener   listener  bottleneck-1      -33.69    -92.76-184.2/-186.0/-179.4 -183.2   0.395   0.370
+simple_speaker_listener   listener  bottleneck-2      -33.69    -33.33-184.2/-186.0/-179.4 -183.2  -0.002        
+simple_speaker_listener   listener  bottleneck-4      -33.69    -32.22-184.2/-186.0/-179.4 -183.2  -0.010        
+simple_adversary          good      full                7.02      6.89     -4.5/-4.4/-4.3 -4.4   0.011        
+simple_adversary          good      removed             7.02      3.20     -4.5/-4.4/-4.3 -4.4   0.335   0.331
+simple_adversary          good      bottleneck-1        7.02      3.97     -4.5/-4.4/-4.3 -4.4   0.267   0.187
+simple_adversary          good      bottleneck-2        7.02      6.73     -4.5/-4.4/-4.3 -4.4   0.026        
+simple_adversary          good      bottleneck-4        7.02      6.94     -4.5/-4.4/-4.3 -4.4   0.007        
+simple_spread             shared    full             -433.83   -469.41-707.6/-720.6/-708.9 -712.3   0.128        
+simple_spread             shared    coarse-8         -433.83   -526.77-707.6/-720.6/-708.9 -712.3   0.334        
+simple_spread             shared    coarse-4         -433.83   -559.77-707.6/-720.6/-708.9 -712.3   0.452   0.460
+simple_spread             shared    removed          -433.83   -648.96-707.6/-720.6/-708.9 -712.3   0.772        
+simple_spread             shared    bottleneck-1     -433.83   -583.18-707.6/-720.6/-708.9 -712.3   0.536        
+simple_spread             shared    bottleneck-2     -433.83   -565.20-707.6/-720.6/-708.9 -712.3   0.472   0.441
+simple_spread             shared    bottleneck-4     -433.83   -534.24-707.6/-720.6/-708.9 -712.3   0.361   0.355

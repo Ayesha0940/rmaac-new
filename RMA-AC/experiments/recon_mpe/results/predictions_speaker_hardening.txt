@@ -1,0 +1,18 @@
+REGISTERED PREDICTION -- MPE Speaker-Listener reconstructor-hardening run (Config B, metric = reward)
+Written 2026-10-12, before any C1-gauss model for this level was trained or evaluated.
+
+Level: simple_speaker_listener, speaker 'removed' (target removed from the speaker's input); only the speaker is faulted
+and corrected. Seeds 0-4; fault cells gauss 0/1/3, biased +1, delay 3/8, stuck 0.5/1; 800 episodes.
+Reused (not recomputed): diffusion, BC, B_mean, clean, noisy, C1, C1-t, C1-linear, C1-linear-t rows from the
+confirm run (il.csv + Step 2 + confirm parts). New: C1-gauss = reconstructor trained only on
+clip(a + sigma*eps, -1, 1), sigma ~ U(0, 3), MSE to a_norm (train_recon method 'c2'), evaluated unscaled and with
+sqrt(abar_t) scaling (S1, t in {5,10,20,30,40,60,80,99}); best variant per cell and seed selected after the fact.
+
+Expanded reconstructor = best of {C1, C1-t, C1-linear, C1-linear-t, C1-gauss} per cell and seed.
+Qualifying cells (il.csv seed 0 rule): gauss 1, gauss 3, biased +1.
+v2 per cell: WIN if mean(diffusion) - mean(X) > max(sd_diffusion, sd_X) for every X in {noisy, BC, B_mean,
+expanded reconstructor} (5-seed sd); LOSE if any X beats diffusion by that margin; else TIE.
+
+PREDICTION: diffusion WINs in >= 2 of the 3 qualifying cells and LOSEs in none.
+OVERTURN CHECK: if mean(C1-gauss) - mean(diffusion) > max(sd_C1-gauss, sd_diffusion) in ANY qualifying cell, the
+headline "diffusion beats the strongest reconstructor on Speaker" is overturned and will be reported as such.

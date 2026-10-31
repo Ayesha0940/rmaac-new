@@ -1,0 +1,48 @@
+levels_manifest_mpe.txt -- built from report_extract_mpe.csv (784 rows) and 529 existing result files; nothing re-run.
+metric = reward (good-agent reward for simple_adversary, summed over agents otherwise); sd = across-seed sd (blank when n_seeds = 1).
+
+DISTINCT onboard_levels (21), with the methods present and the seeds available:
+  simple_adversary/good/bottleneck-1                   n_seeds=[5]  methods=clean,noisy,BC,B_mean,denoiser,reconstructor
+  simple_adversary/good/bottleneck-2                   n_seeds=[1]  methods=clean,noisy,BC,denoiser
+  simple_adversary/good/bottleneck-4                   n_seeds=[1]  methods=clean,noisy,BC,denoiser
+  simple_adversary/good/full                           n_seeds=[1]  methods=clean,noisy,BC,denoiser
+  simple_adversary/good/removed                        n_seeds=[5]  methods=clean,noisy,BC,B_mean,denoiser,reconstructor
+  simple_speaker_listener/listener/bottleneck-1        n_seeds=[5]  methods=clean,noisy,BC,B_mean,denoiser,reconstructor
+  simple_speaker_listener/listener/bottleneck-2        n_seeds=[1]  methods=clean,noisy,BC,denoiser
+  simple_speaker_listener/listener/bottleneck-4        n_seeds=[1]  methods=clean,noisy,BC,denoiser
+  simple_speaker_listener/listener/full                n_seeds=[1]  methods=clean,noisy,BC,denoiser
+  simple_speaker_listener/listener/removed             n_seeds=[1]  methods=clean,noisy,BC,denoiser
+  simple_speaker_listener/speaker/bottleneck-1         n_seeds=[1]  methods=clean,noisy,BC,denoiser
+  simple_speaker_listener/speaker/bottleneck-2         n_seeds=[1]  methods=clean,noisy,BC,denoiser
+  simple_speaker_listener/speaker/full                 n_seeds=[1]  methods=clean,noisy,BC,denoiser
+  simple_speaker_listener/speaker/removed              n_seeds=[5]  methods=clean,noisy,BC,B_mean,denoiser,reconstructor
+  simple_spread/shared/bottleneck-1                    n_seeds=[1]  methods=clean,noisy,BC,denoiser
+  simple_spread/shared/bottleneck-2                    n_seeds=[5]  methods=clean,noisy,BC,B_mean,denoiser,reconstructor
+  simple_spread/shared/bottleneck-4                    n_seeds=[5]  methods=clean,noisy,BC,B_mean,denoiser,reconstructor
+  simple_spread/shared/coarse-4                        n_seeds=[3]  methods=clean,noisy,BC,B_mean,denoiser,reconstructor
+  simple_spread/shared/coarse-8                        n_seeds=[1]  methods=clean,noisy,BC,denoiser
+  simple_spread/shared/full                            n_seeds=[1]  methods=clean,noisy,BC,denoiser
+  simple_spread/shared/removed                         n_seeds=[1]  methods=clean,noisy,BC,denoiser
+
+PERTURBATION TYPES and strength values (sorted), with suggested tag:
+  clean     [0.0] (no fault)   []
+  gaussian  [1.0, 3.0] -> mild = 1.0, severe = 3.0   [action-noise std]
+  bias      [1.0] -> single value (mild = severe)   [mean offset +1 with std 1 (fixed)]
+  delay     [3.0, 8.0] -> mild = 3.0, severe = 8.0   [steps k]
+  stuck     [0.5, 1.0] -> mild = 0.5, severe = 1.0   [probability p per dim]
+
+WINS OVER THE RECONSTRUCTOR per onboard_level (7 faulted cells; WIN if mean(den) - mean(rec) > max(sd_den, sd_rec),
+LOSE if mean(rec) - mean(den) > that margin, else TIE). Rankable = reconstructor present and n_seeds >= 3.
+onboard_level                                         WIN  TIE  LOSE mean(d-r)  n_seeds
+simple_speaker_listener/speaker/removed                 2    5     0      0.86        5
+simple_adversary/good/removed                           1    4     2     -0.03        5
+simple_spread/shared/coarse-4                           1    3     3     -5.28        3
+simple_spread/shared/bottleneck-4                       0    7     0     -8.32        5
+simple_spread/shared/bottleneck-2                       0    4     3     -7.45        5
+simple_adversary/good/bottleneck-1                      0    3     4     -0.32        5
+simple_speaker_listener/listener/bottleneck-1           0    2     5     -2.79        5
+not rankable (no reconstructor rows or n_seeds < 3): simple_adversary/good/bottleneck-2; simple_adversary/good/bottleneck-4; simple_adversary/good/full; simple_speaker_listener/listener/bottleneck-2; simple_speaker_listener/listener/bottleneck-4; simple_speaker_listener/listener/full; simple_speaker_listener/listener/removed; simple_speaker_listener/speaker/bottleneck-1; simple_speaker_listener/speaker/bottleneck-2; simple_speaker_listener/speaker/full; simple_spread/shared/bottleneck-1; simple_spread/shared/coarse-8; simple_spread/shared/full; simple_spread/shared/removed
+
+SUGGESTED TO FEATURE (most WINs over the reconstructor, ties broken by fewer LOSEs then larger mean margin): simple_speaker_listener/speaker/removed; simple_adversary/good/removed; simple_spread/shared/coarse-4
+Reconstructor family per level (best-of over what exists): C1, C1-t where available; C1-linear, C1-linear-t for the six confirm-run levels;
+C1-gauss for adversary/good/removed, spread/shared/bottleneck-2 and speaker_listener/speaker/removed. Levels differ in family size.

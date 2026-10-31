@@ -1,0 +1,8 @@
+phase,scenario,varied,info_level,method,mode,t,fault,level,seed,reward_mean,reward_std,reward_adv_mean,reward_adv_std,reward_good_mean,reward_good_std,action_mse_per_agent,action_cos_per_agent,msg_acc,start_hash,fault_state_hash,n_episodes,seconds
+smoke,simple_speaker_listener,listener,bottleneck-1,bmean,1step,10,biased_gauss_mu+1,1.0,0,-150.77586438903205,148.52090027460446,,,,,0.000000|0.130268,1.000000|0.526770,1.0000,2206486474,3933557854,10,1.0
+smoke,simple_speaker_listener,listener,bottleneck-1,bmean,chain,10,biased_gauss_mu+1,1.0,0,-149.67337808504615,146.61968744637232,,,,,0.000000|0.127076,1.000000|0.535419,1.0000,2206486474,3933557854,10,0.9
+smoke,simple_speaker_listener,listener,bottleneck-1,bmean,1step,60,biased_gauss_mu+1,1.0,0,-129.02623326273323,139.86383872684786,,,,,0.000000|0.126025,1.000000|0.554006,1.0000,2206486474,3933557854,10,0.8
+smoke,simple_speaker_listener,listener,bottleneck-1,bmean,chain,60,biased_gauss_mu+1,1.0,0,-127.96718840001795,129.2612855365241,,,,,0.000000|0.146349,1.000000|0.472441,1.0000,2206486474,3933557854,10,1.2
+smoke,simple_speaker_listener,listener,bottleneck-1,c1,unscaled,,biased_gauss_mu+1,1.0,0,-92.87939386813993,117.21778512545534,,,,,0.000000|0.157475,1.000000|0.442606,1.0000,2206486474,3933557854,10,1.0
+smoke,simple_speaker_listener,listener,bottleneck-1,c1,scaled,10,biased_gauss_mu+1,1.0,0,-93.1727011411174,117.27785422717857,,,,,0.000000|0.156107,1.000000|0.445056,1.0000,2206486474,3933557854,10,1.0
+smoke,simple_speaker_listener,listener,bottleneck-1,c1,scaled,60,biased_gauss_mu+1,1.0,0,-101.30134945020036,117.26791154855512,,,,,0.000000|0.129838,1.000000|0.507742,1.0000,2206486474,3933557854,10,0.8

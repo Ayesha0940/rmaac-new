@@ -1,0 +1,5 @@
+noise_mu,action_noise_std,reward_no_noise,reward_noise_no_diffusion,reward_bc_reduced,best_reward_with_diffusion,best_reward_with_diffusion_full_obs,best_variant_reduced,best_variant_bc,restores,beats_bc
+1.00,0.00,-8.34,-25.54,-17.11,-17.01,-12.60,chain@40,chain@40,1,0
+1.00,1.00,-8.34,-19.87,-16.59,-14.62,-10.71,chain@40,chain@40,1,1
+1.00,2.00,-8.34,-23.89,-16.66,-15.12,-11.12,chain@40,chain@40,1,1
+1.00,3.00,-8.34,-26.87,-16.74,-15.60,-11.54,chain@40,chain@40,1,1

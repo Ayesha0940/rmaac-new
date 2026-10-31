@@ -12,7 +12,10 @@
       "Bash(python3 -c \"import py_compile; py_compile.compile\\('plot_filter_combined.py', doraise=True\\); print\\('OK'\\)\")",
       "Bash(python3 -c \"import py_compile; py_compile.compile\\('plot_diffusion_and_filters_combined.py', doraise=True\\); print\\('OK'\\)\")",
       "Bash(python3 plot_diffusion_and_filters_combined.py)",
-      "Bash(tmux new-session -d -s filter_multiseed -c /home/axs0940/rmaac-new/RMA-AC/experiments 'export SUPPRESS_MA_PROMPT=1 CUDA_VISIBLE_DEVICES='\\\\'''\\\\'' *)"
+      "Bash(tmux new-session -d -s filter_multiseed -c /home/axs0940/rmaac-new/RMA-AC/experiments 'export SUPPRESS_MA_PROMPT=1 CUDA_VISIBLE_DEVICES='\\\\'''\\\\'' *)",
+      "Bash(python3 -)",
+      "Bash(/home/axs0940/miniconda3/bin/python plot_decentralized_reduced_combined_dummy.py)",
+      "Bash(grep -E \"^bc_simple_[a-z_]+_full_[a-z]+_s0\\\\.pt$\")"
     ],
     "additionalDirectories": [
       "/tmp/oracle_dryrun"

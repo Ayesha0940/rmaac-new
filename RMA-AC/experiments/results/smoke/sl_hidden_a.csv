@@ -1,0 +1,3 @@
+phase,scenario,info_level,method,policy,fault,level,t_start,seed,reward_mean,reward_std,action_mse_per_agent,action_mse_det_per_agent,msg_acc,msg_acc_det,start_hash,fault_state_hash,n_episodes,seconds
+smoke,simple_speaker_listener,hidden,noisy,m3ddpg,noise,0.0,,0,-37.463959937868005,42.09016142814331,0.000000|0.000000,0.001666|0.031493,1.0000,0.9960,2206486474,1778628959,10,1.0
+smoke,simple_speaker_listener,hidden,noisy,m3ddpg,noise,0.0,,0,-37.463959937868005,42.09016142814331,0.000000|0.000000,0.001666|0.031493,1.0000,0.9960,2206486474,1778628959,10,1.1

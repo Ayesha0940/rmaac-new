@@ -1,0 +1,3 @@
+scenario,method,seed,reward_mean,reward_std,n_episodes,start_hash
+simple_speaker_listener,clean,0,-33.69,29.14,800,2554794061
+simple_speaker_listener,bc,0,-33.15,30.02,800,2554794061

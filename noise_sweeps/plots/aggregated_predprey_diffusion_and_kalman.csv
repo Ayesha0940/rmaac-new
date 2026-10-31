@@ -1,0 +1,433 @@
+metric,attack_type,algo,severity,reward_no_filter,reward_diffusion,reward_kalman
+Captures,actuation_fault,ERNIE,0.0,4.20±1.27,2.90±0.40,5.02±0.00
+Captures,actuation_fault,ERNIE,0.1,3.50±1.01,2.35±0.27,
+Captures,actuation_fault,ERNIE,0.25,2.52±0.53,1.66±0.20,
+Captures,actuation_fault,ERNIE,0.5,1.28±0.19,1.03±0.02,1.73±0.00
+Captures,actuation_fault,ERNIE,0.75,0.74±0.07,0.64±0.07,
+Captures,actuation_fault,ERNIE,1.0,0.43±0.03,0.46±0.09,0.48±0.00
+Captures,actuation_fault,M3DDPG,0.0,3.15±0.25,2.17±0.70,3.36±0.00
+Captures,actuation_fault,M3DDPG,0.1,2.74±0.28,1.78±0.67,
+Captures,actuation_fault,M3DDPG,0.25,1.93±0.14,1.35±0.34,
+Captures,actuation_fault,M3DDPG,0.5,1.18±0.15,0.84±0.11,1.30±0.00
+Captures,actuation_fault,M3DDPG,0.75,0.70±0.09,0.64±0.07,
+Captures,actuation_fault,M3DDPG,1.0,0.48±0.06,0.49±0.08,0.54±0.00
+Captures,actuation_fault,MADDPG,0.0,3.05±0.33,1.74±0.56,2.73±0.00
+Captures,actuation_fault,MADDPG,0.1,2.53±0.16,1.52±0.38,
+Captures,actuation_fault,MADDPG,0.25,1.95±0.07,1.22±0.42,
+Captures,actuation_fault,MADDPG,0.5,1.14±0.09,0.89±0.20,1.18±0.00
+Captures,actuation_fault,MADDPG,0.75,0.61±0.07,0.61±0.11,
+Captures,actuation_fault,MADDPG,1.0,0.42±0.02,0.45±0.02,0.45±0.00
+Captures,actuation_fault,RMAAC,0.0,5.16±0.04,3.28±0.32,5.40±0.00
+Captures,actuation_fault,RMAAC,0.1,4.12±0.21,2.62±0.21,
+Captures,actuation_fault,RMAAC,0.25,2.80±0.07,2.00±0.03,
+Captures,actuation_fault,RMAAC,0.5,1.40±0.10,1.20±0.03,1.46±0.00
+Captures,actuation_fault,RMAAC,0.75,0.83±0.07,0.76±0.05,
+Captures,actuation_fault,RMAAC,1.0,0.54±0.03,0.58±0.02,0.63±0.00
+Captures,biased_noise_neg,ERNIE,0.0,4.87±0.14,3.33±0.03,5.12±0.00
+Captures,biased_noise_neg,ERNIE,1.0,1.13±0.04,0.95±0.04,
+Captures,biased_noise_neg,ERNIE,1.5,,,0.93±0.00
+Captures,biased_noise_neg,ERNIE,2.0,0.66±0.01,0.65±0.01,
+Captures,biased_noise_neg,ERNIE,3.0,0.58±0.01,0.58±0.07,0.59±0.00
+Captures,biased_noise_neg,M3DDPG,0.0,3.35±0.00,2.60±0.06,3.32±0.00
+Captures,biased_noise_neg,M3DDPG,1.0,1.17±0.08,0.95±0.06,
+Captures,biased_noise_neg,M3DDPG,1.5,,,0.95±0.00
+Captures,biased_noise_neg,M3DDPG,2.0,0.72±0.03,0.70±0.04,
+Captures,biased_noise_neg,M3DDPG,3.0,0.58±0.01,0.57±0.01,0.61±0.00
+Captures,biased_noise_neg,MADDPG,0.0,2.77±0.06,2.17±0.15,2.76±0.00
+Captures,biased_noise_neg,MADDPG,1.0,0.92±0.06,0.86±0.03,
+Captures,biased_noise_neg,MADDPG,1.5,,,0.77±0.00
+Captures,biased_noise_neg,MADDPG,2.0,0.68±0.01,0.62±0.01,
+Captures,biased_noise_neg,MADDPG,3.0,0.53±0.01,0.54±0.04,0.56±0.00
+Captures,biased_noise_neg,RMAAC,0.0,4.88±0.03,3.63±0.04,5.14±0.00
+Captures,biased_noise_neg,RMAAC,1.0,1.33±0.01,1.15±0.01,
+Captures,biased_noise_neg,RMAAC,1.5,,,1.09±0.00
+Captures,biased_noise_neg,RMAAC,2.0,0.80±0.01,0.73±0.00,
+Captures,biased_noise_neg,RMAAC,3.0,0.64±0.07,0.64±0.04,0.66±0.00
+Captures,biased_noise_pos,ERNIE,0.0,4.80±0.10,3.25±0.19,0.03±0.00
+Captures,biased_noise_pos,ERNIE,1.0,1.10±0.05,0.96±0.04,
+Captures,biased_noise_pos,ERNIE,1.5,,,0.70±0.00
+Captures,biased_noise_pos,ERNIE,2.0,0.68±0.02,0.66±0.03,
+Captures,biased_noise_pos,ERNIE,3.0,0.56±0.01,0.56±0.06,0.59±0.00
+Captures,biased_noise_pos,M3DDPG,0.0,3.22±0.16,2.57±0.10,0.03±0.00
+Captures,biased_noise_pos,M3DDPG,1.0,1.16±0.00,0.94±0.02,
+Captures,biased_noise_pos,M3DDPG,1.5,,,0.75±0.00
+Captures,biased_noise_pos,M3DDPG,2.0,0.74±0.05,0.70±0.03,
+Captures,biased_noise_pos,M3DDPG,3.0,0.56±0.03,0.59±0.05,0.65±0.00
+Captures,biased_noise_pos,MADDPG,0.0,2.70±0.06,2.13±0.13,0.03±0.00
+Captures,biased_noise_pos,MADDPG,1.0,0.95±0.01,0.88±0.01,
+Captures,biased_noise_pos,MADDPG,1.5,,,0.64±0.00
+Captures,biased_noise_pos,MADDPG,2.0,0.66±0.05,0.65±0.04,
+Captures,biased_noise_pos,MADDPG,3.0,0.52±0.02,0.54±0.04,0.56±0.00
+Captures,biased_noise_pos,RMAAC,0.0,4.86±0.05,3.60±0.11,0.03±0.00
+Captures,biased_noise_pos,RMAAC,1.0,1.30±0.01,1.19±0.02,
+Captures,biased_noise_pos,RMAAC,1.5,,,0.83±0.00
+Captures,biased_noise_pos,RMAAC,2.0,0.78±0.03,0.72±0.01,
+Captures,biased_noise_pos,RMAAC,3.0,0.62±0.11,0.67±0.04,0.62±0.00
+Captures,delay,ERNIE,0.0,,,5.23±0.00
+Captures,delay,ERNIE,1.0,2.12±0.48,1.77±0.00,
+Captures,delay,ERNIE,2.0,1.46±0.07,1.33±0.01,
+Captures,delay,ERNIE,3.0,1.06±0.02,1.09±0.03,1.09±0.00
+Captures,delay,ERNIE,5.0,0.79±0.08,0.78±0.08,
+Captures,delay,ERNIE,8.0,0.60±0.08,0.57±0.04,0.61±0.00
+Captures,delay,M3DDPG,0.0,,,3.44±0.00
+Captures,delay,M3DDPG,1.0,1.86±0.31,1.35±0.42,
+Captures,delay,M3DDPG,2.0,1.47±0.21,1.10±0.36,
+Captures,delay,M3DDPG,3.0,1.11±0.11,0.92±0.19,1.21±0.00
+Captures,delay,M3DDPG,5.0,0.85±0.06,0.72±0.04,
+Captures,delay,M3DDPG,8.0,0.67±0.17,0.58±0.06,0.73±0.00
+Captures,delay,MADDPG,0.0,,,2.91±0.00
+Captures,delay,MADDPG,1.0,1.69±0.31,1.08±0.36,
+Captures,delay,MADDPG,2.0,1.24±0.18,0.91±0.28,
+Captures,delay,MADDPG,3.0,0.95±0.02,0.78±0.22,0.85±0.00
+Captures,delay,MADDPG,5.0,0.65±0.01,0.64±0.12,
+Captures,delay,MADDPG,8.0,0.54±0.04,0.53±0.13,0.57±0.00
+Captures,delay,RMAAC,0.0,,,5.18±0.00
+Captures,delay,RMAAC,1.0,2.37±0.13,1.82±0.08,
+Captures,delay,RMAAC,2.0,1.54±0.06,1.30±0.11,
+Captures,delay,RMAAC,3.0,1.07±0.23,1.14±0.08,1.30±0.00
+Captures,delay,RMAAC,5.0,0.79±0.16,0.91±0.06,
+Captures,delay,RMAAC,8.0,0.65±0.10,0.79±0.07,0.80±0.00
+Captures,noise,ERNIE,0.0,4.75±0.00,3.13±0.08,5.08±0.00
+Captures,noise,ERNIE,1.0,1.09±0.06,0.95±0.06,
+Captures,noise,ERNIE,1.5,,,0.82±0.00
+Captures,noise,ERNIE,2.0,0.70±0.01,0.66±0.02,
+Captures,noise,ERNIE,3.0,0.57±0.02,0.55±0.06,0.62±0.00
+Captures,noise,M3DDPG,0.0,3.23±0.07,2.64±0.01,3.46±0.00
+Captures,noise,M3DDPG,1.0,1.17±0.04,0.98±0.06,
+Captures,noise,M3DDPG,1.5,,,0.96±0.00
+Captures,noise,M3DDPG,2.0,0.71±0.01,0.72±0.00,
+Captures,noise,M3DDPG,3.0,0.56±0.01,0.60±0.00,0.67±0.00
+Captures,noise,MADDPG,0.0,2.71±0.13,2.23±0.14,2.92±0.00
+Captures,noise,MADDPG,1.0,0.95±0.04,0.88±0.08,
+Captures,noise,MADDPG,1.5,,,0.74±0.00
+Captures,noise,MADDPG,2.0,0.67±0.06,0.61±0.05,
+Captures,noise,MADDPG,3.0,0.54±0.03,0.54±0.07,0.56±0.00
+Captures,noise,RMAAC,0.0,4.78±0.21,3.50±0.06,5.17±0.00
+Captures,noise,RMAAC,1.0,1.29±0.00,1.25±0.00,
+Captures,noise,RMAAC,1.5,,,1.01±0.00
+Captures,noise,RMAAC,2.0,0.76±0.03,0.77±0.01,
+Captures,noise,RMAAC,3.0,0.65±0.11,0.64±0.06,0.64±0.00
+Predator reward,actuation_fault,ERNIE,0.0,125.95±38.25,86.85±12.15,150.49±0.00
+Predator reward,actuation_fault,ERNIE,0.1,104.99±30.17,70.49±8.20,
+Predator reward,actuation_fault,ERNIE,0.25,75.41±15.95,49.91±6.16,
+Predator reward,actuation_fault,ERNIE,0.5,38.44±5.57,30.91±0.66,51.75±0.00
+Predator reward,actuation_fault,ERNIE,0.75,22.18±2.16,19.26±2.03,
+Predator reward,actuation_fault,ERNIE,1.0,12.98±0.79,13.90±2.64,14.51±0.00
+Predator reward,actuation_fault,M3DDPG,0.0,94.41±7.40,65.21±20.93,100.91±0.00
+Predator reward,actuation_fault,M3DDPG,0.1,82.20±8.44,53.46±20.17,
+Predator reward,actuation_fault,M3DDPG,0.25,58.07±4.25,40.41±10.14,
+Predator reward,actuation_fault,M3DDPG,0.5,35.40±4.47,25.34±3.14,38.89±0.00
+Predator reward,actuation_fault,M3DDPG,0.75,21.01±2.53,19.33±2.03,
+Predator reward,actuation_fault,M3DDPG,1.0,14.45±1.83,14.54±2.34,16.16±0.00
+Predator reward,actuation_fault,MADDPG,0.0,91.34±10.07,52.21±16.84,81.94±0.00
+Predator reward,actuation_fault,MADDPG,0.1,75.89±4.65,45.70±11.19,
+Predator reward,actuation_fault,MADDPG,0.25,58.38±2.03,36.65±12.58,
+Predator reward,actuation_fault,MADDPG,0.5,34.37±2.73,26.80±6.02,35.25±0.00
+Predator reward,actuation_fault,MADDPG,0.75,18.23±2.10,18.44±3.28,
+Predator reward,actuation_fault,MADDPG,1.0,12.42±0.64,13.49±0.53,13.43±0.00
+Predator reward,actuation_fault,RMAAC,0.0,154.85±1.19,98.25±9.47,162.07±0.00
+Predator reward,actuation_fault,RMAAC,0.1,123.59±6.34,78.55±6.15,
+Predator reward,actuation_fault,RMAAC,0.25,84.05±2.05,60.00±1.03,
+Predator reward,actuation_fault,RMAAC,0.5,41.85±2.96,36.18±0.77,43.88±0.00
+Predator reward,actuation_fault,RMAAC,0.75,24.89±2.05,22.79±1.41,
+Predator reward,actuation_fault,RMAAC,1.0,16.07±0.68,17.42±0.53,18.79±0.00
+Predator reward,biased_noise_neg,ERNIE,0.0,146.10±4.30,99.92±0.93,153.71±0.00
+Predator reward,biased_noise_neg,ERNIE,1.0,33.84±1.20,28.50±1.33,
+Predator reward,biased_noise_neg,ERNIE,1.5,,,27.79±0.00
+Predator reward,biased_noise_neg,ERNIE,2.0,19.62±0.11,19.48±0.30,
+Predator reward,biased_noise_neg,ERNIE,3.0,17.38±0.40,17.34±2.09,17.74±0.00
+Predator reward,biased_noise_neg,M3DDPG,0.0,100.48±0.13,78.15±2.12,99.56±0.00
+Predator reward,biased_noise_neg,M3DDPG,1.0,35.14±2.39,28.43±1.65,
+Predator reward,biased_noise_neg,M3DDPG,1.5,,,28.39±0.00
+Predator reward,biased_noise_neg,M3DDPG,2.0,21.67±0.90,20.89±1.00,
+Predator reward,biased_noise_neg,M3DDPG,3.0,17.51±0.16,17.21±0.27,18.45±0.00
+Predator reward,biased_noise_neg,MADDPG,0.0,83.13±1.53,65.28±4.50,82.76±0.00
+Predator reward,biased_noise_neg,MADDPG,1.0,27.60±1.64,25.80±0.74,
+Predator reward,biased_noise_neg,MADDPG,1.5,,,22.99±0.00
+Predator reward,biased_noise_neg,MADDPG,2.0,20.31±0.24,18.62±0.45,
+Predator reward,biased_noise_neg,MADDPG,3.0,15.86±0.47,16.14±1.35,16.88±0.00
+Predator reward,biased_noise_neg,RMAAC,0.0,146.36±0.85,108.98±1.27,154.16±0.00
+Predator reward,biased_noise_neg,RMAAC,1.0,39.94±0.37,34.61±0.16,
+Predator reward,biased_noise_neg,RMAAC,1.5,,,32.66±0.00
+Predator reward,biased_noise_neg,RMAAC,2.0,23.77±0.22,21.84±0.08,
+Predator reward,biased_noise_neg,RMAAC,3.0,19.12±2.17,19.05±0.95,19.84±0.00
+Predator reward,biased_noise_pos,ERNIE,0.0,144.04±3.03,97.33±5.54,0.94±0.00
+Predator reward,biased_noise_pos,ERNIE,1.0,33.19±1.44,28.63±1.03,
+Predator reward,biased_noise_pos,ERNIE,1.5,,,21.00±0.00
+Predator reward,biased_noise_pos,ERNIE,2.0,20.30±0.71,19.84±0.74,
+Predator reward,biased_noise_pos,ERNIE,3.0,17.00±0.08,16.78±1.67,17.66±0.00
+Predator reward,biased_noise_pos,M3DDPG,0.0,96.71±4.67,77.12±2.79,0.90±0.00
+Predator reward,biased_noise_pos,M3DDPG,1.0,34.78±0.08,28.16±0.69,
+Predator reward,biased_noise_pos,M3DDPG,1.5,,,22.54±0.00
+Predator reward,biased_noise_pos,M3DDPG,2.0,22.33±1.51,21.05±0.98,
+Predator reward,biased_noise_pos,M3DDPG,3.0,16.80±0.79,17.83±1.40,19.43±0.00
+Predator reward,biased_noise_pos,MADDPG,0.0,80.87±1.77,63.82±3.92,0.94±0.00
+Predator reward,biased_noise_pos,MADDPG,1.0,28.55±0.29,26.23±0.18,
+Predator reward,biased_noise_pos,MADDPG,1.5,,,19.05±0.00
+Predator reward,biased_noise_pos,MADDPG,2.0,19.70±1.41,19.30±0.93,
+Predator reward,biased_noise_pos,MADDPG,3.0,15.48±0.59,16.20±1.43,16.88±0.00
+Predator reward,biased_noise_pos,RMAAC,0.0,145.65±1.64,108.00±3.34,0.97±0.00
+Predator reward,biased_noise_pos,RMAAC,1.0,39.03±0.32,35.91±0.61,
+Predator reward,biased_noise_pos,RMAAC,1.5,,,24.98±0.00
+Predator reward,biased_noise_pos,RMAAC,2.0,23.45±0.77,21.84±0.13,
+Predator reward,biased_noise_pos,RMAAC,3.0,18.73±3.15,20.09±1.38,18.75±0.00
+Predator reward,delay,ERNIE,0.0,,,156.90±0.00
+Predator reward,delay,ERNIE,1.0,63.63±14.53,53.19±0.03,
+Predator reward,delay,ERNIE,2.0,43.77±2.28,39.84±0.50,
+Predator reward,delay,ERNIE,3.0,32.02±0.74,32.70±0.69,32.70±0.00
+Predator reward,delay,ERNIE,5.0,23.77±2.44,23.40±2.55,
+Predator reward,delay,ERNIE,8.0,17.95±2.52,17.25±1.16,18.41±0.00
+Predator reward,delay,M3DDPG,0.0,,,103.09±0.00
+Predator reward,delay,M3DDPG,1.0,55.77±9.23,40.48±12.76,
+Predator reward,delay,M3DDPG,2.0,43.99±6.36,33.09±10.80,
+Predator reward,delay,M3DDPG,3.0,33.39±3.15,27.45±5.62,36.41±0.00
+Predator reward,delay,M3DDPG,5.0,25.52±1.82,21.56±1.38,
+Predator reward,delay,M3DDPG,8.0,20.16±5.01,17.42±1.94,22.05±0.00
+Predator reward,delay,MADDPG,0.0,,,87.26±0.00
+Predator reward,delay,MADDPG,1.0,50.69±9.26,32.68±10.85,
+Predator reward,delay,MADDPG,2.0,37.05±5.25,27.28±8.30,
+Predator reward,delay,MADDPG,3.0,28.34±0.77,23.37±6.53,25.61±0.00
+Predator reward,delay,MADDPG,5.0,19.27±0.22,18.98±3.71,
+Predator reward,delay,MADDPG,8.0,16.04±1.20,15.79±3.82,17.18±0.00
+Predator reward,delay,RMAAC,0.0,,,155.29±0.00
+Predator reward,delay,RMAAC,1.0,70.91±4.19,54.80±2.31,
+Predator reward,delay,RMAAC,2.0,46.44±1.88,39.19±3.18,
+Predator reward,delay,RMAAC,3.0,32.09±6.71,34.09±2.49,38.89±0.00
+Predator reward,delay,RMAAC,5.0,23.77±4.72,27.13±1.94,
+Predator reward,delay,RMAAC,8.0,19.48±3.05,23.70±2.12,24.11±0.00
+Predator reward,noise,ERNIE,0.0,142.56±0.08,93.94±2.70,152.36±0.00
+Predator reward,noise,ERNIE,1.0,32.83±1.73,28.41±2.04,
+Predator reward,noise,ERNIE,1.5,,,24.75±0.00
+Predator reward,noise,ERNIE,2.0,21.19±0.11,19.65±0.48,
+Predator reward,noise,ERNIE,3.0,17.32±0.53,16.59±1.89,18.75±0.00
+Predator reward,noise,M3DDPG,0.0,96.88±2.25,79.09±0.37,103.69±0.00
+Predator reward,noise,M3DDPG,1.0,35.25±1.06,29.32±1.70,
+Predator reward,noise,M3DDPG,1.5,,,28.88±0.00
+Predator reward,noise,M3DDPG,2.0,21.32±0.51,21.70±0.02,
+Predator reward,noise,M3DDPG,3.0,16.84±0.48,18.05±0.02,20.18±0.00
+Predator reward,noise,MADDPG,0.0,81.47±4.06,66.95±4.38,87.56±0.00
+Predator reward,noise,MADDPG,1.0,28.63±1.30,26.27±2.36,
+Predator reward,noise,MADDPG,1.5,,,22.09±0.00
+Predator reward,noise,MADDPG,2.0,19.97±1.73,18.48±1.53,
+Predator reward,noise,MADDPG,3.0,16.11±0.77,16.14±2.15,16.91±0.00
+Predator reward,noise,RMAAC,0.0,143.40±6.31,105.09±1.83,155.14±0.00
+Predator reward,noise,RMAAC,1.0,38.75±0.13,37.63±0.03,
+Predator reward,noise,RMAAC,1.5,,,30.23±0.00
+Predator reward,noise,RMAAC,2.0,22.86±0.71,22.97±0.24,
+Predator reward,noise,RMAAC,3.0,19.59±3.32,19.09±1.70,19.27±0.00
+Prey reward,actuation_fault,ERNIE,0.0,-46.23±11.57,-26.41±2.55,-35.80±0.00
+Prey reward,actuation_fault,ERNIE,0.1,-40.66±8.54,-23.41±2.43,
+Prey reward,actuation_fault,ERNIE,0.25,-34.22±4.34,-22.55±2.39,
+Prey reward,actuation_fault,ERNIE,0.5,-34.89±2.55,-28.44±4.15,-33.62±0.00
+Prey reward,actuation_fault,ERNIE,0.75,-46.79±3.63,-39.97±8.47,
+Prey reward,actuation_fault,ERNIE,1.0,-69.48±6.71,-58.14±11.41,-70.71±0.00
+Prey reward,actuation_fault,M3DDPG,0.0,-33.22±1.16,-15.88±2.01,-22.78±0.00
+Prey reward,actuation_fault,M3DDPG,0.1,-30.65±1.48,-16.42±1.91,
+Prey reward,actuation_fault,M3DDPG,0.25,-27.75±1.31,-18.27±0.28,
+Prey reward,actuation_fault,M3DDPG,0.5,-32.86±2.67,-24.01±0.62,-28.39±0.00
+Prey reward,actuation_fault,M3DDPG,0.75,-43.88±3.97,-35.74±0.58,
+Prey reward,actuation_fault,M3DDPG,1.0,-64.25±4.98,-49.68±3.86,-57.44±0.00
+Prey reward,actuation_fault,MADDPG,0.0,-32.54±3.45,-18.20±5.74,-19.50±0.00
+Prey reward,actuation_fault,MADDPG,0.1,-28.46±2.13,-17.58±3.15,
+Prey reward,actuation_fault,MADDPG,0.25,-27.25±1.06,-17.74±2.58,
+Prey reward,actuation_fault,MADDPG,0.5,-31.18±2.53,-22.03±0.56,-26.35±0.00
+Prey reward,actuation_fault,MADDPG,0.75,-41.93±1.47,-30.30±1.74,
+Prey reward,actuation_fault,MADDPG,1.0,-61.72±4.54,-42.40±1.11,-57.32±0.00
+Prey reward,actuation_fault,RMAAC,0.0,-51.94±0.40,-26.94±1.72,-29.96±0.00
+Prey reward,actuation_fault,RMAAC,0.1,-42.05±2.21,-22.39±0.53,
+Prey reward,actuation_fault,RMAAC,0.25,-31.61±1.28,-20.91±1.29,
+Prey reward,actuation_fault,RMAAC,0.5,-26.73±1.19,-21.12±0.97,-23.86±0.00
+Prey reward,actuation_fault,RMAAC,0.75,-35.04±0.21,-28.16±2.91,
+Prey reward,actuation_fault,RMAAC,1.0,-51.64±1.14,-40.92±3.29,-50.58±0.00
+Prey reward,biased_noise_neg,ERNIE,0.0,-52.04±1.34,-26.97±0.41,-36.31±0.00
+Prey reward,biased_noise_neg,ERNIE,1.0,-15.96±0.11,-13.02±0.73,
+Prey reward,biased_noise_neg,ERNIE,1.5,,,-14.65±0.00
+Prey reward,biased_noise_neg,ERNIE,2.0,-16.30±0.33,-13.52±0.59,
+Prey reward,biased_noise_neg,ERNIE,3.0,-17.98±0.09,-16.38±1.18,-17.53±0.00
+Prey reward,biased_noise_neg,M3DDPG,0.0,-34.58±0.10,-18.01±0.76,-22.58±0.00
+Prey reward,biased_noise_neg,M3DDPG,1.0,-16.27±1.20,-11.68±0.24,
+Prey reward,biased_noise_neg,M3DDPG,1.5,,,-14.95±0.00
+Prey reward,biased_noise_neg,M3DDPG,2.0,-16.87±0.39,-14.91±0.63,
+Prey reward,biased_noise_neg,M3DDPG,3.0,-18.20±0.30,-17.11±0.93,-17.71±0.00
+Prey reward,biased_noise_neg,MADDPG,0.0,-29.76±0.54,-21.15±0.59,-20.71±0.00
+Prey reward,biased_noise_neg,MADDPG,1.0,-15.04±1.05,-11.66±1.47,
+Prey reward,biased_noise_neg,MADDPG,1.5,,,-13.98±0.00
+Prey reward,biased_noise_neg,MADDPG,2.0,-17.58±0.09,-13.94±0.40,
+Prey reward,biased_noise_neg,MADDPG,3.0,-18.37±0.47,-16.77±2.14,-18.00±0.00
+Prey reward,biased_noise_neg,RMAAC,0.0,-49.14±0.25,-27.42±0.54,-27.44±0.00
+Prey reward,biased_noise_neg,RMAAC,1.0,-14.66±0.03,-11.07±0.24,
+Prey reward,biased_noise_neg,RMAAC,1.5,,,-11.82±0.00
+Prey reward,biased_noise_neg,RMAAC,2.0,-14.24±0.29,-11.63±0.18,
+Prey reward,biased_noise_neg,RMAAC,3.0,-15.72±0.61,-14.11±1.05,-14.73±0.00
+Prey reward,biased_noise_pos,ERNIE,0.0,-51.41±1.10,-27.59±0.28,-3.00±0.00
+Prey reward,biased_noise_pos,ERNIE,1.0,-15.85±0.16,-12.55±0.16,
+Prey reward,biased_noise_pos,ERNIE,1.5,,,-13.23±0.00
+Prey reward,biased_noise_pos,ERNIE,2.0,-16.48±0.54,-13.56±0.39,
+Prey reward,biased_noise_pos,ERNIE,3.0,-17.78±0.10,-16.07±1.17,-17.93±0.00
+Prey reward,biased_noise_pos,M3DDPG,0.0,-33.45±1.61,-17.99±0.16,-3.30±0.00
+Prey reward,biased_noise_pos,M3DDPG,1.0,-16.20±0.37,-12.26±0.35,
+Prey reward,biased_noise_pos,M3DDPG,1.5,,,-12.76±0.00
+Prey reward,biased_noise_pos,M3DDPG,2.0,-17.13±0.68,-14.84±0.63,
+Prey reward,biased_noise_pos,M3DDPG,3.0,-18.05±0.03,-16.91±0.84,-18.17±0.00
+Prey reward,biased_noise_pos,MADDPG,0.0,-29.02±0.66,-21.42±0.76,-3.00±0.00
+Prey reward,biased_noise_pos,MADDPG,1.0,-15.18±0.39,-11.92±1.16,
+Prey reward,biased_noise_pos,MADDPG,1.5,,,-13.47±0.00
+Prey reward,biased_noise_pos,MADDPG,2.0,-17.46±0.44,-13.94±0.28,
+Prey reward,biased_noise_pos,MADDPG,3.0,-18.29±0.11,-16.73±1.76,-18.32±0.00
+Prey reward,biased_noise_pos,RMAAC,0.0,-48.88±0.65,-27.34±0.98,-2.54±0.00
+Prey reward,biased_noise_pos,RMAAC,1.0,-14.34±0.28,-10.76±0.51,
+Prey reward,biased_noise_pos,RMAAC,1.5,,,-10.84±0.00
+Prey reward,biased_noise_pos,RMAAC,2.0,-14.08±0.07,-11.85±0.41,
+Prey reward,biased_noise_pos,RMAAC,3.0,-15.52±1.02,-14.34±1.08,-15.47±0.00
+Prey reward,delay,ERNIE,0.0,,,-35.23±0.00
+Prey reward,delay,ERNIE,1.0,-25.87±3.34,-17.91±0.18,
+Prey reward,delay,ERNIE,2.0,-19.11±1.59,-15.72±1.70,
+Prey reward,delay,ERNIE,3.0,-15.38±1.87,-14.34±0.03,-13.36±0.00
+Prey reward,delay,ERNIE,5.0,-15.47±1.51,-13.96±0.49,
+Prey reward,delay,ERNIE,8.0,-22.31±1.20,-19.23±2.95,-21.73±0.00
+Prey reward,delay,M3DDPG,0.0,,,-22.42±0.00
+Prey reward,delay,M3DDPG,1.0,-20.95±1.46,-13.21±1.55,
+Prey reward,delay,M3DDPG,2.0,-17.19±0.75,-12.66±1.92,
+Prey reward,delay,M3DDPG,3.0,-15.01±0.55,-12.30±0.83,-13.73±0.00
+Prey reward,delay,M3DDPG,5.0,-16.10±0.78,-13.38±0.78,
+Prey reward,delay,M3DDPG,8.0,-23.04±1.56,-18.74±0.64,-21.66±0.00
+Prey reward,delay,MADDPG,0.0,,,-19.77±0.00
+Prey reward,delay,MADDPG,1.0,-18.71±3.32,-12.44±3.37,
+Prey reward,delay,MADDPG,2.0,-14.53±1.70,-10.87±2.26,
+Prey reward,delay,MADDPG,3.0,-12.59±0.18,-10.46±1.68,-10.83±0.00
+Prey reward,delay,MADDPG,5.0,-12.79±0.59,-11.28±0.44,
+Prey reward,delay,MADDPG,8.0,-20.72±0.98,-14.91±2.04,-18.85±0.00
+Prey reward,delay,RMAAC,0.0,,,-28.70±0.00
+Prey reward,delay,RMAAC,1.0,-23.89±1.27,-17.39±0.06,
+Prey reward,delay,RMAAC,2.0,-15.69±0.59,-12.64±0.23,
+Prey reward,delay,RMAAC,3.0,-10.98±2.16,-10.86±0.76,-10.23±0.00
+Prey reward,delay,RMAAC,5.0,-8.41±1.48,-9.25±0.78,
+Prey reward,delay,RMAAC,8.0,-9.16±0.45,-9.75±1.05,-9.74±0.00
+Prey reward,noise,ERNIE,0.0,-50.91±0.00,-27.95±0.63,-35.02±0.00
+Prey reward,noise,ERNIE,1.0,-15.68±0.23,-12.72±0.07,
+Prey reward,noise,ERNIE,1.5,,,-14.57±0.00
+Prey reward,noise,ERNIE,2.0,-16.73±0.35,-13.57±0.25,
+Prey reward,noise,ERNIE,3.0,-17.93±0.20,-16.41±1.39,-17.54±0.00
+Prey reward,noise,M3DDPG,0.0,-33.41±0.76,-18.05±0.19,-22.97±0.00
+Prey reward,noise,M3DDPG,1.0,-16.34±0.63,-12.12±0.24,
+Prey reward,noise,M3DDPG,1.5,,,-15.36±0.00
+Prey reward,noise,M3DDPG,2.0,-16.82±0.40,-14.70±0.52,
+Prey reward,noise,M3DDPG,3.0,-17.95±0.39,-17.24±0.78,-18.11±0.00
+Prey reward,noise,MADDPG,0.0,-29.21±1.47,-22.08±0.66,-21.08±0.00
+Prey reward,noise,MADDPG,1.0,-15.33±0.91,-11.82±1.15,
+Prey reward,noise,MADDPG,1.5,,,-14.83±0.00
+Prey reward,noise,MADDPG,2.0,-17.55±0.66,-13.79±0.16,
+Prey reward,noise,MADDPG,3.0,-18.51±0.03,-16.59±1.56,-17.81±0.00
+Prey reward,noise,RMAAC,0.0,-48.16±2.00,-27.41±0.91,-30.55±0.00
+Prey reward,noise,RMAAC,1.0,-14.27±0.16,-11.16±0.47,
+Prey reward,noise,RMAAC,1.5,,,-12.29±0.00
+Prey reward,noise,RMAAC,2.0,-13.93±0.01,-11.98±0.81,
+Prey reward,noise,RMAAC,3.0,-15.84±1.00,-14.37±0.91,-15.69±0.00
+Survival,actuation_fault,ERNIE,0.0,14.73±1.62,17.49±0.34,14.93±0.00
+Survival,actuation_fault,ERNIE,0.1,15.08±1.06,17.92±0.41,
+Survival,actuation_fault,ERNIE,0.25,16.21±0.69,18.55±0.19,
+Survival,actuation_fault,ERNIE,0.5,17.77±0.50,18.88±0.15,18.30±0.00
+Survival,actuation_fault,ERNIE,0.75,18.74±0.41,19.61±0.40,
+Survival,actuation_fault,ERNIE,1.0,19.80±0.41,19.89±0.28,20.32±0.00
+Survival,actuation_fault,M3DDPG,0.0,14.78±0.56,18.29±0.43,14.86±0.00
+Survival,actuation_fault,M3DDPG,0.1,15.09±0.80,18.39±0.69,
+Survival,actuation_fault,M3DDPG,0.25,16.38±0.38,18.72±0.71,
+Survival,actuation_fault,M3DDPG,0.5,17.61±0.58,19.58±0.66,17.89±0.00
+Survival,actuation_fault,M3DDPG,0.75,18.57±0.65,19.48±0.53,
+Survival,actuation_fault,M3DDPG,1.0,19.06±0.43,19.57±0.58,19.27±0.00
+Survival,actuation_fault,MADDPG,0.0,16.21±0.41,18.48±0.61,16.60±0.00
+Survival,actuation_fault,MADDPG,0.1,16.44±0.20,18.53±0.37,
+Survival,actuation_fault,MADDPG,0.25,16.92±0.14,18.98±0.97,
+Survival,actuation_fault,MADDPG,0.5,18.53±0.48,19.19±0.62,18.83±0.00
+Survival,actuation_fault,MADDPG,0.75,19.39±0.27,19.82±0.32,
+Survival,actuation_fault,MADDPG,1.0,20.00±0.32,20.21±0.11,20.72±0.00
+Survival,actuation_fault,RMAAC,0.0,13.99±0.17,16.98±0.17,14.94±0.00
+Survival,actuation_fault,RMAAC,0.1,14.44±0.10,17.75±0.45,
+Survival,actuation_fault,RMAAC,0.25,15.42±0.31,17.84±0.15,
+Survival,actuation_fault,RMAAC,0.5,17.03±0.28,18.18±0.09,17.41±0.00
+Survival,actuation_fault,RMAAC,0.75,17.67±0.19,18.47±0.23,
+Survival,actuation_fault,RMAAC,1.0,18.55±0.25,18.74±0.37,19.00±0.00
+Survival,biased_noise_neg,ERNIE,0.0,13.80±0.08,17.51±0.01,14.65±0.00
+Survival,biased_noise_neg,ERNIE,1.0,17.80±0.02,19.17±0.13,
+Survival,biased_noise_neg,ERNIE,1.5,,,19.34±0.00
+Survival,biased_noise_neg,ERNIE,2.0,19.71±0.02,20.27±0.08,
+Survival,biased_noise_neg,ERNIE,3.0,19.74±0.40,20.41±0.30,20.64±0.00
+Survival,biased_noise_neg,M3DDPG,0.0,14.31±0.29,17.69±0.13,15.46±0.00
+Survival,biased_noise_neg,M3DDPG,1.0,17.71±0.40,19.21±0.44,
+Survival,biased_noise_neg,M3DDPG,1.5,,,19.27±0.00
+Survival,biased_noise_neg,M3DDPG,2.0,19.39±0.18,19.93±0.11,
+Survival,biased_noise_neg,M3DDPG,3.0,19.75±0.07,20.27±0.40,20.40±0.00
+Survival,biased_noise_neg,MADDPG,0.0,15.99±0.32,17.58±0.16,16.80±0.00
+Survival,biased_noise_neg,MADDPG,1.0,18.61±0.20,19.88±0.56,
+Survival,biased_noise_neg,MADDPG,1.5,,,19.74±0.00
+Survival,biased_noise_neg,MADDPG,2.0,19.61±0.28,20.04±0.27,
+Survival,biased_noise_neg,MADDPG,3.0,20.05±0.18,20.26±0.52,20.52±0.00
+Survival,biased_noise_neg,RMAAC,0.0,13.97±0.23,17.04±0.15,15.21±0.00
+Survival,biased_noise_neg,RMAAC,1.0,17.23±0.13,18.74±0.36,
+Survival,biased_noise_neg,RMAAC,1.5,,,19.36±0.00
+Survival,biased_noise_neg,RMAAC,2.0,18.88±0.15,19.61±0.25,
+Survival,biased_noise_neg,RMAAC,3.0,19.50±0.43,20.22±0.64,20.34±0.00
+Survival,biased_noise_pos,ERNIE,0.0,13.73±0.11,17.57±0.08,23.82±0.00
+Survival,biased_noise_pos,ERNIE,1.0,17.86±0.05,19.29±0.21,
+Survival,biased_noise_pos,ERNIE,1.5,,,20.61±0.00
+Survival,biased_noise_pos,ERNIE,2.0,19.67±0.08,20.17±0.07,
+Survival,biased_noise_pos,ERNIE,3.0,19.71±0.23,20.43±0.30,20.47±0.00
+Survival,biased_noise_pos,M3DDPG,0.0,14.41±0.29,17.74±0.04,23.83±0.00
+Survival,biased_noise_pos,M3DDPG,1.0,17.75±0.28,19.12±0.25,
+Survival,biased_noise_pos,M3DDPG,1.5,,,19.95±0.00
+Survival,biased_noise_pos,M3DDPG,2.0,19.29±0.13,19.96±0.07,
+Survival,biased_noise_pos,M3DDPG,3.0,19.86±0.20,20.22±0.23,20.21±0.00
+Survival,biased_noise_pos,MADDPG,0.0,15.88±0.12,17.70±0.08,23.82±0.00
+Survival,biased_noise_pos,MADDPG,1.0,18.45±0.16,19.76±0.45,
+Survival,biased_noise_pos,MADDPG,1.5,,,20.62±0.00
+Survival,biased_noise_pos,MADDPG,2.0,19.53±0.31,19.93±0.23,
+Survival,biased_noise_pos,MADDPG,3.0,20.08±0.27,20.34±0.26,20.55±0.00
+Survival,biased_noise_pos,RMAAC,0.0,13.96±0.31,17.09±0.33,23.84±0.00
+Survival,biased_noise_pos,RMAAC,1.0,17.20±0.33,18.67±0.52,
+Survival,biased_noise_pos,RMAAC,1.5,,,19.75±0.00
+Survival,biased_noise_pos,RMAAC,2.0,18.93±0.30,19.63±0.02,
+Survival,biased_noise_pos,RMAAC,3.0,19.55±0.49,20.23±0.44,20.38±0.00
+Survival,delay,ERNIE,0.0,,,14.69±0.00
+Survival,delay,ERNIE,1.0,16.01±0.72,18.17±0.21,
+Survival,delay,ERNIE,2.0,17.02±0.09,18.02±0.39,
+Survival,delay,ERNIE,3.0,17.42±0.06,18.30±0.09,18.40±0.00
+Survival,delay,ERNIE,5.0,18.27±0.12,19.12±0.64,
+Survival,delay,ERNIE,8.0,19.30±0.08,20.05±0.21,19.90±0.00
+Survival,delay,M3DDPG,0.0,,,15.19±0.00
+Survival,delay,M3DDPG,1.0,15.79±1.07,18.53±0.45,
+Survival,delay,M3DDPG,2.0,16.58±0.95,18.45±0.83,
+Survival,delay,M3DDPG,3.0,17.42±0.37,18.70±1.10,17.68±0.00
+Survival,delay,M3DDPG,5.0,18.09±0.14,19.27±0.25,
+Survival,delay,M3DDPG,8.0,18.95±0.63,20.04±0.05,19.30±0.00
+Survival,delay,MADDPG,0.0,,,17.02±0.00
+Survival,delay,MADDPG,1.0,16.67±0.64,19.08±0.52,
+Survival,delay,MADDPG,2.0,17.24±0.59,19.04±0.64,
+Survival,delay,MADDPG,3.0,17.86±0.18,19.19±0.99,18.92±0.00
+Survival,delay,MADDPG,5.0,18.99±0.38,19.71±0.26,
+Survival,delay,MADDPG,8.0,19.83±0.27,20.34±0.35,19.79±0.00
+Survival,delay,RMAAC,0.0,,,15.20±0.00
+Survival,delay,RMAAC,1.0,14.95±0.45,17.54±0.54,
+Survival,delay,RMAAC,2.0,16.12±0.57,17.86±0.35,
+Survival,delay,RMAAC,3.0,17.19±0.91,17.61±0.45,17.23±0.00
+Survival,delay,RMAAC,5.0,17.84±0.39,18.29±0.30,
+Survival,delay,RMAAC,8.0,18.42±0.44,18.62±0.15,18.68±0.00
+Survival,noise,ERNIE,0.0,13.98±0.10,17.46±0.24,15.06±0.00
+Survival,noise,ERNIE,1.0,17.87±0.04,19.16±0.19,
+Survival,noise,ERNIE,1.5,,,19.71±0.00
+Survival,noise,ERNIE,2.0,19.49±0.08,20.20±0.11,
+Survival,noise,ERNIE,3.0,19.74±0.27,20.37±0.36,20.53±0.00
+Survival,noise,M3DDPG,0.0,14.59±0.37,17.77±0.05,15.44±0.00
+Survival,noise,M3DDPG,1.0,17.70±0.18,19.32±0.27,
+Survival,noise,M3DDPG,1.5,,,19.58±0.00
+Survival,noise,M3DDPG,2.0,19.27±0.08,19.94±0.06,
+Survival,noise,M3DDPG,3.0,19.83±0.06,20.21±0.38,20.53±0.00
+Survival,noise,MADDPG,0.0,16.09±0.21,17.66±0.33,16.64±0.00
+Survival,noise,MADDPG,1.0,18.42±0.32,19.69±0.59,
+Survival,noise,MADDPG,1.5,,,19.92±0.00
+Survival,noise,MADDPG,2.0,19.52±0.53,20.11±0.18,
+Survival,noise,MADDPG,3.0,20.06±0.11,20.45±0.35,20.60±0.00
+Survival,noise,RMAAC,0.0,14.12±0.37,16.91±0.13,14.84±0.00
+Survival,noise,RMAAC,1.0,17.20±0.09,18.77±0.35,
+Survival,noise,RMAAC,1.5,,,19.06±0.00
+Survival,noise,RMAAC,2.0,19.06±0.28,19.45±0.06,
+Survival,noise,RMAAC,3.0,19.52±0.49,20.27±0.33,20.03±0.00

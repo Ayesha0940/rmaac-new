@@ -1,0 +1,481 @@
+cell,cell_type,level,method,reward,seed,success,task
+no fault,no-fault,removed,"diffusion (best t, selected after the fact)",7.0521533687153,0,,simple_adversary
+no fault,no-fault,removed,noisy,7.022844666427551,0,,simple_adversary
+no fault,no-fault,removed,clean,7.022844658749776,0,,simple_adversary
+no fault,no-fault,removed,"B_mean (best t, selected after the fact)",3.517975831881058,0,,simple_adversary
+no fault,no-fault,removed,"C1-gauss (best variant, selected after the fact)",5.609962257295384,0,,simple_adversary
+no fault,no-fault,removed,BC,3.1991156476145077,0,,simple_adversary
+no fault,no-fault,removed,"diffusion (best t, selected after the fact)",6.892498806996174,1,,simple_adversary
+no fault,no-fault,removed,noisy,6.8367463979235765,1,,simple_adversary
+no fault,no-fault,removed,clean,6.836746398163752,1,,simple_adversary
+no fault,no-fault,removed,"B_mean (best t, selected after the fact)",3.4573926973101465,1,,simple_adversary
+no fault,no-fault,removed,"C1-gauss (best variant, selected after the fact)",5.404718891488625,1,,simple_adversary
+no fault,no-fault,removed,BC,3.1405054332241087,1,,simple_adversary
+no fault,no-fault,removed,"diffusion (best t, selected after the fact)",6.94384806569484,2,,simple_adversary
+no fault,no-fault,removed,noisy,6.907827926157753,2,,simple_adversary
+no fault,no-fault,removed,clean,6.907827922921399,2,,simple_adversary
+no fault,no-fault,removed,"B_mean (best t, selected after the fact)",3.248555079689893,2,,simple_adversary
+no fault,no-fault,removed,"C1-gauss (best variant, selected after the fact)",5.614571678708273,2,,simple_adversary
+no fault,no-fault,removed,BC,3.2104014453627503,2,,simple_adversary
+no fault,no-fault,removed,"diffusion (best t, selected after the fact)",6.590838831276379,3,,simple_adversary
+no fault,no-fault,removed,noisy,6.5573766518883785,3,,simple_adversary
+no fault,no-fault,removed,clean,6.557376661581162,3,,simple_adversary
+no fault,no-fault,removed,"B_mean (best t, selected after the fact)",3.0195227579730517,3,,simple_adversary
+no fault,no-fault,removed,"C1-gauss (best variant, selected after the fact)",5.2731691062223005,3,,simple_adversary
+no fault,no-fault,removed,BC,3.2135888186803525,3,,simple_adversary
+no fault,no-fault,removed,"diffusion (best t, selected after the fact)",6.883327984177623,4,,simple_adversary
+no fault,no-fault,removed,noisy,6.846215611474898,4,,simple_adversary
+no fault,no-fault,removed,clean,6.846215602345015,4,,simple_adversary
+no fault,no-fault,removed,"B_mean (best t, selected after the fact)",3.577041254849794,4,,simple_adversary
+no fault,no-fault,removed,"C1-gauss (best variant, selected after the fact)",5.635212466903992,4,,simple_adversary
+no fault,no-fault,removed,BC,3.3536941822324704,4,,simple_adversary
+gauss 1,gaussian,removed,"diffusion (best t, selected after the fact)",4.883476104995931,0,,simple_adversary
+gauss 1,gaussian,removed,noisy,3.3697221892528626,0,,simple_adversary
+gauss 1,gaussian,removed,clean,7.022844658749776,0,,simple_adversary
+gauss 1,gaussian,removed,"B_mean (best t, selected after the fact)",3.517975831881058,0,,simple_adversary
+gauss 1,gaussian,removed,"C1-gauss (best variant, selected after the fact)",3.741163120244445,0,,simple_adversary
+gauss 1,gaussian,removed,BC,3.1991156476145077,0,,simple_adversary
+gauss 1,gaussian,removed,"diffusion (best t, selected after the fact)",4.669669733787684,1,,simple_adversary
+gauss 1,gaussian,removed,noisy,3.160287312792432,1,,simple_adversary
+gauss 1,gaussian,removed,clean,6.836746398163752,1,,simple_adversary
+gauss 1,gaussian,removed,"B_mean (best t, selected after the fact)",3.4573926973101465,1,,simple_adversary
+gauss 1,gaussian,removed,"C1-gauss (best variant, selected after the fact)",3.697094133114273,1,,simple_adversary
+gauss 1,gaussian,removed,BC,3.1405054332241087,1,,simple_adversary
+gauss 1,gaussian,removed,"diffusion (best t, selected after the fact)",4.791466401361199,2,,simple_adversary
+gauss 1,gaussian,removed,noisy,3.301395947679966,2,,simple_adversary
+gauss 1,gaussian,removed,clean,6.907827922921399,2,,simple_adversary
+gauss 1,gaussian,removed,"B_mean (best t, selected after the fact)",3.248555079689893,2,,simple_adversary
+gauss 1,gaussian,removed,"C1-gauss (best variant, selected after the fact)",3.92594529946682,2,,simple_adversary
+gauss 1,gaussian,removed,BC,3.2104014453627503,2,,simple_adversary
+gauss 1,gaussian,removed,"diffusion (best t, selected after the fact)",4.436482456671387,3,,simple_adversary
+gauss 1,gaussian,removed,noisy,2.8559541403874613,3,,simple_adversary
+gauss 1,gaussian,removed,clean,6.557376661581162,3,,simple_adversary
+gauss 1,gaussian,removed,"B_mean (best t, selected after the fact)",3.0195227579730517,3,,simple_adversary
+gauss 1,gaussian,removed,"C1-gauss (best variant, selected after the fact)",3.4766351288554262,3,,simple_adversary
+gauss 1,gaussian,removed,BC,3.2135888186803525,3,,simple_adversary
+gauss 1,gaussian,removed,"diffusion (best t, selected after the fact)",4.932880052074097,4,,simple_adversary
+gauss 1,gaussian,removed,noisy,3.2313547946213457,4,,simple_adversary
+gauss 1,gaussian,removed,clean,6.846215602345015,4,,simple_adversary
+gauss 1,gaussian,removed,"B_mean (best t, selected after the fact)",3.577041254849794,4,,simple_adversary
+gauss 1,gaussian,removed,"C1-gauss (best variant, selected after the fact)",3.906427758032045,4,,simple_adversary
+gauss 1,gaussian,removed,BC,3.3536941822324704,4,,simple_adversary
+gauss 3,gaussian,removed,"diffusion (best t, selected after the fact)",3.877461137385092,0,,simple_adversary
+gauss 3,gaussian,removed,noisy,-2.216415155985954,0,,simple_adversary
+gauss 3,gaussian,removed,clean,7.022844658749776,0,,simple_adversary
+gauss 3,gaussian,removed,"B_mean (best t, selected after the fact)",3.517975831881058,0,,simple_adversary
+gauss 3,gaussian,removed,"C1-gauss (best variant, selected after the fact)",3.3348830976942274,0,,simple_adversary
+gauss 3,gaussian,removed,BC,3.1991156476145077,0,,simple_adversary
+gauss 3,gaussian,removed,"diffusion (best t, selected after the fact)",3.6952273904644057,1,,simple_adversary
+gauss 3,gaussian,removed,noisy,-2.6664129317223653,1,,simple_adversary
+gauss 3,gaussian,removed,clean,6.836746398163752,1,,simple_adversary
+gauss 3,gaussian,removed,"B_mean (best t, selected after the fact)",3.4573926973101465,1,,simple_adversary
+gauss 3,gaussian,removed,"C1-gauss (best variant, selected after the fact)",3.3633429637136523,1,,simple_adversary
+gauss 3,gaussian,removed,BC,3.1405054332241087,1,,simple_adversary
+gauss 3,gaussian,removed,"diffusion (best t, selected after the fact)",3.4486779370931755,2,,simple_adversary
+gauss 3,gaussian,removed,noisy,-2.306053742991062,2,,simple_adversary
+gauss 3,gaussian,removed,clean,6.907827922921399,2,,simple_adversary
+gauss 3,gaussian,removed,"B_mean (best t, selected after the fact)",3.248555079689893,2,,simple_adversary
+gauss 3,gaussian,removed,"C1-gauss (best variant, selected after the fact)",3.560549432476197,2,,simple_adversary
+gauss 3,gaussian,removed,BC,3.2104014453627503,2,,simple_adversary
+gauss 3,gaussian,removed,"diffusion (best t, selected after the fact)",3.1266927407559115,3,,simple_adversary
+gauss 3,gaussian,removed,noisy,-2.8325572338789344,3,,simple_adversary
+gauss 3,gaussian,removed,clean,6.557376661581162,3,,simple_adversary
+gauss 3,gaussian,removed,"B_mean (best t, selected after the fact)",3.0195227579730517,3,,simple_adversary
+gauss 3,gaussian,removed,"C1-gauss (best variant, selected after the fact)",3.098633789300297,3,,simple_adversary
+gauss 3,gaussian,removed,BC,3.2135888186803525,3,,simple_adversary
+gauss 3,gaussian,removed,"diffusion (best t, selected after the fact)",3.7532192623467098,4,,simple_adversary
+gauss 3,gaussian,removed,noisy,-2.3081601470804216,4,,simple_adversary
+gauss 3,gaussian,removed,clean,6.846215602345015,4,,simple_adversary
+gauss 3,gaussian,removed,"B_mean (best t, selected after the fact)",3.577041254849794,4,,simple_adversary
+gauss 3,gaussian,removed,"C1-gauss (best variant, selected after the fact)",3.56880230605419,4,,simple_adversary
+gauss 3,gaussian,removed,BC,3.3536941822324704,4,,simple_adversary
+stuck .5,non-gaussian,removed,"diffusion (best t, selected after the fact)",6.312116619429481,0,,simple_adversary
+stuck .5,non-gaussian,removed,noisy,2.591893723679758,0,,simple_adversary
+stuck .5,non-gaussian,removed,clean,7.022844658749776,0,,simple_adversary
+stuck .5,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.517975831881058,0,,simple_adversary
+stuck .5,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",5.009405321343,0,,simple_adversary
+stuck .5,non-gaussian,removed,BC,3.1991156476145077,0,,simple_adversary
+stuck .5,non-gaussian,removed,"diffusion (best t, selected after the fact)",6.066593818614901,1,,simple_adversary
+stuck .5,non-gaussian,removed,noisy,1.8438722995068304,1,,simple_adversary
+stuck .5,non-gaussian,removed,clean,6.836746398163752,1,,simple_adversary
+stuck .5,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.4573926973101465,1,,simple_adversary
+stuck .5,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",4.83237794544971,1,,simple_adversary
+stuck .5,non-gaussian,removed,BC,3.1405054332241087,1,,simple_adversary
+stuck .5,non-gaussian,removed,"diffusion (best t, selected after the fact)",6.133700820728332,2,,simple_adversary
+stuck .5,non-gaussian,removed,noisy,2.0937844314734524,2,,simple_adversary
+stuck .5,non-gaussian,removed,clean,6.907827922921399,2,,simple_adversary
+stuck .5,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.248555079689893,2,,simple_adversary
+stuck .5,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",5.092853885050979,2,,simple_adversary
+stuck .5,non-gaussian,removed,BC,3.2104014453627503,2,,simple_adversary
+stuck .5,non-gaussian,removed,"diffusion (best t, selected after the fact)",5.709331017588157,3,,simple_adversary
+stuck .5,non-gaussian,removed,noisy,2.191099812254149,3,,simple_adversary
+stuck .5,non-gaussian,removed,clean,6.557376661581162,3,,simple_adversary
+stuck .5,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.0195227579730517,3,,simple_adversary
+stuck .5,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",4.613930191315546,3,,simple_adversary
+stuck .5,non-gaussian,removed,BC,3.2135888186803525,3,,simple_adversary
+stuck .5,non-gaussian,removed,"diffusion (best t, selected after the fact)",6.129053699962639,4,,simple_adversary
+stuck .5,non-gaussian,removed,noisy,1.839929408311353,4,,simple_adversary
+stuck .5,non-gaussian,removed,clean,6.846215602345015,4,,simple_adversary
+stuck .5,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.577041254849794,4,,simple_adversary
+stuck .5,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",4.9910774311058885,4,,simple_adversary
+stuck .5,non-gaussian,removed,BC,3.3536941822324704,4,,simple_adversary
+stuck 1,non-gaussian,removed,"diffusion (best t, selected after the fact)",5.231671979848938,0,,simple_adversary
+stuck 1,non-gaussian,removed,noisy,-14.460480898072364,0,,simple_adversary
+stuck 1,non-gaussian,removed,clean,7.022844658749776,0,,simple_adversary
+stuck 1,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.517975831881058,0,,simple_adversary
+stuck 1,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",4.403955210131345,0,,simple_adversary
+stuck 1,non-gaussian,removed,BC,3.1991156476145077,0,,simple_adversary
+stuck 1,non-gaussian,removed,"diffusion (best t, selected after the fact)",5.061571971927989,1,,simple_adversary
+stuck 1,non-gaussian,removed,noisy,-15.224041288225918,1,,simple_adversary
+stuck 1,non-gaussian,removed,clean,6.836746398163752,1,,simple_adversary
+stuck 1,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.4573926973101465,1,,simple_adversary
+stuck 1,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",4.2931362343591974,1,,simple_adversary
+stuck 1,non-gaussian,removed,BC,3.1405054332241087,1,,simple_adversary
+stuck 1,non-gaussian,removed,"diffusion (best t, selected after the fact)",5.146630404226958,2,,simple_adversary
+stuck 1,non-gaussian,removed,noisy,-14.502920528972153,2,,simple_adversary
+stuck 1,non-gaussian,removed,clean,6.907827922921399,2,,simple_adversary
+stuck 1,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.248555079689893,2,,simple_adversary
+stuck 1,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",4.508477497390519,2,,simple_adversary
+stuck 1,non-gaussian,removed,BC,3.2104014453627503,2,,simple_adversary
+stuck 1,non-gaussian,removed,"diffusion (best t, selected after the fact)",4.6338078926977655,3,,simple_adversary
+stuck 1,non-gaussian,removed,noisy,-15.086131477493598,3,,simple_adversary
+stuck 1,non-gaussian,removed,clean,6.557376661581162,3,,simple_adversary
+stuck 1,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.0195227579730517,3,,simple_adversary
+stuck 1,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",3.994262279274121,3,,simple_adversary
+stuck 1,non-gaussian,removed,BC,3.2135888186803525,3,,simple_adversary
+stuck 1,non-gaussian,removed,"diffusion (best t, selected after the fact)",5.203706475304448,4,,simple_adversary
+stuck 1,non-gaussian,removed,noisy,-14.785398793010188,4,,simple_adversary
+stuck 1,non-gaussian,removed,clean,6.846215602345015,4,,simple_adversary
+stuck 1,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.577041254849794,4,,simple_adversary
+stuck 1,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",4.425224394176599,4,,simple_adversary
+stuck 1,non-gaussian,removed,BC,3.3536941822324704,4,,simple_adversary
+biased+1,non-gaussian,removed,"diffusion (best t, selected after the fact)",3.90660995610422,0,,simple_adversary
+biased+1,non-gaussian,removed,noisy,2.015904033768112,0,,simple_adversary
+biased+1,non-gaussian,removed,clean,7.022844658749776,0,,simple_adversary
+biased+1,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.517975831881058,0,,simple_adversary
+biased+1,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",3.4799405110284507,0,,simple_adversary
+biased+1,non-gaussian,removed,BC,3.1991156476145077,0,,simple_adversary
+biased+1,non-gaussian,removed,"diffusion (best t, selected after the fact)",3.770254081516127,1,,simple_adversary
+biased+1,non-gaussian,removed,noisy,1.8140252775752208,1,,simple_adversary
+biased+1,non-gaussian,removed,clean,6.836746398163752,1,,simple_adversary
+biased+1,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.4573926973101465,1,,simple_adversary
+biased+1,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",3.4895087329912293,1,,simple_adversary
+biased+1,non-gaussian,removed,BC,3.1405054332241087,1,,simple_adversary
+biased+1,non-gaussian,removed,"diffusion (best t, selected after the fact)",3.6144122295154206,2,,simple_adversary
+biased+1,non-gaussian,removed,noisy,2.2120649396074663,2,,simple_adversary
+biased+1,non-gaussian,removed,clean,6.907827922921399,2,,simple_adversary
+biased+1,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.248555079689893,2,,simple_adversary
+biased+1,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",3.640421715241658,2,,simple_adversary
+biased+1,non-gaussian,removed,BC,3.2104014453627503,2,,simple_adversary
+biased+1,non-gaussian,removed,"diffusion (best t, selected after the fact)",3.1954736435886355,3,,simple_adversary
+biased+1,non-gaussian,removed,noisy,1.4590575563332735,3,,simple_adversary
+biased+1,non-gaussian,removed,clean,6.557376661581162,3,,simple_adversary
+biased+1,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.0195227579730517,3,,simple_adversary
+biased+1,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",3.177003332422237,3,,simple_adversary
+biased+1,non-gaussian,removed,BC,3.2135888186803525,3,,simple_adversary
+biased+1,non-gaussian,removed,"diffusion (best t, selected after the fact)",3.811360018105341,4,,simple_adversary
+biased+1,non-gaussian,removed,noisy,1.9269878732637604,4,,simple_adversary
+biased+1,non-gaussian,removed,clean,6.846215602345015,4,,simple_adversary
+biased+1,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.577041254849794,4,,simple_adversary
+biased+1,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",3.638589563742223,4,,simple_adversary
+biased+1,non-gaussian,removed,BC,3.3536941822324704,4,,simple_adversary
+delay 3,non-gaussian,removed,"diffusion (best t, selected after the fact)",5.794916403180414,0,,simple_adversary
+delay 3,non-gaussian,removed,noisy,2.5565362553143247,0,,simple_adversary
+delay 3,non-gaussian,removed,clean,7.022844658749776,0,,simple_adversary
+delay 3,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.517975831881058,0,,simple_adversary
+delay 3,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",4.877297978122215,0,,simple_adversary
+delay 3,non-gaussian,removed,BC,3.1991156476145077,0,,simple_adversary
+delay 3,non-gaussian,removed,"diffusion (best t, selected after the fact)",5.691844976307457,1,,simple_adversary
+delay 3,non-gaussian,removed,noisy,2.409318073610648,1,,simple_adversary
+delay 3,non-gaussian,removed,clean,6.836746398163752,1,,simple_adversary
+delay 3,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.4573926973101465,1,,simple_adversary
+delay 3,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",4.716139994093421,1,,simple_adversary
+delay 3,non-gaussian,removed,BC,3.1405054332241087,1,,simple_adversary
+delay 3,non-gaussian,removed,"diffusion (best t, selected after the fact)",5.701886598383544,2,,simple_adversary
+delay 3,non-gaussian,removed,noisy,2.4495099671936686,2,,simple_adversary
+delay 3,non-gaussian,removed,clean,6.907827922921399,2,,simple_adversary
+delay 3,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.248555079689893,2,,simple_adversary
+delay 3,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",4.910091842652637,2,,simple_adversary
+delay 3,non-gaussian,removed,BC,3.2104014453627503,2,,simple_adversary
+delay 3,non-gaussian,removed,"diffusion (best t, selected after the fact)",5.324824450618683,3,,simple_adversary
+delay 3,non-gaussian,removed,noisy,2.0075642024419835,3,,simple_adversary
+delay 3,non-gaussian,removed,clean,6.557376661581162,3,,simple_adversary
+delay 3,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.0195227579730517,3,,simple_adversary
+delay 3,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",4.537245429134635,3,,simple_adversary
+delay 3,non-gaussian,removed,BC,3.2135888186803525,3,,simple_adversary
+delay 3,non-gaussian,removed,"diffusion (best t, selected after the fact)",5.8021212892728675,4,,simple_adversary
+delay 3,non-gaussian,removed,noisy,2.3667672092608374,4,,simple_adversary
+delay 3,non-gaussian,removed,clean,6.846215602345015,4,,simple_adversary
+delay 3,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.577041254849794,4,,simple_adversary
+delay 3,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",4.8636867861688,4,,simple_adversary
+delay 3,non-gaussian,removed,BC,3.3536941822324704,4,,simple_adversary
+delay 8,non-gaussian,removed,"diffusion (best t, selected after the fact)",5.2692492952611705,0,,simple_adversary
+delay 8,non-gaussian,removed,noisy,-4.931533458849708,0,,simple_adversary
+delay 8,non-gaussian,removed,clean,7.022844658749776,0,,simple_adversary
+delay 8,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.517975831881058,0,,simple_adversary
+delay 8,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",4.545057498258278,0,,simple_adversary
+delay 8,non-gaussian,removed,BC,3.1991156476145077,0,,simple_adversary
+delay 8,non-gaussian,removed,"diffusion (best t, selected after the fact)",5.095640107464796,1,,simple_adversary
+delay 8,non-gaussian,removed,noisy,-5.293154697633871,1,,simple_adversary
+delay 8,non-gaussian,removed,clean,6.836746398163752,1,,simple_adversary
+delay 8,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.4573926973101465,1,,simple_adversary
+delay 8,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",4.385174716051397,1,,simple_adversary
+delay 8,non-gaussian,removed,BC,3.1405054332241087,1,,simple_adversary
+delay 8,non-gaussian,removed,"diffusion (best t, selected after the fact)",5.2093697075259575,2,,simple_adversary
+delay 8,non-gaussian,removed,noisy,-4.871695283344012,2,,simple_adversary
+delay 8,non-gaussian,removed,clean,6.907827922921399,2,,simple_adversary
+delay 8,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.248555079689893,2,,simple_adversary
+delay 8,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",4.544588409619767,2,,simple_adversary
+delay 8,non-gaussian,removed,BC,3.2104014453627503,2,,simple_adversary
+delay 8,non-gaussian,removed,"diffusion (best t, selected after the fact)",4.701831418309755,3,,simple_adversary
+delay 8,non-gaussian,removed,noisy,-5.4881885746441705,3,,simple_adversary
+delay 8,non-gaussian,removed,clean,6.557376661581162,3,,simple_adversary
+delay 8,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.0195227579730517,3,,simple_adversary
+delay 8,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",4.151161758817366,3,,simple_adversary
+delay 8,non-gaussian,removed,BC,3.2135888186803525,3,,simple_adversary
+delay 8,non-gaussian,removed,"diffusion (best t, selected after the fact)",5.2664901583244985,4,,simple_adversary
+delay 8,non-gaussian,removed,noisy,-5.102257769262153,4,,simple_adversary
+delay 8,non-gaussian,removed,clean,6.846215602345015,4,,simple_adversary
+delay 8,non-gaussian,removed,"B_mean (best t, selected after the fact)",3.577041254849794,4,,simple_adversary
+delay 8,non-gaussian,removed,"C1-gauss (best variant, selected after the fact)",4.4880154171705815,4,,simple_adversary
+delay 8,non-gaussian,removed,BC,3.3536941822324704,4,,simple_adversary
+no fault,no-fault,bottleneck-2,"diffusion (best t, selected after the fact)",-433.98897668992134,0,,simple_spread
+no fault,no-fault,bottleneck-2,noisy,-433.8268563062055,0,,simple_spread
+no fault,no-fault,bottleneck-2,clean,-433.82685414353887,0,,simple_spread
+no fault,no-fault,bottleneck-2,"B_mean (best t, selected after the fact)",-552.0263364279224,0,,simple_spread
+no fault,no-fault,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-437.6895213320069,0,,simple_spread
+no fault,no-fault,bottleneck-2,BC,-565.1971630633483,0,,simple_spread
+no fault,no-fault,bottleneck-2,"diffusion (best t, selected after the fact)",-429.15029966566254,1,,simple_spread
+no fault,no-fault,bottleneck-2,noisy,-429.099792304396,1,,simple_spread
+no fault,no-fault,bottleneck-2,clean,-429.09976895562346,1,,simple_spread
+no fault,no-fault,bottleneck-2,"B_mean (best t, selected after the fact)",-542.0546490401368,1,,simple_spread
+no fault,no-fault,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-434.55870895621337,1,,simple_spread
+no fault,no-fault,bottleneck-2,BC,-554.8419132044007,1,,simple_spread
+no fault,no-fault,bottleneck-2,"diffusion (best t, selected after the fact)",-435.45357745729933,2,,simple_spread
+no fault,no-fault,bottleneck-2,noisy,-435.4410054124366,2,,simple_spread
+no fault,no-fault,bottleneck-2,clean,-435.44849422599924,2,,simple_spread
+no fault,no-fault,bottleneck-2,"B_mean (best t, selected after the fact)",-556.6795430040771,2,,simple_spread
+no fault,no-fault,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-442.40338769103164,2,,simple_spread
+no fault,no-fault,bottleneck-2,BC,-548.4824534230781,2,,simple_spread
+no fault,no-fault,bottleneck-2,"diffusion (best t, selected after the fact)",-436.7172555194851,3,,simple_spread
+no fault,no-fault,bottleneck-2,noisy,-437.20587887762116,3,,simple_spread
+no fault,no-fault,bottleneck-2,clean,-437.2058757880976,3,,simple_spread
+no fault,no-fault,bottleneck-2,"B_mean (best t, selected after the fact)",-576.3313701868401,3,,simple_spread
+no fault,no-fault,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-442.6567326351968,3,,simple_spread
+no fault,no-fault,bottleneck-2,BC,-568.4794304298357,3,,simple_spread
+no fault,no-fault,bottleneck-2,"diffusion (best t, selected after the fact)",-438.1310795218492,4,,simple_spread
+no fault,no-fault,bottleneck-2,noisy,-438.3893962509621,4,,simple_spread
+no fault,no-fault,bottleneck-2,clean,-438.38967309945315,4,,simple_spread
+no fault,no-fault,bottleneck-2,"B_mean (best t, selected after the fact)",-551.2981742515186,4,,simple_spread
+no fault,no-fault,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-442.0710681173209,4,,simple_spread
+no fault,no-fault,bottleneck-2,BC,-571.9522647572437,4,,simple_spread
+gauss 1,gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-505.97260264287,0,,simple_spread
+gauss 1,gaussian,bottleneck-2,noisy,-535.736269735763,0,,simple_spread
+gauss 1,gaussian,bottleneck-2,clean,-433.82685414353887,0,,simple_spread
+gauss 1,gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-552.0263364279224,0,,simple_spread
+gauss 1,gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-525.0753588753166,0,,simple_spread
+gauss 1,gaussian,bottleneck-2,BC,-565.1971630633483,0,,simple_spread
+gauss 1,gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-502.93697569554513,1,,simple_spread
+gauss 1,gaussian,bottleneck-2,noisy,-535.6023994332832,1,,simple_spread
+gauss 1,gaussian,bottleneck-2,clean,-429.09976895562346,1,,simple_spread
+gauss 1,gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-542.0546490401368,1,,simple_spread
+gauss 1,gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-515.1363124926645,1,,simple_spread
+gauss 1,gaussian,bottleneck-2,BC,-554.8419132044007,1,,simple_spread
+gauss 1,gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-514.80417101793,2,,simple_spread
+gauss 1,gaussian,bottleneck-2,noisy,-540.5332845983182,2,,simple_spread
+gauss 1,gaussian,bottleneck-2,clean,-435.44849422599924,2,,simple_spread
+gauss 1,gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-556.6795430040771,2,,simple_spread
+gauss 1,gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-523.2033901325077,2,,simple_spread
+gauss 1,gaussian,bottleneck-2,BC,-548.4824534230781,2,,simple_spread
+gauss 1,gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-527.9096025630558,3,,simple_spread
+gauss 1,gaussian,bottleneck-2,noisy,-536.1324138523665,3,,simple_spread
+gauss 1,gaussian,bottleneck-2,clean,-437.2058757880976,3,,simple_spread
+gauss 1,gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-576.3313701868401,3,,simple_spread
+gauss 1,gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-519.1814270855758,3,,simple_spread
+gauss 1,gaussian,bottleneck-2,BC,-568.4794304298357,3,,simple_spread
+gauss 1,gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-510.9925173412794,4,,simple_spread
+gauss 1,gaussian,bottleneck-2,noisy,-539.5460144242738,4,,simple_spread
+gauss 1,gaussian,bottleneck-2,clean,-438.38967309945315,4,,simple_spread
+gauss 1,gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-551.2981742515186,4,,simple_spread
+gauss 1,gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-514.1938902438227,4,,simple_spread
+gauss 1,gaussian,bottleneck-2,BC,-571.9522647572437,4,,simple_spread
+gauss 3,gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-540.8254666591408,0,,simple_spread
+gauss 3,gaussian,bottleneck-2,noisy,-675.1025003731469,0,,simple_spread
+gauss 3,gaussian,bottleneck-2,clean,-433.82685414353887,0,,simple_spread
+gauss 3,gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-552.0263364279224,0,,simple_spread
+gauss 3,gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-545.7108468637181,0,,simple_spread
+gauss 3,gaussian,bottleneck-2,BC,-565.1971630633483,0,,simple_spread
+gauss 3,gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-539.0219155200679,1,,simple_spread
+gauss 3,gaussian,bottleneck-2,noisy,-674.4178763277631,1,,simple_spread
+gauss 3,gaussian,bottleneck-2,clean,-429.09976895562346,1,,simple_spread
+gauss 3,gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-542.0546490401368,1,,simple_spread
+gauss 3,gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-535.5238494115679,1,,simple_spread
+gauss 3,gaussian,bottleneck-2,BC,-554.8419132044007,1,,simple_spread
+gauss 3,gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-551.121897681781,2,,simple_spread
+gauss 3,gaussian,bottleneck-2,noisy,-681.6532871869913,2,,simple_spread
+gauss 3,gaussian,bottleneck-2,clean,-435.44849422599924,2,,simple_spread
+gauss 3,gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-556.6795430040771,2,,simple_spread
+gauss 3,gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-539.6882401077112,2,,simple_spread
+gauss 3,gaussian,bottleneck-2,BC,-548.4824534230781,2,,simple_spread
+gauss 3,gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-563.5805860868785,3,,simple_spread
+gauss 3,gaussian,bottleneck-2,noisy,-681.2332857575076,3,,simple_spread
+gauss 3,gaussian,bottleneck-2,clean,-437.2058757880976,3,,simple_spread
+gauss 3,gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-576.3313701868401,3,,simple_spread
+gauss 3,gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-537.831641853059,3,,simple_spread
+gauss 3,gaussian,bottleneck-2,BC,-568.4794304298357,3,,simple_spread
+gauss 3,gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-541.2250308264016,4,,simple_spread
+gauss 3,gaussian,bottleneck-2,noisy,-685.8760103249535,4,,simple_spread
+gauss 3,gaussian,bottleneck-2,clean,-438.38967309945315,4,,simple_spread
+gauss 3,gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-551.2981742515186,4,,simple_spread
+gauss 3,gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-531.3197816417128,4,,simple_spread
+gauss 3,gaussian,bottleneck-2,BC,-571.9522647572437,4,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-519.1085479407573,0,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,noisy,-571.7734575815402,0,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,clean,-433.82685414353887,0,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-552.0263364279224,0,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-520.455698949357,0,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,BC,-565.1971630633483,0,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-516.0258218174116,1,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,noisy,-564.4741473437188,1,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,clean,-429.09976895562346,1,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-542.0546490401368,1,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-513.1911647714862,1,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,BC,-554.8419132044007,1,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-523.6615212182488,2,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,noisy,-574.3784952206652,2,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,clean,-435.44849422599924,2,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-556.6795430040771,2,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-515.8080865786711,2,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,BC,-548.4824534230781,2,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-532.9944794064817,3,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,noisy,-579.2799065100866,3,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,clean,-437.2058757880976,3,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-576.3313701868401,3,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-515.1730905676718,3,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,BC,-568.4794304298357,3,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-521.7448397861901,4,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,noisy,-575.3104384244211,4,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,clean,-438.38967309945315,4,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-551.2981742515186,4,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-512.1146681156778,4,,simple_spread
+stuck .5,non-gaussian,bottleneck-2,BC,-571.9522647572437,4,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-538.2139859789677,0,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,noisy,-1079.6602746075523,0,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,clean,-433.82685414353887,0,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-552.0263364279224,0,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-544.6751447939348,0,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,BC,-565.1971630633483,0,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-539.8593181317624,1,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,noisy,-1078.065342598782,1,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,clean,-429.09976895562346,1,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-542.0546490401368,1,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-543.783310120592,1,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,BC,-554.8419132044007,1,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-551.5616050597971,2,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,noisy,-1082.5196693728585,2,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,clean,-435.44849422599924,2,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-556.6795430040771,2,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-546.8061361072537,2,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,BC,-548.4824534230781,2,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-558.1262352359659,3,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,noisy,-1075.521056087199,3,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,clean,-437.2058757880976,3,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-576.3313701868401,3,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-542.396567617032,3,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,BC,-568.4794304298357,3,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-543.4305669025059,4,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,noisy,-1073.7674221956695,4,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,clean,-438.38967309945315,4,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-551.2981742515186,4,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-538.3014212117381,4,,simple_spread
+stuck 1,non-gaussian,bottleneck-2,BC,-571.9522647572437,4,,simple_spread
+biased+1,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-524.8849284934197,0,,simple_spread
+biased+1,non-gaussian,bottleneck-2,noisy,-565.8707665884731,0,,simple_spread
+biased+1,non-gaussian,bottleneck-2,clean,-433.82685414353887,0,,simple_spread
+biased+1,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-552.0263364279224,0,,simple_spread
+biased+1,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-540.1327303727091,0,,simple_spread
+biased+1,non-gaussian,bottleneck-2,BC,-565.1971630633483,0,,simple_spread
+biased+1,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-523.9029499543444,1,,simple_spread
+biased+1,non-gaussian,bottleneck-2,noisy,-564.9251592241933,1,,simple_spread
+biased+1,non-gaussian,bottleneck-2,clean,-429.09976895562346,1,,simple_spread
+biased+1,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-542.0546490401368,1,,simple_spread
+biased+1,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-530.9359647289389,1,,simple_spread
+biased+1,non-gaussian,bottleneck-2,BC,-554.8419132044007,1,,simple_spread
+biased+1,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-537.5977520171647,2,,simple_spread
+biased+1,non-gaussian,bottleneck-2,noisy,-571.7018005484389,2,,simple_spread
+biased+1,non-gaussian,bottleneck-2,clean,-435.44849422599924,2,,simple_spread
+biased+1,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-556.6795430040771,2,,simple_spread
+biased+1,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-538.952651546742,2,,simple_spread
+biased+1,non-gaussian,bottleneck-2,BC,-548.4824534230781,2,,simple_spread
+biased+1,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-558.6835628578539,3,,simple_spread
+biased+1,non-gaussian,bottleneck-2,noisy,-571.6133674657879,3,,simple_spread
+biased+1,non-gaussian,bottleneck-2,clean,-437.2058757880976,3,,simple_spread
+biased+1,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-576.3313701868401,3,,simple_spread
+biased+1,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-534.1055506394333,3,,simple_spread
+biased+1,non-gaussian,bottleneck-2,BC,-568.4794304298357,3,,simple_spread
+biased+1,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-531.8258921046431,4,,simple_spread
+biased+1,non-gaussian,bottleneck-2,noisy,-575.7868910970179,4,,simple_spread
+biased+1,non-gaussian,bottleneck-2,clean,-438.38967309945315,4,,simple_spread
+biased+1,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-551.2981742515186,4,,simple_spread
+biased+1,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-528.1211446217785,4,,simple_spread
+biased+1,non-gaussian,bottleneck-2,BC,-571.9522647572437,4,,simple_spread
+delay 3,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-475.8461992303695,0,,simple_spread
+delay 3,non-gaussian,bottleneck-2,noisy,-499.317078890044,0,,simple_spread
+delay 3,non-gaussian,bottleneck-2,clean,-433.82685414353887,0,,simple_spread
+delay 3,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-552.0263364279224,0,,simple_spread
+delay 3,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-479.45078897523706,0,,simple_spread
+delay 3,non-gaussian,bottleneck-2,BC,-565.1971630633483,0,,simple_spread
+delay 3,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-471.15559757166193,1,,simple_spread
+delay 3,non-gaussian,bottleneck-2,noisy,-494.9840012542892,1,,simple_spread
+delay 3,non-gaussian,bottleneck-2,clean,-429.09976895562346,1,,simple_spread
+delay 3,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-542.0546490401368,1,,simple_spread
+delay 3,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-473.7764558103779,1,,simple_spread
+delay 3,non-gaussian,bottleneck-2,BC,-554.8419132044007,1,,simple_spread
+delay 3,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-484.46786016897147,2,,simple_spread
+delay 3,non-gaussian,bottleneck-2,noisy,-498.1808837843721,2,,simple_spread
+delay 3,non-gaussian,bottleneck-2,clean,-435.44849422599924,2,,simple_spread
+delay 3,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-556.6795430040771,2,,simple_spread
+delay 3,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-483.8288867421652,2,,simple_spread
+delay 3,non-gaussian,bottleneck-2,BC,-548.4824534230781,2,,simple_spread
+delay 3,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-487.36688042744566,3,,simple_spread
+delay 3,non-gaussian,bottleneck-2,noisy,-499.4234338463315,3,,simple_spread
+delay 3,non-gaussian,bottleneck-2,clean,-437.2058757880976,3,,simple_spread
+delay 3,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-576.3313701868401,3,,simple_spread
+delay 3,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-479.650306734978,3,,simple_spread
+delay 3,non-gaussian,bottleneck-2,BC,-568.4794304298357,3,,simple_spread
+delay 3,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-477.65766964020463,4,,simple_spread
+delay 3,non-gaussian,bottleneck-2,noisy,-501.6237946235095,4,,simple_spread
+delay 3,non-gaussian,bottleneck-2,clean,-438.38967309945315,4,,simple_spread
+delay 3,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-551.2981742515186,4,,simple_spread
+delay 3,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-479.91260027951677,4,,simple_spread
+delay 3,non-gaussian,bottleneck-2,BC,-571.9522647572437,4,,simple_spread
+delay 8,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-532.8630226946078,0,,simple_spread
+delay 8,non-gaussian,bottleneck-2,noisy,-681.8590946163346,0,,simple_spread
+delay 8,non-gaussian,bottleneck-2,clean,-433.82685414353887,0,,simple_spread
+delay 8,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-552.0263364279224,0,,simple_spread
+delay 8,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-523.194900654575,0,,simple_spread
+delay 8,non-gaussian,bottleneck-2,BC,-565.1971630633483,0,,simple_spread
+delay 8,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-534.9147939527015,1,,simple_spread
+delay 8,non-gaussian,bottleneck-2,noisy,-677.3155243145695,1,,simple_spread
+delay 8,non-gaussian,bottleneck-2,clean,-429.09976895562346,1,,simple_spread
+delay 8,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-542.0546490401368,1,,simple_spread
+delay 8,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-519.3664519666978,1,,simple_spread
+delay 8,non-gaussian,bottleneck-2,BC,-554.8419132044007,1,,simple_spread
+delay 8,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-546.8265430685847,2,,simple_spread
+delay 8,non-gaussian,bottleneck-2,noisy,-683.5747342026463,2,,simple_spread
+delay 8,non-gaussian,bottleneck-2,clean,-435.44849422599924,2,,simple_spread
+delay 8,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-556.6795430040771,2,,simple_spread
+delay 8,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-526.0400570095692,2,,simple_spread
+delay 8,non-gaussian,bottleneck-2,BC,-548.4824534230781,2,,simple_spread
+delay 8,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-553.204523706052,3,,simple_spread
+delay 8,non-gaussian,bottleneck-2,noisy,-681.1557536722843,3,,simple_spread
+delay 8,non-gaussian,bottleneck-2,clean,-437.2058757880976,3,,simple_spread
+delay 8,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-576.3313701868401,3,,simple_spread
+delay 8,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-519.2275422193276,3,,simple_spread
+delay 8,non-gaussian,bottleneck-2,BC,-568.4794304298357,3,,simple_spread
+delay 8,non-gaussian,bottleneck-2,"diffusion (best t, selected after the fact)",-540.0428908658239,4,,simple_spread
+delay 8,non-gaussian,bottleneck-2,noisy,-683.3378965199221,4,,simple_spread
+delay 8,non-gaussian,bottleneck-2,clean,-438.38967309945315,4,,simple_spread
+delay 8,non-gaussian,bottleneck-2,"B_mean (best t, selected after the fact)",-551.2981742515186,4,,simple_spread
+delay 8,non-gaussian,bottleneck-2,"C1-gauss (best variant, selected after the fact)",-518.2021454689025,4,,simple_spread
+delay 8,non-gaussian,bottleneck-2,BC,-571.9522647572437,4,,simple_spread

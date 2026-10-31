@@ -1,0 +1,5 @@
+sp_prob,reward_noisy,reward_with_diff_t10,reward_with_diff_t20,reward_with_diff_t40,best_reward_with_diffusion,pct_inc_vs_no_diffusion,best_variant,reward_with_diff_t10_1step,reward_with_diff_t10_chain,reward_with_diff_t20_1step,reward_with_diff_t20_chain,reward_with_diff_t40_1step,reward_with_diff_t40_chain
+0.00,-8.34,-8.30,-8.24,-8.17,-8.17,2.03,1step@40,-8.30,-8.35,-8.24,-8.35,-8.17,-8.35
+0.10,-10.66,-9.17,-8.71,-8.33,-8.33,21.84,1step@40,-9.48,-9.17,-8.88,-8.71,-8.33,-8.44
+0.20,-13.67,-10.68,-9.55,-8.61,-8.61,36.98,chain@40,-11.43,-10.68,-10.22,-9.55,-8.78,-8.61
+0.40,-18.91,-14.02,-11.48,-9.04,-9.04,52.22,chain@40,-15.34,-14.02,-13.15,-11.48,-9.76,-9.04

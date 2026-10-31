@@ -1,0 +1,4 @@
+phase,scenario,varied,info_level,method,mode,t,fault,level,seed,reward_mean,reward_std,reward_adv_mean,reward_adv_std,reward_good_mean,reward_good_std,action_mse_per_agent,action_cos_per_agent,msg_acc,start_hash,fault_state_hash,n_episodes,seconds
+reg,simple_spread,shared,full,clean,,,gauss,1.0,0,-433.82685414353887,65.1345273001063,,,,,0.000000|0.000000|0.000000,1.000000|1.000000|1.000000,,3463017446,,800,15.4
+reg,simple_spread,shared,full,noisy,,,gauss,1.0,0,-535.736269735763,78.42574611435953,,,,,0.502291|0.504339|0.504296,0.341905|0.338288|0.339366,,3463017446,3858433563,800,14.5
+reg,simple_spread,shared,full,bc,,,gauss,1.0,0,-469.4063889715989,72.95906555467644,,,,,0.150894|0.156851|0.179235,0.446469|0.411500|0.338588,,3463017446,,800,16.6

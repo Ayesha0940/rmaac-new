@@ -1,0 +1,6 @@
+phase,scenario,info_level,method,policy,fault,level,t_start,seed,reward_mean,reward_std,action_mse_per_agent,action_mse_det_per_agent,msg_acc,msg_acc_det,start_hash,fault_state_hash,n_episodes,seconds,schedule,oracle,reward_adv_mean,reward_adv_std,reward_good_mean,reward_good_std
+smoke,simple_spread,full,clean,m3ddpg,biased_gauss_mu+1,1.0,,0,-431.91210750576954,75.44670257062369,0.000000|0.000000|0.000000,0.029612|0.027607|0.030362,,,2763149307,,10,1.6,,,,,,
+smoke,simple_spread,full,noisy,m3ddpg,biased_gauss_mu+1,1.0,,0,-535.5403779242545,82.49397810794079,0.522033|0.542712|0.559966,0.525279|0.547671|0.562743,,,2763149307,2023589559,10,1.6,,,,,,
+smoke,simple_spread,full,S0_legacy_chain@10,m3ddpg,biased_gauss_mu+1,1.0,A0:10|A1:10|A2:10,0,-506.41823476378596,82.27308147538805,0.153295|0.152489|0.151002,0.157374|0.153397|0.150509,,,2763149307,2023589559,10,1.9,S0,0,,,,
+smoke,simple_spread,full,S1_1step@20,m3ddpg,biased_gauss_mu+1,1.0,A0:20|A1:20|A2:20,0,-515.459424351965,85.22466375082736,0.286802|0.296844|0.300850,0.290760|0.300227|0.302940,,,2763149307,2023589559,10,1.8,S1,0,,,,
+smoke,simple_spread,full,S1_ORACLE_chain_match_scaled,m3ddpg,biased_gauss_mu+1,1.0,A0:73|A1:73|A2:74,0,-515.9903695785026,72.36458851755567,0.144789|0.141788|0.155712,0.148090|0.141996|0.158470,,,2763149307,2023589559,10,2.7,S1,1,,,,

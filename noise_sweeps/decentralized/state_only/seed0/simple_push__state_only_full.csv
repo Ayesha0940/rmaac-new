@@ -1,0 +1,3 @@
+scenario,method,mode,seed,reward_mean,reward_std,action_mse_per_agent,action_cos_per_agent,msg_acc,n_episodes,start_hash,seconds,model_sha
+simple_push,clean,full,0,-8.344630961146766,4.770513483860421,0.0000|0.0000,1.0000|1.0000,,800,3066067778,8.2,
+simple_push,state_only,full,0,-8.80237471551088,5.1140640096338945,0.0842|0.0965,0.6897|0.6413,,800,3066067778,75.5,2c433b5248c9cc07|99722583ff0b6eaf

@@ -1,0 +1,2 @@
+phase,scenario,info_level,method,policy,fault,level,t_start,seed,reward_mean,reward_std,action_mse_per_agent,action_mse_det_per_agent,msg_acc,msg_acc_det,start_hash,fault_state_hash,n_episodes,seconds,schedule,oracle,reward_adv_mean,reward_adv_std,reward_good_mean,reward_good_std
+reg,simple_spread,full,S0_legacy_chain@10,m3ddpg,gauss,3.0,A0:10|A1:10|A2:10,0,-573.3740634376736,108.02658234148134,0.135163|0.139581|0.137672,0.135007|0.138637|0.137037,,,3463017446,3858433563,800,37.0,S0,0,,,,

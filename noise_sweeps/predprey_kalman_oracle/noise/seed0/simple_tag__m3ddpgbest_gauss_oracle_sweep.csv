@@ -1,0 +1,4 @@
+action_noise_std,pred_reward_baseline,prey_reward_baseline,captures_baseline,survival_baseline,best_pred_reward,best_pred_reward_hparam,best_prey_reward,best_prey_reward_hparam,best_captures,best_captures_hparam,best_survival,best_survival_hparam
+0.0,96.75,-33.39,3.23,14.19,103.69,"q=1.0,r=0.01",-22.97,"q=0.05,r=0.2",3.46,"q=1.0,r=0.01",15.44,"q=0.05,r=0.2"
+1.5,25.61,-15.79,0.85,18.91,28.88,"q=1.0,r=0.01",-15.36,"q=0.2,r=0.05",0.96,"q=1.0,r=0.01",19.58,"q=0.05,r=0.2"
+3.0,21.45,-20.57,0.71,19.00,20.18,"q=1.0,r=0.05",-18.11,"q=0.2,r=0.01",0.67,"q=1.0,r=0.05",20.53,"q=0.05,r=0.2"

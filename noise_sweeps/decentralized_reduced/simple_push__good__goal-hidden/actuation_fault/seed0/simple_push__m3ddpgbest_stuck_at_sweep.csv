@@ -1,0 +1,5 @@
+sp_prob,reward_noisy,reward_bc_reduced,best_reward_with_diffusion,best_reward_with_diffusion_full_obs,best_variant_reduced,best_variant_bc,restores,beats_bc
+0.00,-8.34,-15.88,-8.26,-8.17,1step@40,1step@40,0,1
+0.10,-10.66,-15.86,-8.62,-8.33,1step@40,1step@40,1,1
+0.20,-13.67,-15.97,-9.33,-8.61,1step@40,1step@40,1,1
+0.40,-18.91,-16.11,-10.14,-9.04,chain@40,chain@40,1,1

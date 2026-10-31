@@ -1,0 +1,30 @@
+REGISTERED PREDICTIONS -- MPE Config-B confirmation run
+Written 2026-10-11, before any confirmation training or evaluation was started.
+
+Setup: Config B (S1 cosine schedule, T=100; scaled input x_t = sqrt(abar_t) * normalized noisy action; standard DDPM
+posterior chain). Seeds 0-4 (0-2 reused from il.csv / Step 2, 3-4 new). Faults: gauss std 0/1/3, biased +1 std 1,
+delay 3/8, stuck 0.5/1; clip to [-1,1]; 800 episodes; only the varied agents faulted/corrected.
+Metric: REWARD (MPE defines no success): summed over agents for speaker_listener and spread, good-agent reward for
+simple_adversary (Physical Deception). Methods: denoiser best-t over {5,10,20,30,40,60,80,99} x {one-step, chain}
+(selected after the fact); noisy; BC; B_mean (same 16 variants, x = 0); best reconstructor = best of
+{C1 (S1) unscaled, C1-t (S1, sqrt(abar_t) scaling, same 8 t), C1-linear (S0-trained) unscaled, C1-linear-t (S0 abar)}.
+
+Rules (fixed now):
+- Qualifying cells = faulted cells where noisy is worse than clean by > 2 SE in il.csv seed 0.
+- v2 verdict per cell: WIN if mean(den) - mean(X) > max(sd_den, sd_X) for every X in {noisy, BC, B_mean, best
+  reconstructor}; LOSE if any X beats den by that margin; else TIE. sd = across-seed sd over the 5 seeds.
+
+P1 Speaker-Listener, target removed from y_i (speaker 'removed'): WIN across seeds.
+   HELD if WIN in >= N1 = 3 of its 3 qualifying cells (gauss 1, gauss 3, biased+1) and LOSE in none.
+   Rationale for N1: the seed-0 screen beat noisy and BC by > 2 SE in 3/3 qualifying cells and Step 2 (seeds 0-2)
+   gave 3 WIN / 0 TIE / 0 LOSE there; any qualifying cell dropping to TIE reads BROKEN.
+
+P2 Physical Deception, target removed from y_i (adversary good 'removed'): WIN across seeds.
+   HELD if WIN in >= N2 = 4 of its 7 qualifying cells and LOSE in none.
+   Rationale for N2: the seed-0 screen beat noisy and BC in 7/7 qualifying cells; the multi-baseline Step 2 count
+   over seeds 0-2 was 4 WIN / 3 TIE / 0 LOSE; 3 or fewer WINs reads BROKEN.
+
+P3 Bottleneck control (continuous compression): the reconstructor ties or beats the denoiser.
+   Checked separately on SL listener bottleneck-1, adversary bottleneck-1, spread bottleneck-2, spread bottleneck-4.
+   HELD for a level if, in more than half of its qualifying cells, mean(den) - mean(best reconstructor)
+   <= max(sd_den, sd_recon). Overall HELD if it holds on all 4 levels; the per-level result is reported either way.

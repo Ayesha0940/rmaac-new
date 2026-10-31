@@ -285,9 +285,9 @@ else:
                       for m in ["no_filter", "diffusion", "kalman"]]
     fig.legend(handles=color_handles + style_handles,
                loc="lower center", ncol=len(color_handles) + len(style_handles), frameon=False,
-               bbox_to_anchor=(0.5, -0.015), columnspacing=1.2, handlelength=2.2)
+               bbox_to_anchor=(0.5, -0.035), columnspacing=1.2, handlelength=2.2)
 
-    fig.tight_layout(rect=(0.01, 0.030, 1, 1))
+    fig.tight_layout(rect=(0.01, 0.008, 1, 1), pad=0.15)
     fig.subplots_adjust(wspace=0.30, hspace=0.18)
 
     for ext, kw in (("pdf", {}), ("png", {"dpi": 300})):

@@ -1,0 +1,22 @@
+REGISTERED PREDICTIONS -- MPE corruption-shift run (Config B, metric = reward)
+Written 2026-10-12, before any C1-gauss model was trained or evaluated.
+
+Levels: simple_adversary good 'removed' (Physical Deception, target removed); simple_spread 'bottleneck-2' (unimodal control).
+Seeds 0-4. Faults: Gaussian = {gauss 1, gauss 3}; non-Gaussian = {stuck 0.5, stuck 1, biased +1, delay 3, delay 8};
+no-fault (gauss 0) reported, not counted. Same harness, seeding, projection and 800 episodes as the confirm run.
+
+C1-gauss (the reconstructor for this run): trained ONLY on the deployment Gaussian fault model
+a~ = clip(a + sigma*eps, -1, 1), sigma ~ U(0, 3), normalized, direct clean-action regression (MSE). Never retrained per test
+fault; never sees stuck / bias / delay. Evaluated unscaled and with sqrt(abar_t) scaling (S1, t in {5,10,20,30,40,60,80,99});
+best variant per cell and seed selected after the fact (labelled).
+Diffusion denoiser: trained on clean actions with Gaussian forward-process noise (never sees a fault model); best of
+16 variants per cell and seed selected after the fact (labelled).
+
+Blindness note: the diffusion, B_mean, BC, clean and noisy rows for these cells are the existing confirm-run rows
+(seeds 0-4) and were already seen before this file was written. The C1-gauss rows are new and unseen.
+
+Margin m = max(sd_den, sd_C1) across the 5 seeds.
+S1 Gaussian cells (each level): C1-gauss >= diffusion. HELD if in neither Gaussian cell mean(den) - mean(C1) > m.
+S2 Non-Gaussian cells (each level): diffusion beats C1-gauss. HELD for a level if mean(den) - mean(C1) > m in >= 4 of
+   the 5 non-Gaussian cells and mean(C1) - mean(den) > m in none. If not, the claim is BROKEN for that level.
+S3 Spread bottleneck-2 (unimodal control): S2 HELD on this level = corruption-agnostic evidence (reported as its own line).

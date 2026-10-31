@@ -1,0 +1,3 @@
+scenario,method,seed,reward_mean,reward_std,n_episodes,start_hash
+simple_spread,clean,0,-433.83,65.13,800,3463017446
+simple_spread,bc,0,-469.41,72.96,800,3463017446

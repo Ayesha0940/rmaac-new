@@ -1,0 +1,2 @@
+reward_pred_bc,reward_prey_bc,captures_bc,survival_bc,reward_pred_policy_maddpg,reward_prey_policy_maddpg,captures_policy_maddpg,survival_policy_maddpg,reward_pred_policy_earnie,reward_prey_policy_earnie,captures_policy_earnie,survival_policy_earnie,reward_pred_policy_rmaac,reward_prey_policy_rmaac,captures_policy_rmaac,survival_policy_rmaac,reward_pred_policy_m3ddpg,reward_prey_policy_m3ddpg,captures_policy_m3ddpg,survival_policy_m3ddpg
+116.59,-42.32,3.89,15.11,78.41,-28.38,2.61,16.43,151.16,-53.69,5.04,13.39,150.68,-50.50,5.02,13.84,103.28,-35.47,3.44,14.09

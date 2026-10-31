@@ -1,0 +1,5 @@
+delay_k,reward_noisy,reward_bc_reduced,best_reward_with_diffusion,best_reward_with_diffusion_full_obs,best_variant_reduced,best_variant_bc,restores,beats_bc
+0.00,-8.34,-15.88,-8.26,-8.17,1step@40,1step@40,0,1
+1.00,-9.26,-15.91,-8.64,-8.52,1step@40,1step@40,1,1
+2.00,-11.15,-15.98,-9.34,-8.96,1step@40,chain@40,1,1
+4.00,-15.79,-16.16,-11.19,-9.68,chain@40,chain@40,1,1

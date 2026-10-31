@@ -1,0 +1,142 @@
+Reduced-observation screen vs BC -- decentralized protocol (all agents faulted and corrected), M3DDPG, seed 0, 800 episodes.
+Reward summed over agents. Denoiser / BC = best of t in {10,20,40} x {one-step, chain} per cell (selected after the fact);
+in the BC run the reduced agent(s) act with BC (no fault) and every other agent is corrected by its full denoiser.
+RESTORES: reduced denoiser > noisy by 2 SE. BEATS-BC: reduced denoiser > BC by 2 SE. Counts over the 17 faulted cells.
+
+======================================================================================================================
+Cooperative Communication: speaker goal colour removed   (simple_speaker_listener / speaker / removed; clean = -33.69)
+======================================================================================================================
+cell                      noisy         BC  den reduced den full-obs  red. var   BC var      RESTORES BEATS-BC
+delay 0.0 *              -33.69     -62.22       -30.59       -30.54  1step@40   chain@40         yes      yes
+delay 1.0                -34.30     -62.16       -30.70       -30.63  1step@40   chain@40         yes      yes
+delay 2.0                -36.48     -62.27       -31.03       -30.94  1step@40   chain@40         yes      yes
+delay 4.0                -48.29     -63.11       -32.32       -32.12  chain@40   chain@40         yes      yes
+stuck 0.0 *              -33.69     -62.22       -30.59       -30.54  1step@40   chain@40         yes      yes
+stuck 0.1                -40.95     -62.13       -31.27       -31.22  1step@40   chain@40         yes      yes
+stuck 0.2                -51.48     -62.44       -31.81       -31.74  chain@40   chain@40         yes      yes
+stuck 0.4               -104.33     -63.81       -33.51       -33.44  chain@40   chain@40         yes      yes
+biased 0.0 mu-1          -82.50     -62.41       -30.86       -30.76  chain@40   chain@40         yes      yes
+biased 1.0 mu-1          -94.55     -64.69       -48.38       -36.33  chain@40   chain@40         yes      yes
+biased 2.0 mu-1         -148.26     -68.35       -62.17       -47.69  chain@40   chain@40         yes      yes
+biased 3.0 mu-1         -182.90     -69.65       -66.93       -53.14  chain@40   chain@40         yes       no
+gauss 0.0 mu+0 *         -33.69     -62.22       -30.59       -30.54  1step@40   chain@40         yes      yes
+gauss 1.0 mu+0           -86.21     -64.44       -49.49       -36.97  chain@40   chain@40         yes      yes
+gauss 2.0 mu+0          -146.22     -66.81       -61.76       -45.85  chain@40   chain@40         yes      yes
+gauss 3.0 mu+0          -181.81     -67.75       -65.92       -50.66  chain@40   chain@40         yes       no
+biased 0.0 mu+1         -135.37     -65.40       -68.76       -37.65  chain@40   chain@40         yes       no
+biased 1.0 mu+1         -103.28     -63.93       -57.21       -36.30  chain@40   chain@40         yes      yes
+biased 2.0 mu+1         -141.17     -65.17       -62.29       -41.50  chain@40   chain@40         yes       no
+biased 3.0 mu+1         -174.16     -66.30       -65.12       -46.37  chain@40   chain@40         yes       no
+(* no fault, not counted)   RESTORES 17 / 17   BEATS-BC 12 / 17   hash mismatches vs decentralized run: 0
+
+======================================================================================================================
+Cooperative Communication: listener message removed   (simple_speaker_listener / listener / removed; clean = -33.69)
+======================================================================================================================
+cell                      noisy         BC  den reduced den full-obs  red. var   BC var      RESTORES BEATS-BC
+delay 0.0 *              -33.69     -84.91       -33.40       -30.54  1step@40   1step@10          no      yes
+delay 1.0                -34.30     -84.91       -33.98       -30.63  1step@40   1step@10          no      yes
+delay 2.0                -36.48     -84.91       -36.21       -30.94  1step@40   1step@10          no      yes
+delay 4.0                -48.29     -84.91       -45.97       -32.12  1step@40   1step@10          no      yes
+stuck 0.0 *              -33.69     -84.91       -33.40       -30.54  1step@40   1step@10          no      yes
+stuck 0.1                -40.95     -84.91       -37.80       -31.22  1step@40   1step@10          no      yes
+stuck 0.2                -51.48     -84.91       -43.11       -31.74  1step@40   1step@10         yes      yes
+stuck 0.4               -104.33     -84.91       -63.75       -33.44  chain@40   1step@10         yes      yes
+biased 0.0 mu-1          -82.50     -84.91       -33.17       -30.76  chain@20   1step@10         yes      yes
+biased 1.0 mu-1          -94.55     -84.91       -58.65       -36.33  chain@40   1step@10         yes      yes
+biased 2.0 mu-1         -148.26     -84.91       -84.58       -47.69  chain@40   1step@10         yes       no
+biased 3.0 mu-1         -182.90     -84.91       -92.15       -53.14  chain@40   1step@10         yes       no
+gauss 0.0 mu+0 *         -33.69     -84.91       -33.40       -30.54  1step@40   1step@10          no      yes
+gauss 1.0 mu+0           -86.21     -84.91       -63.36       -36.97  chain@40   1step@10         yes      yes
+gauss 2.0 mu+0          -146.22     -84.91       -83.52       -45.85  chain@40   1step@10         yes       no
+gauss 3.0 mu+0          -181.81     -84.91       -89.55       -50.66  chain@40   1step@10         yes       no
+biased 0.0 mu+1         -135.37     -84.91       -93.28       -37.65  chain@40   1step@10         yes       no
+biased 1.0 mu+1         -103.28     -84.91       -78.79       -36.30  chain@40   1step@10         yes       no
+biased 2.0 mu+1         -141.17     -84.91       -83.98       -41.50  chain@40   1step@10         yes       no
+biased 3.0 mu+1         -174.16     -84.91       -88.05       -46.37  chain@40   1step@10         yes       no
+(* no fault, not counted)   RESTORES 13 / 17   BEATS-BC 9 / 17   hash mismatches vs decentralized run: 0
+
+======================================================================================================================
+Physical Deception: good agents' goal position removed   (simple_adversary / good / removed; clean = 4.25)
+======================================================================================================================
+cell                      noisy         BC  den reduced den full-obs  red. var   BC var      RESTORES BEATS-BC
+delay 0.0 *                4.25      -8.17         4.26         4.49  1step@40   1step@10          no      yes
+delay 1.0                  2.65      -7.81         3.22         3.63  1step@40   chain@10          no      yes
+delay 2.0                  0.32      -7.32         1.47         2.25  chain@40   chain@10         yes      yes
+delay 4.0                 -4.24      -6.37        -1.90        -0.15  chain@40   1step@10         yes      yes
+stuck 0.0 *                4.25      -8.17         4.26         4.49  1step@40   1step@10          no      yes
+stuck 0.1                  3.32      -8.20         4.07         4.39  1step@40   chain@40          no      yes
+stuck 0.2                  1.22      -8.11         3.74         4.19  1step@40   chain@20         yes      yes
+stuck 0.4                 -6.02      -7.70         2.59         3.61  1step@40   chain@20         yes      yes
+biased 0.0 mu-1            4.25      -7.82         4.03         4.48  chain@40   1step@10          no      yes
+biased 1.0 mu-1           -1.81      -6.72        -0.77         2.55  chain@40   1step@10         yes      yes
+biased 2.0 mu-1          -13.51      -6.71        -6.09         0.12  chain@40   1step@10         yes       no
+biased 3.0 mu-1          -22.08      -6.78        -8.17        -0.90  chain@40   chain@10         yes       no
+gauss 0.0 mu+0 *           4.25      -8.17         4.26         4.49  1step@40   1step@10          no      yes
+gauss 1.0 mu+0            -2.94      -6.68        -1.88         2.13  chain@40   1step@10          no      yes
+gauss 2.0 mu+0           -14.46      -6.56        -6.04         0.35  chain@40   1step@10         yes       no
+gauss 3.0 mu+0           -22.40      -6.65        -7.74        -0.51  chain@40   chain@10         yes       no
+biased 0.0 mu+1          -20.53      -6.16        -9.43        -0.10  chain@40   1step@40         yes       no
+biased 1.0 mu+1           -7.00      -6.51        -5.79         1.63  chain@40   1step@10          no       no
+biased 2.0 mu+1          -14.93      -6.54        -6.80         0.72  chain@40   1step@10         yes       no
+biased 3.0 mu+1          -22.25      -6.49        -7.65         0.00  chain@40   chain@10         yes       no
+(* no fault, not counted)   RESTORES 12 / 17   BEATS-BC 9 / 17   hash mismatches vs decentralized run: 0
+
+======================================================================================================================
+Keep-away: good agent's goal position + own colour removed   (simple_push / good / goal-hidden; clean = -8.34)
+======================================================================================================================
+cell                      noisy         BC  den reduced den full-obs  red. var   BC var      RESTORES BEATS-BC
+delay 0.0 *               -8.34     -15.88        -8.26        -8.17  1step@40   1step@40          no      yes
+delay 1.0                 -9.26     -15.91        -8.64        -8.52  1step@40   1step@40         yes      yes
+delay 2.0                -11.15     -15.98        -9.34        -8.96  1step@40   chain@40         yes      yes
+delay 4.0                -15.79     -16.16       -11.19        -9.68  chain@40   chain@40         yes      yes
+stuck 0.0 *               -8.34     -15.88        -8.26        -8.17  1step@40   1step@40          no      yes
+stuck 0.1                -10.66     -15.86        -8.62        -8.33  1step@40   1step@40         yes      yes
+stuck 0.2                -13.67     -15.97        -9.33        -8.61  1step@40   1step@40         yes      yes
+stuck 0.4                -18.91     -16.11       -10.14        -9.04  chain@40   chain@40         yes      yes
+biased 0.0 mu-1           -8.34     -15.94        -8.31        -8.24  chain@10   chain@40          no      yes
+biased 1.0 mu-1          -15.62     -16.21       -11.99        -9.62  chain@40   chain@40         yes      yes
+biased 2.0 mu-1          -22.53     -16.56       -14.68       -11.32  chain@40   chain@40         yes      yes
+biased 3.0 mu-1          -26.10     -16.79       -15.67       -12.03  chain@40   chain@40         yes      yes
+gauss 0.0 mu+0 *          -8.34     -15.88        -8.26        -8.17  1step@40   1step@40          no      yes
+gauss 1.0 mu+0           -16.57     -16.34       -12.54        -9.94  chain@40   chain@40         yes      yes
+gauss 2.0 mu+0           -23.36     -16.59       -14.93       -11.22  chain@40   chain@40         yes      yes
+gauss 3.0 mu+0           -26.74     -16.70       -15.60       -11.75  chain@40   chain@40         yes      yes
+biased 0.0 mu+1          -25.54     -17.11       -17.01       -12.60  chain@40   chain@40         yes       no
+biased 1.0 mu+1          -19.87     -16.59       -14.62       -10.71  chain@40   chain@40         yes      yes
+biased 2.0 mu+1          -23.89     -16.66       -15.12       -11.12  chain@40   chain@40         yes      yes
+biased 3.0 mu+1          -26.87     -16.74       -15.60       -11.54  chain@40   chain@40         yes      yes
+(* no fault, not counted)   RESTORES 16 / 17   BEATS-BC 16 / 17   hash mismatches vs decentralized run: 0
+
+======================================================================================================================
+Cooperative Navigation: other agents' positions (+ empty comm) removed   (simple_spread / shared / others-removed; clean = -433.83)
+======================================================================================================================
+cell                      noisy         BC  den reduced den full-obs  red. var   BC var      RESTORES BEATS-BC
+delay 0.0 *             -433.83    -502.24      -432.87      -433.31  1step@20   1step@10          no      yes
+delay 1.0               -438.89    -502.24      -438.76      -437.15  1step@20   1step@10          no      yes
+delay 2.0               -463.53    -502.24      -458.34      -453.83  1step@40   1step@10          no      yes
+delay 4.0               -537.98    -502.24      -520.29      -489.57  chain@40   1step@10         yes       no
+stuck 0.0 *             -433.83    -502.24      -432.87      -433.31  1step@20   1step@10          no      yes
+stuck 0.1               -452.26    -502.24      -449.97      -447.57  1step@20   1step@10          no      yes
+stuck 0.2               -476.31    -502.24      -471.50      -465.98  1step@40   1step@10          no      yes
+stuck 0.4               -532.18    -502.24      -515.11      -487.72  1step@40   1step@10         yes       no
+biased 0.0 mu-1         -433.83    -502.24      -438.72      -437.53  chain@20   1step@10          no      yes
+biased 1.0 mu-1         -523.22    -502.24      -511.63      -490.50  chain@40   1step@10         yes       no
+biased 2.0 mu-1         -624.14    -502.24      -558.76      -520.24  chain@40   1step@10         yes       no
+biased 3.0 mu-1         -673.67    -502.24      -572.93      -529.35  chain@40   1step@10         yes       no
+gauss 0.0 mu+0 *        -433.83    -502.24      -432.88      -433.31  1step@20   1step@10          no      yes
+gauss 1.0 mu+0          -535.74    -502.24      -510.90      -485.66  chain@40   1step@10         yes       no
+gauss 2.0 mu+0          -626.99    -502.24      -548.34      -506.34  chain@40   1step@10         yes       no
+gauss 3.0 mu+0          -675.10    -502.24      -562.86      -514.58  chain@40   1step@10         yes       no
+biased 0.0 mu+1         -646.14    -502.24      -523.30      -480.93  chain@40   1step@10         yes       no
+biased 1.0 mu+1         -565.87    -502.24      -514.55      -477.60  chain@40   1step@10         yes       no
+biased 2.0 mu+1         -630.90    -502.24      -534.42      -491.08  chain@40   1step@10         yes       no
+biased 3.0 mu+1         -672.65    -502.24      -547.95      -500.54  chain@40   1step@10         yes       no
+(* no fault, not counted)   RESTORES 12 / 17   BEATS-BC 5 / 17   hash mismatches vs decentralized run: 0
+
+======================================================================================================================
+SUMMARY (17 faulted cells per level)
+  Cooperative Communication: speaker goal colour removed                   RESTORES 17/17   BEATS-BC 12/17
+  Cooperative Communication: listener message removed                      RESTORES 13/17   BEATS-BC  9/17
+  Physical Deception: good agents' goal position removed                   RESTORES 12/17   BEATS-BC  9/17
+  Keep-away: good agent's goal position + own colour removed               RESTORES 16/17   BEATS-BC 16/17
+  Cooperative Navigation: other agents' positions (+ empty comm) removed   RESTORES 12/17   BEATS-BC  5/17

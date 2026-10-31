@@ -1,0 +1,198 @@
+==================================================================================================================================
+TASK simple_speaker_listener   varied agent: speaker   corrected+faulted agents: [0]   reward = summed over agents
+==================================================================================================================================
+level                     gauss 0          gauss 1          gauss 3         biased+1          delay 3          delay 8         stuck .5          stuck 1          BC
+clean policy                -33.7
+noisy policy                -33.7            -50.6            -69.7            -67.5            -33.7            -33.8            -33.8            -33.9
+
+denoiser = best t (selected after the fact, not deployable): value [t, mode: s=1step c=chain]
+full                 -33.6 [40,s]     -33.6 [60,s]     -33.6 [80,s]     -33.4 [60,s]     -33.6 [40,s]     -33.6 [40,s]     -33.6 [40,s]     -33.6 [40,s]       -33.7
+removed              -33.6 [40,s]     -45.7 [20,c]     -59.7 [30,c]     -53.7 [30,c]     -33.6 [10,s]     -33.7 [10,s]     -33.6 [40,s]      -33.8 [5,s]       -67.9
+bottleneck-1         -33.6 [40,s]     -33.5 [60,s]     -33.6 [60,s]     -33.5 [60,s]     -33.6 [40,s]     -33.6 [40,s]     -33.6 [60,c]     -33.6 [60,c]       -33.7
+bottleneck-2         -33.6 [60,c]     -33.6 [60,c]     -33.6 [80,c]     -33.6 [60,c]     -33.6 [60,c]     -33.6 [60,c]     -33.6 [60,c]     -33.6 [60,c]       -33.6
+
+level               RECONSTRUCTS NEEDS-ACTION (BC < threshold)
+full              no (0/3 cells)        no (BC -33.7 vs -40.9)
+removed           no (0/3 cells)       YES (BC -67.9 vs -40.9)
+bottleneck-1      no (0/3 cells)        no (BC -33.7 vs -40.9)
+bottleneck-2      no (0/3 cells)        no (BC -33.6 vs -40.9)
+
+CANDIDATE NARROW SET (simple_speaker_listener / speaker): none
+
+Action MSE vs clean (mean over corrected agents): best-t denoiser / noisy
+level                     gauss 0          gauss 1          gauss 3         biased+1          delay 3          delay 8         stuck .5          stuck 1
+full                  0.001/0.000      0.002/0.499      0.003/0.992      0.002/0.474      0.001/0.002      0.001/0.002      0.001/0.001      0.001/0.003
+removed               0.001/0.000      0.219/0.499      0.352/0.992      0.287/0.474      0.002/0.002      0.002/0.002      0.001/0.001      0.002/0.003
+bottleneck-1          0.001/0.000      0.002/0.499      0.009/0.992      0.002/0.474      0.001/0.002      0.001/0.002      0.001/0.001      0.001/0.003
+bottleneck-2          0.001/0.000      0.003/0.499      0.002/0.992      0.002/0.474      0.001/0.002      0.001/0.002      0.001/0.001      0.001/0.003
+BC action MSE / cosine (corrected agents), fault-independent:
+  full           mse 0.001  cos 0.998
+  removed        mse 0.216  cos 0.583
+  bottleneck-1   mse 0.001  cos 0.998
+  bottleneck-2   mse 0.001  cos 0.998
+
+Action cosine vs clean (mean over corrected agents): best-t denoiser / noisy
+level                     gauss 0          gauss 1          gauss 3         biased+1          delay 3          delay 8         stuck .5          stuck 1
+full                  0.998/1.000      0.997/0.454      0.996/0.155      0.997/0.622      0.998/0.997      0.998/0.996      0.998/0.998      0.998/0.996
+removed               0.999/1.000      0.643/0.454      0.439/0.155      0.532/0.622      0.997/0.997      0.997/0.996      0.998/0.998      0.996/0.996
+bottleneck-1          0.998/1.000      0.997/0.454      0.987/0.155      0.998/0.622      0.998/0.997      0.998/0.996      0.998/0.998      0.998/0.996
+bottleneck-2          0.998/1.000      0.997/0.454      0.997/0.155      0.997/0.622      0.998/0.997      0.998/0.996      0.998/0.998      0.998/0.996
+
+Message accuracy (speaker): best-t denoiser / noisy
+level                     gauss 0          gauss 1          gauss 3         biased+1          delay 3          delay 8         stuck .5          stuck 1
+full                  0.998/1.000      0.998/0.609      0.998/0.413      0.998/0.513      0.998/0.997      0.998/0.997      0.998/0.998      0.998/0.996
+removed               1.000/1.000      0.599/0.609      0.405/0.413      0.486/0.513      0.997/0.997      0.997/0.997      0.998/0.998      0.996/0.996
+bottleneck-1          0.998/1.000      0.998/0.609      0.986/0.413      0.998/0.513      0.998/0.997      0.998/0.997      0.998/0.998      0.998/0.996
+bottleneck-2          0.998/1.000      0.997/0.609      0.998/0.413      0.998/0.513      0.998/0.997      0.998/0.997      0.998/0.998      0.998/0.996
+
+==================================================================================================================================
+TASK simple_speaker_listener   varied agent: listener   corrected+faulted agents: [1]   reward = summed over agents
+==================================================================================================================================
+level                     gauss 0          gauss 1          gauss 3         biased+1          delay 3          delay 8         stuck .5          stuck 1          BC
+clean policy                -33.7
+noisy policy                -33.7            -63.7           -158.6            -82.6            -41.3           -100.8           -135.3           -382.6
+
+denoiser = best t (selected after the fact, not deployable): value [t, mode: s=1step c=chain]
+full                 -30.6 [60,s]     -31.9 [80,s]     -32.3 [80,c]     -32.1 [80,s]     -30.8 [60,s]     -31.8 [80,s]     -31.9 [80,s]     -32.3 [80,s]       -33.2
+removed              -33.4 [30,s]     -60.7 [60,c]     -79.8 [60,c]     -74.9 [60,c]     -40.7 [40,s]     -64.3 [60,s]     -60.6 [60,s]     -80.3 [80,s]       -84.9
+bottleneck-1         -33.2 [10,s]     -57.0 [40,c]     -79.9 [80,s]     -70.1 [40,c]     -37.6 [40,s]     -56.4 [60,s]     -55.0 [60,s]     -72.8 [80,s]       -92.8
+bottleneck-2         -31.1 [40,c]     -32.9 [60,c]     -33.9 [80,c]     -33.5 [60,c]     -31.7 [60,c]     -33.3 [60,c]     -33.3 [60,c]     -34.0 [80,c]       -33.3
+bottleneck-4         -30.1 [40,s]     -32.0 [80,s]     -32.3 [80,s]     -32.4 [80,c]     -31.3 [60,s]     -32.0 [60,c]     -32.1 [60,c]     -32.5 [80,c]       -32.2
+
+level               RECONSTRUCTS NEEDS-ACTION (BC < threshold)
+full              no (0/7 cells)       no (BC -33.2 vs -103.5)
+removed           no (0/7 cells)       no (BC -84.9 vs -103.5)
+bottleneck-1      no (0/7 cells)       no (BC -92.8 vs -103.5)
+bottleneck-2      no (0/7 cells)       no (BC -33.3 vs -103.5)
+bottleneck-4      no (0/7 cells)       no (BC -32.2 vs -103.5)
+
+CANDIDATE NARROW SET (simple_speaker_listener / listener): none
+
+Action MSE vs clean (mean over corrected agents): best-t denoiser / noisy
+level                     gauss 0          gauss 1          gauss 3         biased+1          delay 3          delay 8         stuck .5          stuck 1
+full                  0.056/0.000      0.101/0.504      0.137/0.915      0.104/0.542      0.087/0.154      0.100/0.224      0.096/0.166      0.104/0.320
+removed               0.004/0.000      0.138/0.504      0.180/0.915      0.155/0.542      0.131/0.154      0.126/0.224      0.089/0.166      0.122/0.320
+bottleneck-1          0.001/0.000      0.137/0.504      0.126/0.915      0.162/0.542      0.123/0.154      0.121/0.224      0.092/0.166      0.123/0.320
+bottleneck-2          0.032/0.000      0.125/0.504      0.141/0.915      0.134/0.542      0.112/0.154      0.125/0.224      0.109/0.166      0.139/0.320
+bottleneck-4          0.020/0.000      0.103/0.504      0.109/0.915      0.136/0.542      0.087/0.154      0.120/0.224      0.109/0.166      0.136/0.320
+BC action MSE / cosine (corrected agents), fault-independent:
+  full           mse 0.109  cos 0.568
+  removed        mse 0.128  cos 0.528
+  bottleneck-1   mse 0.124  cos 0.541
+  bottleneck-2   mse 0.105  cos 0.583
+  bottleneck-4   mse 0.107  cos 0.571
+
+Action cosine vs clean (mean over corrected agents): best-t denoiser / noisy
+level                     gauss 0          gauss 1          gauss 3         biased+1          delay 3          delay 8         stuck .5          stuck 1
+full                  0.763/1.000      0.591/0.338      0.506/0.117      0.577/0.521      0.645/0.542      0.601/0.393      0.613/0.505      0.583/0.145
+removed               0.981/1.000      0.520/0.338      0.409/0.117      0.452/0.521      0.575/0.542      0.558/0.393      0.665/0.505      0.544/0.145
+bottleneck-1          0.997/1.000      0.522/0.338      0.543/0.117      0.418/0.521      0.583/0.542      0.567/0.393      0.648/0.505      0.551/0.145
+bottleneck-2          0.852/1.000      0.546/0.338      0.496/0.117      0.503/0.521      0.578/0.542      0.545/0.393      0.587/0.505      0.500/0.145
+bottleneck-4          0.898/1.000      0.585/0.338      0.566/0.117      0.505/0.521      0.642/0.542      0.550/0.393      0.581/0.505      0.506/0.145
+
+==================================================================================================================================
+TASK simple_adversary   varied agent: good   corrected+faulted agents: [1, 2]   reward = good-agent reward
+==================================================================================================================================
+level                     gauss 0          gauss 1          gauss 3         biased+1          delay 3          delay 8         stuck .5          stuck 1          BC
+clean policy                  7.0
+noisy policy                  7.0              3.4             -2.2              2.0              2.6             -4.9              2.6            -14.5
+
+denoiser = best t (selected after the fact, not deployable): value [t, mode: s=1step c=chain]
+full                   7.1 [40,s]       6.8 [80,c]       6.7 [99,c]       6.7 [99,c]       6.8 [80,c]       6.8 [80,c]       6.8 [60,s]       6.8 [80,c]         6.9
+removed                7.1 [30,s]       4.9 [60,c]       3.9 [80,s]       3.9 [80,s]       5.8 [60,s]       5.3 [60,c]       6.3 [60,s]       5.2 [60,c]         3.2
+bottleneck-1            7.0 [5,s]       5.1 [60,c]       4.4 [80,s]       4.4 [60,s]       5.2 [60,s]       4.7 [80,s]       5.3 [60,s]       4.6 [80,s]         4.0
+bottleneck-2           7.1 [60,s]       6.8 [80,s]       6.7 [80,s]       6.6 [80,s]       6.8 [80,s]       6.7 [80,s]       6.8 [80,s]       6.7 [80,s]         6.7
+bottleneck-4           7.1 [40,s]       6.9 [80,s]       6.8 [80,s]       6.8 [80,s]       6.8 [80,s]       6.8 [80,s]       6.9 [80,s]       6.8 [80,s]         6.9
+
+level               RECONSTRUCTS NEEDS-ACTION (BC < threshold)
+full              no (0/7 cells)            no (BC 6.9 vs 2.7)
+removed           no (0/7 cells)            no (BC 3.2 vs 2.7)
+bottleneck-1      no (0/7 cells)            no (BC 4.0 vs 2.7)
+bottleneck-2      no (0/7 cells)            no (BC 6.7 vs 2.7)
+bottleneck-4      no (0/7 cells)            no (BC 6.9 vs 2.7)
+
+CANDIDATE NARROW SET (simple_adversary / good): none
+
+Action MSE vs clean (mean over corrected agents): best-t denoiser / noisy
+level                     gauss 0          gauss 1          gauss 3         biased+1          delay 3          delay 8         stuck .5          stuck 1
+full                  0.010/0.000      0.108/0.504      0.118/0.912      0.118/0.542      0.102/0.115      0.104/0.172      0.064/0.146      0.105/0.277
+removed               0.004/0.000      0.134/0.504      0.117/0.912      0.113/0.542      0.067/0.115      0.106/0.172      0.062/0.146      0.115/0.277
+bottleneck-1          0.000/0.000      0.134/0.504      0.116/0.912      0.216/0.542      0.069/0.115      0.096/0.172      0.072/0.146      0.099/0.277
+bottleneck-2          0.028/0.000      0.076/0.504      0.090/0.912      0.087/0.542      0.065/0.115      0.070/0.172      0.066/0.146      0.073/0.277
+bottleneck-4          0.009/0.000      0.081/0.504      0.090/0.912      0.086/0.542      0.073/0.115      0.075/0.172      0.073/0.146      0.077/0.277
+BC action MSE / cosine (corrected agents), fault-independent:
+  full           mse 0.085  cos 0.655
+  removed        mse 0.117  cos 0.574
+  bottleneck-1   mse 0.102  cos 0.605
+  bottleneck-2   mse 0.079  cos 0.673
+  bottleneck-4   mse 0.082  cos 0.667
+
+Action cosine vs clean (mean over corrected agents): best-t denoiser / noisy
+level                     gauss 0          gauss 1          gauss 3         biased+1          delay 3          delay 8         stuck .5          stuck 1
+full                  0.954/1.000      0.599/0.338      0.579/0.118      0.579/0.518      0.621/0.660      0.613/0.517      0.737/0.582      0.610/0.242
+removed               0.982/1.000      0.535/0.338      0.557/0.118      0.571/0.518      0.752/0.660      0.630/0.517      0.755/0.582      0.596/0.242
+bottleneck-1          1.000/1.000      0.528/0.338      0.553/0.118      0.367/0.518      0.742/0.660      0.621/0.517      0.722/0.582      0.609/0.242
+bottleneck-2          0.882/1.000      0.681/0.338      0.629/0.118      0.650/0.518      0.731/0.660      0.716/0.517      0.726/0.582      0.700/0.242
+bottleneck-4          0.959/1.000      0.668/0.338      0.636/0.118      0.646/0.518      0.700/0.660      0.691/0.517      0.699/0.582      0.685/0.242
+
+==================================================================================================================================
+TASK simple_spread   varied agent: shared   corrected+faulted agents: [0, 1, 2]   reward = summed over agents
+==================================================================================================================================
+level                     gauss 0          gauss 1          gauss 3         biased+1          delay 3          delay 8         stuck .5          stuck 1          BC
+clean policy               -433.8
+noisy policy               -433.8           -535.7           -675.1           -565.9           -499.3           -681.9           -571.8          -1079.7
+
+denoiser = best t (selected after the fact, not deployable): value [t, mode: s=1step c=chain]
+full                -433.3 [10,s]    -465.4 [80,c]    -467.4 [80,c]    -466.5 [80,c]    -461.9 [60,c]    -464.3 [80,c]    -463.6 [80,c]    -465.4 [80,c]      -469.4
+coarse-8            -434.0 [30,s]    -511.1 [60,s]    -529.2 [80,c]    -526.9 [60,c]    -489.3 [60,s]    -525.4 [80,c]    -516.4 [60,s]    -529.0 [80,c]      -526.8
+coarse-4            -433.7 [30,s]    -522.2 [60,s]    -558.0 [80,c]    -544.4 [60,c]    -490.6 [60,s]    -549.8 [80,c]    -520.9 [60,s]    -553.6 [80,c]      -559.8
+removed              -434.0 [5,s]     -539.1 [5,c]    -616.0 [60,s]     -580.1 [5,c]     -499.6 [5,s]    -597.0 [60,s]    -548.3 [60,s]    -618.0 [80,c]      -649.0
+bottleneck-1         -434.4 [5,s]    -532.9 [60,s]    -591.7 [80,s]    -560.2 [60,s]    -485.8 [60,s]    -570.5 [80,s]    -543.4 [60,s]    -581.2 [80,s]      -583.2
+bottleneck-2         -434.0 [5,s]    -506.0 [60,s]    -540.8 [80,s]    -524.9 [60,s]    -475.8 [60,s]    -532.9 [80,s]    -519.1 [60,s]    -538.2 [80,s]      -565.2
+bottleneck-4        -433.7 [10,s]    -497.7 [60,s]    -511.8 [80,s]    -506.0 [60,s]    -481.8 [60,s]    -509.9 [80,s]    -505.2 [60,s]    -513.4 [80,s]      -534.2
+
+level               RECONSTRUCTS NEEDS-ACTION (BC < threshold)
+full              no (0/7 cells)      no (BC -469.4 vs -563.0)
+coarse-8          no (0/7 cells)      no (BC -526.8 vs -563.0)
+coarse-4          no (0/7 cells)      no (BC -559.8 vs -563.0)
+removed           no (0/7 cells)     YES (BC -649.0 vs -563.0)
+bottleneck-1      no (0/7 cells)     YES (BC -583.2 vs -563.0)
+bottleneck-2      no (0/7 cells)     YES (BC -565.2 vs -563.0)
+bottleneck-4      no (0/7 cells)      no (BC -534.2 vs -563.0)
+
+CANDIDATE NARROW SET (simple_spread / shared): none
+
+Action MSE vs clean (mean over corrected agents): best-t denoiser / noisy
+level                     gauss 0          gauss 1          gauss 3         biased+1          delay 3          delay 8         stuck .5          stuck 1
+full                  0.001/0.000      0.185/0.504      0.188/0.912      0.187/0.542      0.153/0.168      0.186/0.210      0.184/0.160      0.187/0.304
+coarse-8              0.003/0.000      0.120/0.504      0.195/0.912      0.170/0.542      0.113/0.168      0.190/0.210      0.103/0.160      0.192/0.304
+coarse-4              0.003/0.000      0.118/0.504      0.200/0.912      0.172/0.542      0.116/0.168      0.192/0.210      0.100/0.160      0.195/0.304
+removed               0.000/0.000      0.141/0.504      0.174/0.912      0.126/0.542      0.168/0.168      0.151/0.210      0.106/0.160      0.210/0.304
+bottleneck-1          0.000/0.000      0.115/0.504      0.141/0.912      0.121/0.542      0.117/0.168      0.130/0.210      0.108/0.160      0.136/0.304
+bottleneck-2          0.000/0.000      0.112/0.504      0.134/0.912      0.118/0.542      0.111/0.168      0.123/0.210      0.099/0.160      0.126/0.304
+bottleneck-4          0.000/0.000      0.118/0.504      0.144/0.912      0.125/0.542      0.111/0.168      0.136/0.210      0.104/0.160      0.139/0.304
+BC action MSE / cosine (corrected agents), fault-independent:
+  full           mse 0.162  cos 0.399
+  coarse-8       mse 0.158  cos 0.411
+  coarse-4       mse 0.158  cos 0.410
+  removed        mse 0.171  cos 0.351
+  bottleneck-1   mse 0.139  cos 0.463
+  bottleneck-2   mse 0.149  cos 0.421
+  bottleneck-4   mse 0.160  cos 0.389
+
+Action cosine vs clean (mean over corrected agents): best-t denoiser / noisy
+level                     gauss 0          gauss 1          gauss 3         biased+1          delay 3          delay 8         stuck .5          stuck 1
+full                  0.997/1.000      0.381/0.340      0.371/0.118      0.374/0.519      0.463/0.508      0.377/0.415      0.382/0.526      0.372/0.165
+coarse-8              0.986/1.000      0.546/0.340      0.354/0.118      0.413/0.519      0.590/0.508      0.372/0.415      0.606/0.526      0.364/0.165
+coarse-4              0.987/1.000      0.559/0.340      0.350/0.118      0.416/0.519      0.594/0.508      0.373/0.415      0.618/0.526      0.363/0.165
+removed               1.000/1.000      0.535/0.340      0.410/0.118      0.538/0.519      0.506/0.508      0.493/0.415      0.598/0.526      0.319/0.165
+bottleneck-1          1.000/1.000      0.572/0.340      0.462/0.118      0.537/0.519      0.584/0.508      0.509/0.415      0.601/0.526      0.482/0.165
+bottleneck-2          1.000/1.000      0.579/0.340      0.481/0.118      0.542/0.519      0.597/0.508      0.526/0.415      0.623/0.526      0.512/0.165
+bottleneck-4          0.998/1.000      0.555/0.340      0.451/0.118      0.508/0.519      0.583/0.508      0.480/0.415      0.599/0.526      0.468/0.165
+
+==================================================================================================================================
+SUMMARY: levels that are both RECONSTRUCTS and NEEDS-ACTION
+  simple_speaker_listener    speaker  : none
+  simple_speaker_listener    listener : none
+  simple_adversary           good     : none
+  simple_spread              shared   : none

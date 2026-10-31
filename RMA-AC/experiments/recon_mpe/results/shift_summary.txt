@@ -1,0 +1,87 @@
+PREDICTION CHECK (registered in results/predictions_shift.txt; margin m = max(sd_diffusion, sd_C1-gauss), 5 seeds)
+  S1 Gaussian cells, Physical Deception, target removed       BROKEN  diffusion - C1-gauss on gauss 1 / gauss 3 = +0.99 / +0.20 (HELD if neither > m)
+  S2 non-Gaussian cells, Physical Deception, target removed   HELD    diffusion beats C1-gauss by > m in 4 of 5 cells, C1-gauss beats diffusion by > m in 0 (HELD if >= 4 and 0)
+  S1 Gaussian cells, spread bottleneck-2 (unimodal control)   HELD    diffusion - C1-gauss on gauss 1 / gauss 3 = +6.83 / -9.14 (HELD if neither > m)
+  S2 non-Gaussian cells, spread bottleneck-2 (unimodal control) BROKEN  diffusion beats C1-gauss by > m in 0 of 5 cells, C1-gauss beats diffusion by > m in 2 (HELD if >= 4 and 0)
+  S3 spread bottleneck-2 (unimodal control): BROKEN
+
+Notes: metric = reward (MPE has no success; success column empty). Diffusion, B_mean, BC, clean and noisy rows are the
+existing confirm-run rows (seeds 0-4), seen before the predictions were registered; C1-gauss rows are new.
+The diffusion denoiser is trained on clean actions with Gaussian forward-process noise (never sees a fault model).
+C1-gauss manifest (all 10 checkpoints): method c2, corruption 'clip(a+sigma*eps,-1,1), sigma~U(0,max_std) [knows noise model]', max_std 3.0, Gaussian-only; checkpoint hashes
+identical across all evaluation parts of the same (level, seed); all checkpoints older than the first evaluation part.
+Start-state / fault hashes equal to the existing rows: checked in 80 (level, cell, seed) groups, skipped (episode count differs) in 0.
+
+==============================================================================================================================
+Physical Deception, target removed   (simple_adversary / good / removed; reward = good-agent reward)
+==============================================================================================================================
+-- NO FAULT (reported, not counted)
+                                            no fault
+clean                                      6.83±0.17
+noisy                                      6.83±0.17
+BC                                         3.22±0.08
+B_mean (best t, after the fact)            3.36±0.23
+diffusion (best t, after the fact)         6.87±0.17
+C1-gauss (best variant, after fact)         5.51±0.16
+diffusion - C1-gauss / margin             +1.37/0.17
+v2 verdict (vs noisy,BC,B_mean,C1g)               TIE
+C1-gauss best variant per seed      no fault: s0:unscaled,s1:unscaled,s2:unscaled,s3:unscaled,s4:unscaled
+-- GAUSSIAN cells (matched to C1-gauss training)
+                                             gauss 1           gauss 3
+clean                                      6.83±0.17         6.83±0.17
+noisy                                      3.18±0.20        -2.47±0.27
+BC                                         3.22±0.08         3.22±0.08
+B_mean (best t, after the fact)            3.36±0.23         3.36±0.23
+diffusion (best t, after the fact)         4.74±0.20         3.58±0.30
+C1-gauss (best variant, after fact)         3.75±0.18         3.39±0.19
+diffusion - C1-gauss / margin             +0.99/0.20        +0.20/0.30
+v2 verdict (vs noisy,BC,B_mean,C1g)               WIN               TIE
+C1-gauss best variant per seed      gauss 1: s0:t60,s1:t60,s2:t60,s3:t60,s4:t60 | gauss 3: s0:t40,s1:t60,s2:t60,s3:t60,s4:t60
+-- NON-GAUSSIAN cells (unmatched: C1-gauss never trained on these)
+                                            stuck .5           stuck 1          biased+1           delay 3           delay 8
+clean                                      6.83±0.17         6.83±0.17         6.83±0.17         6.83±0.17         6.83±0.17
+noisy                                      2.11±0.31       -14.81±0.34         1.89±0.28         2.36±0.21        -5.14±0.26
+BC                                         3.22±0.08         3.22±0.08         3.22±0.08         3.22±0.08         3.22±0.08
+B_mean (best t, after the fact)            3.36±0.23         3.36±0.23         3.36±0.23         3.36±0.23         3.36±0.23
+diffusion (best t, after the fact)         6.07±0.22         5.06±0.24         3.66±0.28         5.66±0.20         5.11±0.24
+C1-gauss (best variant, after fact)         4.91±0.19         4.33±0.20         3.49±0.19         4.78±0.16         4.42±0.17
+diffusion - C1-gauss / margin             +1.16/0.22        +0.73/0.24        +0.17/0.28        +0.88/0.20        +0.69/0.24
+v2 verdict (vs noisy,BC,B_mean,C1g)               WIN               WIN               TIE               WIN               WIN
+C1-gauss best variant per seed      stuck .5: s0:unscaled,s1:unscaled,s2:unscaled,s3:unscaled,s4:unscaled | stuck 1: s0:unscaled,s1:unscaled,s2:unscaled,s3:unscaled,s4:unscaled | biased+1: s0:t40,s1:t40,s2:t60,s3:t40,s4:t40 | delay 3: s0:unscaled,s1:unscaled,s2:unscaled,s3:unscaled,s4:unscaled | delay 8: s0:unscaled,s1:unscaled,s2:unscaled,s3:unscaled,s4:unscaled
+
+==============================================================================================================================
+spread bottleneck-2 (unimodal control)   (simple_spread / shared / bottleneck-2; reward = summed over agents)
+==============================================================================================================================
+-- NO FAULT (reported, not counted)
+                                            no fault
+clean                                   -434.79±3.62
+noisy                                   -434.79±3.62
+BC                                      -561.79±9.81
+B_mean (best t, after the fact)        -555.68±12.71
+diffusion (best t, after the fact)      -434.69±3.45
+C1-gauss (best variant, after fact)      -439.88±3.61
+diffusion - C1-gauss / margin             +5.19/3.61
+v2 verdict (vs noisy,BC,B_mean,C1g)               TIE
+C1-gauss best variant per seed      no fault: s0:unscaled,s1:unscaled,s2:unscaled,s3:t10,s4:t5
+-- GAUSSIAN cells (matched to C1-gauss training)
+                                             gauss 1           gauss 3
+clean                                   -434.79±3.62      -434.79±3.62
+noisy                                   -537.51±2.34      -679.66±4.83
+BC                                      -561.79±9.81      -561.79±9.81
+B_mean (best t, after the fact)        -555.68±12.71     -555.68±12.71
+diffusion (best t, after the fact)      -512.52±9.74     -547.15±10.33
+C1-gauss (best variant, after fact)      -519.36±4.80      -538.01±5.32
+diffusion - C1-gauss / margin             +6.83/9.74       -9.14/10.33
+v2 verdict (vs noisy,BC,B_mean,C1g)               TIE               TIE
+C1-gauss best variant per seed      gauss 1: s0:t60,s1:t60,s2:t60,s3:t60,s4:t60 | gauss 3: s0:t60,s1:t60,s2:t60,s3:t60,s4:t60
+-- NON-GAUSSIAN cells (unmatched: C1-gauss never trained on these)
+                                            stuck .5           stuck 1          biased+1           delay 3           delay 8
+clean                                   -434.79±3.62      -434.79±3.62      -434.79±3.62      -434.79±3.62      -434.79±3.62
+noisy                                   -573.04±5.50     -1077.91±3.44      -569.98±4.52      -498.71±2.43      -681.45±2.52
+BC                                      -561.79±9.81      -561.79±9.81      -561.79±9.81      -561.79±9.81      -561.79±9.81
+B_mean (best t, after the fact)        -555.68±12.71     -555.68±12.71     -555.68±12.71     -555.68±12.71     -555.68±12.71
+diffusion (best t, after the fact)      -522.71±6.43      -546.24±8.41     -535.38±14.16      -479.30±6.57      -541.57±8.45
+C1-gauss (best variant, after fact)      -515.35±3.22      -543.19±3.17      -534.45±5.13      -479.32±3.59      -521.21±3.30
+diffusion - C1-gauss / margin             -7.36/6.43        -3.05/8.41       -0.93/14.16        +0.02/6.57       -20.36/8.45
+v2 verdict (vs noisy,BC,B_mean,C1g)              LOSE               TIE               TIE               TIE              LOSE
+C1-gauss best variant per seed      stuck .5: s0:t80,s1:t60,s2:t60,s3:t60,s4:t60 | stuck 1: s0:t80,s1:t80,s2:t80,s3:t80,s4:t80 | biased+1: s0:t60,s1:t40,s2:t20,s3:t60,s4:t30 | delay 3: s0:t60,s1:t60,s2:t60,s3:t60,s4:t60 | delay 8: s0:t80,s1:t80,s2:t80,s3:t80,s4:t80

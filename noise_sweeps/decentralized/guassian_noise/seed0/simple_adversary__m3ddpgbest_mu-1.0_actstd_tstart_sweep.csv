@@ -1,0 +1,5 @@
+noise_mu,action_noise_std,reward_no_noise,reward_noise_no_diffusion,reward_with_diff_t10,reward_with_diff_t20,reward_with_diff_t40,best_reward_with_diffusion,pct_inc_vs_no_diffusion,best_variant,reward_with_diff_t10_1step,reward_with_diff_t10_chain,reward_with_diff_t20_1step,reward_with_diff_t20_chain,reward_with_diff_t40_1step,reward_with_diff_t40_chain
+-1.00,0.00,4.25,4.25,4.26,4.38,4.48,4.48,5.36,chain@40,-20.52,4.26,-20.53,4.38,-20.53,4.48
+-1.00,1.00,4.25,-1.81,-0.74,0.56,2.55,2.55,241.22,chain@40,-15.10,-0.74,-18.33,0.56,-10.64,2.55
+-1.00,2.00,4.25,-13.51,-7.20,-4.37,0.12,0.12,100.89,chain@40,-15.16,-7.20,-20.35,-4.37,-14.47,0.12
+-1.00,3.00,4.25,-22.08,-10.22,-6.48,-0.90,-0.90,95.91,chain@40,-16.51,-10.22,-21.43,-6.48,-16.11,-0.90
