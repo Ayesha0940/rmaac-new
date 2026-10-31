@@ -1,0 +1,11 @@
+attack,noise_mu,severity,level,reward_no_recovery,reward_mlp,reward_kalman
+delay,,1,low,-29.22,-64.23,
+delay,,8,high,-97.92,-56.10,
+stuck_at,,0.1,low,-40.00,-63.18,
+stuck_at,,1.0,high,-390.43,-57.39,
+gauss,0.0,1.0,low,-86.87,-64.36,-85.06
+gauss,0.0,3.0,high,-182.08,-67.92,
+biased_gauss,1.0,1.0,low,-97.74,-70.11,-97.81
+biased_gauss,1.0,3.0,high,-169.02,-64.84,
+biased_gauss,-1.0,1.0,low,-94.61,-64.93,-95.83
+biased_gauss,-1.0,3.0,high,-179.47,-68.72,

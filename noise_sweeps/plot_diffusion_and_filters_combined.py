@@ -86,12 +86,14 @@ LINESTYLES = {
     "no_filter": (0, ()),          # matches plot_combined.py's "-" baseline
     "diffusion": (0, (1, 1)),      # matches plot_combined.py's ":" diffusion line
     "kalman":    (0, (6, 2, 1, 2)),  # long dash + dot, coarser than a tight dash-dot so it reads at panel scale
+    "mlp":       (0, (4, 1.5)),      # plain dash, the one style not used above
 }
-LINEWIDTHS = {"no_filter": 1.2, "diffusion": 1.2, "kalman": 1.3}
+LINEWIDTHS = {"no_filter": 1.2, "diffusion": 1.2, "kalman": 1.3, "mlp": 1.2}
 METHOD_LABEL = {
     "no_filter": "no diffusion (baseline)",  # exact label text from plot_combined.py
     "diffusion": "with diffusion (ours)",    # exact label text from plot_combined.py
     "kalman":    "Kalman",
+    "mlp":       "reconstruction",
 }
 
 
@@ -202,20 +204,44 @@ noise_f = {s: {a: _agg_filter(dfs, "action_noise_std") for a, dfs in m.items()} 
 biaspos_f = {s: {a: _agg_filter(dfs, "action_noise_std") for a, dfs in m.items()} for s, m in _biaspos_f_raw.items()}
 biasneg_f = {s: {a: _agg_filter(dfs, "action_noise_std") for a, dfs in m.items()} for s, m in _biasneg_f_raw.items()}
 
-# (title, x_col, xlabel, ddpm_data, filter_data) -- same order/titles as
+# ── MLP joint-action denoiser ("reconstruction"): MADDPG only, trained on the
+# episode's initial state like the DDPM, evaluated at low/high severity only
+# (run_mlp_denoiser_sweep.py), so each panel has two points per scenario ────
+MLP_RE = re.compile(r"^(simple_.+?)__maddpgbest_mlp_sweep\.csv$")
+_mlp_raw = defaultdict(list)
+for f in sorted((NOISE_DIR / "mlp_denoiser_initial").glob("seed*/*_mlp_sweep.csv")):
+    m = MLP_RE.match(f.name)
+    if m:
+        _mlp_raw[m.group(1)].append(pd.read_csv(f))
+
+
+def _mlp_for(attack, mu, x_col):
+    out = {}
+    for scenario, dfs in _mlp_raw.items():
+        df = pd.concat(dfs, ignore_index=True)
+        df = df[df["attack"] == attack]
+        if mu is not None:
+            df = df[df["noise_mu"] == mu]
+        df = df.rename(columns={"severity": x_col})[[x_col, "reward_mlp"]]
+        out[scenario] = {"maddpgbest": _agg([df], x_col, ["reward_mlp"])}
+    return out
+
+
+# (title, x_col, xlabel, ddpm_data, filter_data, mlp_data) -- same order/titles as
 # plot_combined.py's COLUMNS: Delay, Actuation fault, Biased noise mu=-1/0/+1.
 COLUMNS = [
-    ("Delay ($k$ steps)",      "delay_k",          "$k$",                 delay_ddpm,           delay_f),
-    ("Actuation fault ($p$)",  "sp_prob",          "$p_\\mathrm{stuck}$", fault_ddpm,           fault_f),
-    ("Biased noise $\\mu=-1$", "action_noise_std", r"$\alpha$",           noise_ddpm_by_mu[-1], biasneg_f),
-    ("Biased noise $\\mu=0$",  "action_noise_std", r"$\alpha$",           noise_ddpm_by_mu[0],  noise_f),
-    ("Biased noise $\\mu=+1$", "action_noise_std", r"$\alpha$",           noise_ddpm_by_mu[1],  biaspos_f),
+    ("Delay ($k$ steps)",      "delay_k",          "$k$",                 delay_ddpm,           delay_f,   _mlp_for("delay", None, "delay_k")),
+    ("Actuation fault ($p$)",  "sp_prob",          "$p_\\mathrm{stuck}$", fault_ddpm,           fault_f,   _mlp_for("stuck_at", None, "sp_prob")),
+    ("Biased noise $\\mu=-1$", "action_noise_std", r"$\alpha$",           noise_ddpm_by_mu[-1], biasneg_f, _mlp_for("biased_gauss", -1.0, "action_noise_std")),
+    ("Biased noise $\\mu=0$",  "action_noise_std", r"$\alpha$",           noise_ddpm_by_mu[0],  noise_f,   _mlp_for("gauss", 0.0, "action_noise_std")),
+    ("Biased noise $\\mu=+1$", "action_noise_std", r"$\alpha$",           noise_ddpm_by_mu[1],  biaspos_f, _mlp_for("biased_gauss", 1.0, "action_noise_std")),
 ]
 
 SCENARIOS = sorted(set(delay_f) | set(fault_f) | set(noise_f) | set(biaspos_f) | set(biasneg_f))
 
 
-def plot_lines(ax, ddpm_algo_dfs, filter_algo_dfs, x_col):
+def plot_lines(ax, ddpm_algo_dfs, filter_algo_dfs, x_col, mlp_algo_dfs=None):
+    mlp_algo_dfs = mlp_algo_dfs or {}
     for algo_key in ALGO_ORDER:
         color = COLORS[ALGO_MAP[algo_key]]
 
@@ -247,6 +273,18 @@ def plot_lines(ax, ddpm_algo_dfs, filter_algo_dfs, x_col):
                 ax.plot(x, mean, color=color, linestyle=LINESTYLES[method], linewidth=LINEWIDTHS[method])
                 ax.fill_between(x, mean - std, mean + std, color=color, alpha=0.08, linewidth=0)
 
+        # MLP reconstruction: MADDPG only, two severities per panel, so it gets
+        # small markers to stay visible as a short segment.
+        if algo_key in mlp_algo_dfs:
+            df = mlp_algo_dfs[algo_key]
+            x = df[x_col]
+            method, y_col = "mlp", "reward_mlp"
+            mean = df[(y_col, "mean")]
+            std = df[(y_col, "std")].fillna(0)
+            ax.plot(x, mean, color=color, linestyle=LINESTYLES[method], linewidth=LINEWIDTHS[method],
+                    marker="o", markersize=2.5)
+            ax.fill_between(x, mean - std, mean + std, color=color, alpha=0.08, linewidth=0)
+
 
 if not SCENARIOS:
     print("No filter-sweep CSVs found under noise_sweeps/filters/ — run "
@@ -258,7 +296,7 @@ else:
                               sharex="col", squeeze=False)
 
     for row_idx, scenario in enumerate(SCENARIOS):
-        for col_idx, (col_title, x_col, xlabel, ddpm_data, filter_data) in enumerate(COLUMNS):
+        for col_idx, (col_title, x_col, xlabel, ddpm_data, filter_data, mlp_data) in enumerate(COLUMNS):
             ax = axes[row_idx, col_idx]
             ax.grid(True, alpha=0.3)
             ax.tick_params(length=2, pad=1.5)
@@ -275,7 +313,7 @@ else:
 
             ddpm_algo_dfs = ddpm_data.get(scenario, {})
             filter_algo_dfs = filter_data.get(scenario, {})
-            plot_lines(ax, ddpm_algo_dfs, filter_algo_dfs, x_col)
+            plot_lines(ax, ddpm_algo_dfs, filter_algo_dfs, x_col, mlp_data.get(scenario, {}))
 
     fig.supylabel("Reward")
 
@@ -283,6 +321,8 @@ else:
                       for k in ALGO_ORDER]
     style_handles = [Line2D([], [], color="black", ls=LINESTYLES[m], lw=1.3, label=METHOD_LABEL[m])
                       for m in ["no_filter", "diffusion", "kalman"]]
+    style_handles.append(Line2D([], [], color="black", ls=LINESTYLES["mlp"], lw=1.3,
+                                marker="o", markersize=2.5, label=METHOD_LABEL["mlp"]))
     fig.legend(handles=color_handles + style_handles,
                loc="lower center", ncol=len(color_handles) + len(style_handles), frameon=False,
                bbox_to_anchor=(0.5, -0.015), columnspacing=1.2, handlelength=2.2)
